@@ -46,6 +46,7 @@ Datový formát je další kategorie pro zpřehlednění a třídění videoték
 Logický datový model
 ------------------------
 Logický datový model ukazuje propojení jendnotlivých entit a jejich hierarchii.
+<https://github.com/rhulek/muni-fi-pb138-2013-videoteka/blob/master/App_model/app-design/exportz.jpg>
 
 Fyzický datový model
 ------------------------
