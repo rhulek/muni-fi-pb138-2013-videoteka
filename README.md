@@ -58,16 +58,16 @@ Persistentní úložiště dat aplikace představuje jeden soubor ve formátu ta
 
 **Médium** představuje jeden řádek v tabulce. Řádek je umístěn v dané záložce dokumentu podle toho, do jaké patří kategorie. Identifikátor média je uložen v uvozujícím sloupci čádku. Další sloupec řádku je vyhrazen pro uložení informace o typu média.
 
-**Záznamy o jednotlivých multimédiích na daném médiu** jsou reprezentovány hodnotou buňky na řádku. Každé další multimédium za zapisuje do další volné buňky na řádku daného média.
+**Záznamy o** jednotlivých **multimédiích** na daném médiu jsou reprezentovány hodnotou buňky na řádku. Každé další multimédium za zapisuje do další volné buňky na řádku daného média.
 
 **Typ multimédia** se ukládá ve strukturované formě (XML) do poznámky buňky konkrétního multimédia.
 
 **Datový formát** multimédia se ukládá ve strukturované formě (XML) do poznámky buňky konkrétního multimédia.
 
 Kvůli zajištění integrity dat se v datovém souboru nacházejí ještě speciální záložky, které obsahují seznamy s výčtovými typy (číselníky).
- - záložka codeList_mediumType obsahuje výčet povolených hodnot typů médií
- - záložka codeList_multimediaType obsahuje výčet povolených hodnot typů multimédií
- - záložka codeList_dataFormat obsahuje výčet povolených hodnot typů datových formátů
+ - záložka **codeList_mediumType** obsahuje výčet povolených hodnot typů médií
+ - záložka **codeList_multimediaType** obsahuje výčet povolených hodnot typů multimédií
+ - záložka **codeList_dataFormat** obsahuje výčet povolených hodnot typů datových formátů
  
 **Strukturovaná poznámka multimédia (buňky)**
 Protože vyžadovaný datový formát tabulkového procesoru neumožňuje díky své dvou dimenzionální povaze ukládat libovolně strukturovaná data, tak bylo k ukládání dodatečných informací o multimédiu zvoleno jejich uchovávání v poznámce buňky ve formě XML s definovanou šablonou.
