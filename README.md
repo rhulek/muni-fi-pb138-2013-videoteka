@@ -73,10 +73,17 @@ Protože vyžadovaný datový formát tabulkového procesoru neumožňuje díky 
 Strukturovaní XML poznámka v tomto momeňtě slouží jednak pro místo pro uchovávání dodatečných informací k multimédiu. Do budoucna však může představovat vhodný nástroj pro další rozšíření aplikace především z pohledu přidání dalších kategorií. Obdobný princip lze aplikovat i na entitu médium.
 
 **Ukázka strukturované XML poznámky:**
+
     <multimediaData>
-      <multimediumType>Hudební klip</multimediumType>
-    <dataFormat>DivX</dataFormat>
-    <otherExtensionPoint>DivX</otherExtensionPoint>
+      <multimediumType>
+        Hudební klip
+      </multimediumType>
+      <dataFormat>
+        DivX
+      </dataFormat>
+      <otherExtensionPoint>
+        DivX
+      </otherExtensionPoint>
     </multimediaData>
 
 Use case
