@@ -88,3 +88,4 @@ Strukturovaní XML poznámka v tomto momeňtě slouží jednak pro místo pro uc
 
 Use case
 ------------------------
+<https://github.com/rhulek/muni-fi-pb138-2013-videoteka/blob/master/App_model/app-design/use-case.jpg>
