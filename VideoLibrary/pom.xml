@@ -29,6 +29,33 @@
             <version>0.6</version>
         </dependency>
         
+        <!-- Google library -->
+         <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>1.15.0-rc</version>
+          </dependency>
+          
+          <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client-appengine</artifactId>
+            <version>1.15.0-rc</version>
+          </dependency>
+          
+          
+           <dependency>
+                <groupId>com.google.apis</groupId>
+                <artifactId>google-api-services-drive</artifactId>
+                <version>v2-rev75-1.15.0-rc</version>
+                <type>jar</type>
+           </dependency>
+          
+            <dependency>
+                <groupId>com.google.oauth-client</groupId>
+                <artifactId>google-oauth-client-java6</artifactId>
+                <version>1.15.0-rc</version>
+            </dependency>
+          
     </dependencies>
 
     <build>
@@ -78,6 +105,8 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            
         </plugins>
     </build>
 
