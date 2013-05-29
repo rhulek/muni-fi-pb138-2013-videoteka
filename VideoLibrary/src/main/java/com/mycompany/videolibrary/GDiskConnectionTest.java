@@ -54,7 +54,7 @@ public class GDiskConnectionTest {
         
         GoogleAuthorizationCodeFlow authorizationFlow = new GoogleAuthorizationCodeFlow.Builder(
                                     httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
-                                        .setAccessType("online").setApprovalPrompt("auto").build();
+                                        .setAccessType("offline").setApprovalPrompt("force").build();
         
         String url = authorizationFlow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
         
@@ -65,7 +65,7 @@ public class GDiskConnectionTest {
             
             logger.log(Level.WARNING, "Soubor credentials nebyl nalezen vytvarim nove uzivatelske data.");
             
-            //If it is possible open web browser with url
+            //When it is possible open web browser with url
             if(!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)){
                 System.out.println("Please open the following URL in your browser then type the authorization code:");
                 System.out.println("  " + url);
@@ -83,8 +83,7 @@ public class GDiskConnectionTest {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String code = br.readLine();
 
-            //String code = "4/DUEoZT9RWlD71Kc4klHYlBJFRCu5.UgZmoQ_8UpwXOl05ti8ZT3af2Fu6fQI";
-            //String code = "4/NzYmTvhgB6PoDVixjVabTYbq9nXR.soLAaBCUFy4bOl05ti8ZT3bTulC6fQI";
+            //String code = "4/ZZMRGEsjXWKjnhMvEQj3CO1SZqpW.QpggOYGeknUbOl05ti8ZT3aVi6fifQI";
             System.out.println("code: " + code);
 
             GoogleAuthorizationCodeTokenRequest authCodeTokeReqest =  authorizationFlow.newTokenRequest(code);
@@ -94,9 +93,20 @@ public class GDiskConnectionTest {
 
             GoogleTokenResponse flowResponse = authCodeTokeReqest.execute();
 
+            logger.log(Level.INFO, "flowResponse: " + flowResponse);
+            
             //GoogleTokenResponse flowResponse = authorizationFlow.newTokenRequest(code).setRedirectUri(REDIRECT_URI).execute();
-            credential = new GoogleCredential().setFromTokenResponse(flowResponse);
-
+            //authorizationFlow.createAndStoreCredential(null, CLIENT_ID)
+            
+            //totally idiotic! If you specifies accesType("offline") you have to create credentials
+            //in complicated way with builder instead just calling: new GoogleCredential().setFromTokenResponse(flowResponse)
+            credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
+                                                        .setTransport(httpTransport)
+                                                        .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
+                                                        .build()
+                                                        .setFromTokenResponse(flowResponse);
+            
+            //credential = new GoogleCredential().setFromTokenResponse(flowResponse);
 
             //Savecredentials for later use
             FileCredentialStore credentialStore = new FileCredentialStore(new java.io.File(CREDENTIALS_FILE_NAME), jsonFactory);
@@ -104,16 +114,21 @@ public class GDiskConnectionTest {
             
         } else {
             
-            Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.WARNING, "Soubor credentials nalezen nahravam uzivatelska data.");
+            Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.INFO, "Soubor credentials nalezen nahravam uzivatelska data.");
             
             FileCredentialStore credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
             if (!credentialStore.load(DEFAULT_USER_ID, credential)) {
                 logger.log(Level.SEVERE, "Chyba pri nahravani credentials");
+                return;
             }
+            
+//            logger.log(Level.INFO, "Refreshuji token. Puvodni token: " + credential.getAccessToken());
+//            GoogleAuthorizationCodeTokenRequest authCodeTokeReqest =  authorizationFlow.newTokenRequest(code);
+//            authCodeTokeReqest.setRedirectUri(REDIRECT_URI);
+//            authCodeTokeReqest.setGrantType("refresh_token");
         }
         
-        System.out.println("credentials: " + credential.getAccessToken());
-        
+        System.out.println("credentials: \n\tAccess token: " + credential.getAccessToken() + "\n\tRefresh token: " + credential.getRefreshToken());
         
         //Create a new authorized API client
         Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).build();
@@ -128,5 +143,14 @@ public class GDiskConnectionTest {
         
         File file = service.files().insert(body, mediaContent).execute();
         System.out.println("File ID: " + file.getId());
+    }
+    
+    private void getFile(String filename, Drive service){
+        try {
+            File file = service.files().get(filename).execute();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
