@@ -49,8 +49,12 @@ public class GDiskConnectionTest {
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
         java.io.File credentialsFile = new java.io.File(CREDENTIALS_FILE_NAME);
-        GoogleCredential credential = new GoogleCredential();
         
+        //TODO bude treba jeste doplnit refresh URL
+        GoogleCredential credential = credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
+                                                        .setTransport(httpTransport)
+                                                        .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
+                                                        .build();
         
         GoogleAuthorizationCodeFlow authorizationFlow = new GoogleAuthorizationCodeFlow.Builder(
                                     httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
@@ -100,12 +104,8 @@ public class GDiskConnectionTest {
             
             //totally idiotic! If you specifies accesType("offline") you have to create credentials
             //in complicated way with builder instead just calling: new GoogleCredential().setFromTokenResponse(flowResponse)
-            credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
-                                                        .setTransport(httpTransport)
-                                                        .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
-                                                        .build()
-                                                        .setFromTokenResponse(flowResponse);
-            
+            credential.setFromTokenResponse(flowResponse);
+
             //credential = new GoogleCredential().setFromTokenResponse(flowResponse);
 
             //Savecredentials for later use
@@ -114,12 +114,25 @@ public class GDiskConnectionTest {
             
         } else {
             
+            //Nahrani credentials ze souboru
             Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.INFO, "Soubor credentials nalezen nahravam uzivatelska data.");
             
             FileCredentialStore credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
             if (!credentialStore.load(DEFAULT_USER_ID, credential)) {
                 logger.log(Level.SEVERE, "Chyba pri nahravani credentials");
                 return;
+            } else {
+                logger.log(Level.INFO, "Credentials uspesne nahrany: \n\tAccess token: "
+                        + credential.getAccessToken() + "\n\tRefresh token: "
+                        + credential.getRefreshToken());
+            }
+            
+            if(credential.refreshToken()){
+                logger.log(Level.INFO, "Token byl uspesne obnoven: \n\tAccess token: " 
+                        + credential.getAccessToken() + "\n\tRefresh token: "
+                        + credential.getRefreshToken());
+            } else {
+                logger.log(Level.SEVERE, "Chyba pri obnoveni tokenu!");
             }
             
 //            logger.log(Level.INFO, "Refreshuji token. Puvodni token: " + credential.getAccessToken());
