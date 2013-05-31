@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.awt.Desktop;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +41,7 @@ public class GDiskConnectionTest {
     private static String DEFAULT_USER_ID = "defaultUser";
     
     private static Logger logger = Logger.getLogger(GDiskConnectionTest.class.getName());
-    private String FILE_TO_COPY = "D:/document.txt";
+    private static String FILE_TO_COPY = "D:/document.txt";
     
     /**
      * @param args the command line arguments
@@ -146,24 +147,50 @@ public class GDiskConnectionTest {
         //Create a new authorized API client
         Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).build();
         
-        File body = new File();
-        body.setTitle("My document");
-        body.setDescription("A test document");
-        body.setMimeType("text/plain");
+//        File body = new File();
+//        body.setTitle("My document");
+//        body.setDescription("A test document");
+//        body.setMimeType("text/plain");
+//        
+//        java.io.File fileContent = new java.io.File(FILE_TO_COPY);
+//        FileContent mediaContent = new FileContent("text/plain", fileContent);
+//        
+//        File file = service.files().insert(body, mediaContent).execute();
+//        System.out.println("File ID: " + file.getId());
         
-        java.io.File fileContent = new java.io.File("D:/document.txt");
-        FileContent mediaContent = new FileContent("text/plain", fileContent);
         
-        File file = service.files().insert(body, mediaContent).execute();
-        System.out.println("File ID: " + file.getId());
-    }
-    
-    private void getFile(String filename, Drive service){
-        try {
-            File file = service.files().get(filename).execute();
-            
-        } catch (IOException ex) {
-            Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.SEVERE, null, ex);
+        GDiskConnectionManager gdiskManager = new GDiskConnectionManager();
+        File file = gdiskManager.getFileByName("videoteka_data", service);
+        
+        
+        System.out.println("Title: " + file.getTitle());
+        System.out.println("Description: " + file.getDescription());
+        System.out.println("MIME type: " + file.getMimeType());
+        
+        InputStream is =  GDiskConnectionManager.downloadFileODF(service, file);
+        
+        if(is != null){
+            InputStreamReader r = new InputStreamReader( is );
+            BufferedReader dataReader = new BufferedReader( r );
+
+            String data;
+            while ((data = dataReader.readLine()) != null ){
+                System.out.println( data );
+            }
+        } else {
+            logger.severe("Doslo k chybe pri stahovani souboru.");
         }
     }
+    
+//    public static void getFile(String filename, Drive service){
+//        try {
+//            File file = service.files().get(filename).execute();
+//            
+//            System.out.println("Title: " + file.getTitle());
+//            System.out.println("Description: " + file.getDescription());
+//            System.out.println("MIME type: " + file.getMimeType());
+//        } catch (IOException ex) {
+//            Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
 }
