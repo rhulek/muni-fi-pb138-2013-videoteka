@@ -60,8 +60,8 @@ public class GDiskConnectionTest {
         logger.log(Level.TRACE, "TRACE");
         logger.log(Level.WARN, "WARN");
         
-        logger.warn("this is ok \n And all \n this have only\t\tblack colour \n and here is colour again?");
-        System.out.println("Is it black again?");
+//        logger.warn("this is ok \r And all \r this have only\t\tblack colour \r and here is colour again?");
+//        System.out.println("Is it black again?");
 
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
@@ -80,7 +80,7 @@ public class GDiskConnectionTest {
         String url = authorizationFlow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
         
         logger.trace("Desktop.isDesktopSupported(): " + Desktop.isDesktopSupported() +
-                    "\nDesktop.Action.BROWSE: " + Desktop.getDesktop().isSupported(Desktop.Action.BROWSE));
+                    "\rDesktop.Action.BROWSE: " + Desktop.getDesktop().isSupported(Desktop.Action.BROWSE));
         
         if(!credentialsFile.exists()){
             
@@ -96,7 +96,7 @@ public class GDiskConnectionTest {
                     Desktop.getDesktop().browse( new java.net.URI(url) );
 
                 } catch (URISyntaxException ex) {
-                    logger.log(Level.FATAL, null, ex);
+                    logger.log(Level.FATAL, ex);
                 }
             }
 
@@ -139,14 +139,14 @@ public class GDiskConnectionTest {
                 logger.log(Level.FATAL, "Chyba pri nahravani credentials");
                 return;
             } else {
-                logger.log(Level.INFO, "Credentials uspesne nahrany: \n\tAccess token: "
-                        + credential.getAccessToken() + "\n\tRefresh token: "
+                logger.log(Level.INFO, "Credentials uspesne nahrany: \r\tAccess token: "
+                        + credential.getAccessToken() + "\r\tRefresh token: "
                         + credential.getRefreshToken());
             }
             
             if(credential.refreshToken()){
-                logger.log(Level.INFO, "Token byl uspesne obnoven: \n\tAccess token: " 
-                        + credential.getAccessToken() + "\n\tRefresh token: "
+                logger.log(Level.INFO, "Token byl uspesne obnoven: \r\tAccess token: " 
+                        + credential.getAccessToken() + "\r\tRefresh token: "
                         + credential.getRefreshToken());
             } else {
                 logger.log(Level.FATAL, "Chyba pri obnoveni tokenu!");
@@ -158,7 +158,7 @@ public class GDiskConnectionTest {
 //            authCodeTokeReqest.setGrantType("refresh_token");
         }
         
-        logger.trace("credentials: \n\tAccess token: " + credential.getAccessToken() + "\n\tRefresh token: " + credential.getRefreshToken());
+        logger.trace("credentials: \r\tAccess token: " + credential.getAccessToken() + "\r\tRefresh token: " + credential.getRefreshToken());
         
         //Create a new authorized API client
         Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).build();

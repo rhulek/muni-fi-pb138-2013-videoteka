@@ -74,7 +74,7 @@ public class GDiskConnectionManager {
             logger.info("Soubor NENALEZEN!");
             
         } catch (IOException ex) {
-            logger.log(Level.ERROR, null, ex);
+            logger.log(Level.ERROR, ex);
         }
         
       return null;
