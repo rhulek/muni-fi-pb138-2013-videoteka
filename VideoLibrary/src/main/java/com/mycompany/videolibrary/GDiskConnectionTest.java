@@ -23,10 +23,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.awt.Desktop;
+import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -40,13 +42,27 @@ public class GDiskConnectionTest {
     private static String CREDENTIALS_FILE_NAME = "credentials.txt";
     private static String DEFAULT_USER_ID = "defaultUser";
     
-    private static Logger logger = Logger.getLogger(GDiskConnectionTest.class.getName());
+    private static Logger logger = LogManager.getLogger(GDiskConnectionTest.class.getName());
     private static String FILE_TO_COPY = "D:/document.txt";
     
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException {
+        
+        //System.out.println("Test \u001B[34m test \u001B[0m TEST");
+                
+        //Test of logging
+        logger.log(Level.DEBUG, "DEBUG");
+        logger.log(Level.ERROR, "ERROR");
+        logger.log(Level.FATAL, "FATAL");
+        logger.log(Level.INFO, "INFO");
+        logger.log(Level.TRACE, "TRACE");
+        logger.log(Level.WARN, "WARN");
+        
+        logger.warn("this is ok \n And all \n this have only\t\tblack colour \n and here is colour again?");
+        System.out.println("Is it black again?");
+
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
         java.io.File credentialsFile = new java.io.File(CREDENTIALS_FILE_NAME);
@@ -63,12 +79,12 @@ public class GDiskConnectionTest {
         
         String url = authorizationFlow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
         
-        System.out.println("Desktop.isDesktopSupported(): " + Desktop.isDesktopSupported() +
-                    "\n Desktop.getDesktop().isSupported(Desktop.Action.BROWSE): " + Desktop.getDesktop().isSupported(Desktop.Action.BROWSE));
+        logger.trace("Desktop.isDesktopSupported(): " + Desktop.isDesktopSupported() +
+                    "\nDesktop.Action.BROWSE: " + Desktop.getDesktop().isSupported(Desktop.Action.BROWSE));
         
         if(!credentialsFile.exists()){
             
-            logger.log(Level.WARNING, "Soubor credentials nebyl nalezen vytvarim nove uzivatelske data.");
+            logger.log(Level.INFO, "Soubor credentials nebyl nalezen vytvarim nove uzivatelske data.");
             
             //When it is possible open web browser with url
             if(!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)){
@@ -80,7 +96,7 @@ public class GDiskConnectionTest {
                     Desktop.getDesktop().browse( new java.net.URI(url) );
 
                 } catch (URISyntaxException ex) {
-                    Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.log(Level.FATAL, null, ex);
                 }
             }
 
@@ -116,11 +132,11 @@ public class GDiskConnectionTest {
         } else {
             
             //Nahrani credentials ze souboru
-            Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.INFO, "Soubor credentials nalezen nahravam uzivatelska data.");
+            logger.log(Level.INFO, "Soubor credentials nalezen nahravam uzivatelska data.");
             
             FileCredentialStore credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
             if (!credentialStore.load(DEFAULT_USER_ID, credential)) {
-                logger.log(Level.SEVERE, "Chyba pri nahravani credentials");
+                logger.log(Level.FATAL, "Chyba pri nahravani credentials");
                 return;
             } else {
                 logger.log(Level.INFO, "Credentials uspesne nahrany: \n\tAccess token: "
@@ -133,7 +149,7 @@ public class GDiskConnectionTest {
                         + credential.getAccessToken() + "\n\tRefresh token: "
                         + credential.getRefreshToken());
             } else {
-                logger.log(Level.SEVERE, "Chyba pri obnoveni tokenu!");
+                logger.log(Level.FATAL, "Chyba pri obnoveni tokenu!");
             }
             
 //            logger.log(Level.INFO, "Refreshuji token. Puvodni token: " + credential.getAccessToken());
@@ -142,7 +158,7 @@ public class GDiskConnectionTest {
 //            authCodeTokeReqest.setGrantType("refresh_token");
         }
         
-        System.out.println("credentials: \n\tAccess token: " + credential.getAccessToken() + "\n\tRefresh token: " + credential.getRefreshToken());
+        logger.trace("credentials: \n\tAccess token: " + credential.getAccessToken() + "\n\tRefresh token: " + credential.getRefreshToken());
         
         //Create a new authorized API client
         Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).build();
@@ -169,17 +185,7 @@ public class GDiskConnectionTest {
         
         InputStream is =  GDiskConnectionManager.downloadFileODF(service, file);
         
-        if(is != null){
-            InputStreamReader r = new InputStreamReader( is );
-            BufferedReader dataReader = new BufferedReader( r );
-
-            String data;
-            while ((data = dataReader.readLine()) != null ){
-                System.out.println( data );
-            }
-        } else {
-            logger.severe("Doslo k chybe pri stahovani souboru.");
-        }
+        
     }
     
 //    public static void getFile(String filename, Drive service){
