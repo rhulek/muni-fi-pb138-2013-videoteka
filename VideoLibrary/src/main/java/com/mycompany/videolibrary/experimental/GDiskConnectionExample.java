@@ -23,6 +23,6 @@ public class GDiskConnectionExample {
     public static void main(String[] args) {
        GDiskManager gDiskManager = new GDiskManagerImpl();
  
-       
+       gDiskManager.getTempFile();
     }
 }
