@@ -29,13 +29,21 @@ public class GDiskConnectionManager {
     
     public static long FILE_SIZE_CONSTRAINT = 104857600;    //restrict size of file to 100MB
     private static String ODF_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
+    private static String TEMPORARY_FILE = "tempFile.odf";
     private static int FILE_BUFFER_SIZE = 2048;
+    
+    private java.io.File tempFile = null;
+    
 
     public GDiskConnectionManager() {
         
     }
     
  
+    public void initialize(){
+        
+    }
+    
     private static List<File> retrieveAllFiles(Drive service) throws IOException {
     List<File> result = new ArrayList<File>();
     Files.List request = service.files().list();
@@ -114,7 +122,7 @@ public class GDiskConnectionManager {
    * This method takes input sream and save it to local temporary file.
    * Returns this new created file.
    */
-  public static java.io.File getTempFile(java.io.InputStream is) {
+  public java.io.File getTempFile(java.io.InputStream is) {
       byte[] buffer = new byte[FILE_BUFFER_SIZE];
       
       if(is == null){
@@ -125,7 +133,7 @@ public class GDiskConnectionManager {
 //      InputStreamReader r = new InputStreamReader( is );
 //      BufferedReader dataReader = new BufferedReader( r );
       
-      java.io.File tempFile = new java.io.File("tempFile.odf");
+      java.io.File tempFile = new java.io.File(TEMPORARY_FILE);
       java.io.OutputStream outS = null;
       
       try {

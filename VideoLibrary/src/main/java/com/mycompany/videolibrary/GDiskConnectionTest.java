@@ -68,7 +68,7 @@ public class GDiskConnectionTest {
         java.io.File credentialsFile = new java.io.File(CREDENTIALS_FILE_NAME);
         
         //TODO bude treba jeste doplnit refresh URL
-        GoogleCredential credential = credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
+        GoogleCredential credential = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
                                                         .setTransport(httpTransport)
                                                         .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
                                                         .build();
@@ -96,7 +96,10 @@ public class GDiskConnectionTest {
                     Desktop.getDesktop().browse( new java.net.URI(url) );
 
                 } catch (URISyntaxException ex) {
-                    logger.log(Level.FATAL, ex);
+                    logger.log(Level.ERROR, ex);
+                    
+                    System.out.println("Please open the following URL in your browser then type the authorization code:");
+                    System.out.println("  " + url);
                 }
             }
 
@@ -104,26 +107,14 @@ public class GDiskConnectionTest {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String code = br.readLine();
 
-            //String code = "4/ZZMRGEsjXWKjnhMvEQj3CO1SZqpW.QpggOYGeknUbOl05ti8ZT3aVi6fifQI";
-            System.out.println("code: " + code);
-
             GoogleAuthorizationCodeTokenRequest authCodeTokeReqest =  authorizationFlow.newTokenRequest(code);
             authCodeTokeReqest.setRedirectUri(REDIRECT_URI);
-            //authCodeTokeReqest.setGrantType("refresh_token");
-            System.out.println("authCodeTokeReqest: " + authCodeTokeReqest);
 
             GoogleTokenResponse flowResponse = authCodeTokeReqest.execute();
-
-            logger.log(Level.INFO, "flowResponse: " + flowResponse);
-            
-            //GoogleTokenResponse flowResponse = authorizationFlow.newTokenRequest(code).setRedirectUri(REDIRECT_URI).execute();
-            //authorizationFlow.createAndStoreCredential(null, CLIENT_ID)
             
             //totally idiotic! If you specifies accesType("offline") you have to create credentials
             //in complicated way with builder instead just calling: new GoogleCredential().setFromTokenResponse(flowResponse)
             credential.setFromTokenResponse(flowResponse);
-
-            //credential = new GoogleCredential().setFromTokenResponse(flowResponse);
 
             //Savecredentials for later use
             FileCredentialStore credentialStore = new FileCredentialStore(new java.io.File(CREDENTIALS_FILE_NAME), jsonFactory);
@@ -144,8 +135,9 @@ public class GDiskConnectionTest {
                         + credential.getRefreshToken());
             }
             
-            if(credential.refreshToken()){
-                logger.log(Level.INFO, "Token byl uspesne obnoven: \r\tAccess token: " 
+            
+            if( credential.refreshToken() ){
+                logger.log(Level.DEBUG, "Token byl uspesne obnoven: \r\tAccess token: " 
                         + credential.getAccessToken() + "\r\tRefresh token: "
                         + credential.getRefreshToken());
             } else {
@@ -162,19 +154,7 @@ public class GDiskConnectionTest {
         
         //Create a new authorized API client
         Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).build();
-        
-//        File body = new File();
-//        body.setTitle("My document");
-//        body.setDescription("A test document");
-//        body.setMimeType("text/plain");
-//        
-//        java.io.File fileContent = new java.io.File(FILE_TO_COPY);
-//        FileContent mediaContent = new FileContent("text/plain", fileContent);
-//        
-//        File file = service.files().insert(body, mediaContent).execute();
-//        System.out.println("File ID: " + file.getId());
-        
-        
+               
         GDiskConnectionManager gdiskManager = new GDiskConnectionManager();
         File file = gdiskManager.getFileByName("videoteka_data", service);
         
@@ -185,6 +165,7 @@ public class GDiskConnectionTest {
         
         InputStream is =  GDiskConnectionManager.downloadFileODF(service, file);
         
+        //java.io.File tempFile = GDiskConnectionManager.getTempFile(is);
         
     }
     
