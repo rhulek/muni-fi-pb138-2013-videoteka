@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
  * @author Martin
  */
 public class GDiskManagerImpl implements GDiskManager{
-    private static Logger logger = LogManager.getLogger(GDiskConnectionTest.class.getName());
+    private static Logger logger = LogManager.getLogger(GDiskManagerImpl.class.getName());
     private static String TEMP_FILE = "tmpFile.odt";
     private static String SERVER_FILE_NAME = "videoteka_data";
     private static String CREDENTIALS_FILE = "credentials.txt";
