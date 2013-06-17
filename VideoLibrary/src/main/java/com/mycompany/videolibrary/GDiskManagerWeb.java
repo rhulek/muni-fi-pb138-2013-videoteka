@@ -41,11 +41,10 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Martin
  */
-public class GDiskManagerImpl implements GDiskManager{
-    private static Logger logger = LogManager.getLogger(GDiskManagerImpl.class.getName());
+public class GDiskManagerWeb implements GDiskManager{
+    private static Logger logger = LogManager.getLogger(GDiskManagerWeb.class.getName());
     private static String TEMP_FILE = "tmpFile.odt";
     private static String SERVER_FILE_NAME = "videoteka_data";
-    private static String CREDENTIALS_FILE = "credentials.txt";
     private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     private static String DEFAULT_USER_ID = "defaultUser";
     private static String ODF_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
@@ -54,7 +53,7 @@ public class GDiskManagerImpl implements GDiskManager{
     //TODO nacitat z properities
     private String CLIENT_ID = "702406823762.apps.googleusercontent.com";
     private String CLIENT_SECRET = "iKIHHkC-wKEC7JS9YkzmDX_n";
-    
+    private String CREDENTIALS_FILE = "credentials.txt";
     
     private GoogleCredential credentials;
     
@@ -62,8 +61,10 @@ public class GDiskManagerImpl implements GDiskManager{
     private JsonFactory jsonFactory;
     private java.io.File credentialsFile;
     private java.io.File tempFile;
-
-    public GDiskManagerImpl() {
+    private AuthFlowAndURL flowAndAuthURL;
+    
+    public GDiskManagerWeb() {
+        logger.log(Level.TRACE, "Constructor invoke.");
         this.httpTransport = new NetHttpTransport();
         this.jsonFactory = new JacksonFactory();
         
@@ -72,125 +73,95 @@ public class GDiskManagerImpl implements GDiskManager{
                                                         .setTransport(httpTransport)
                                                         .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
                                                         .build();
+        
+        flowAndAuthURL = new AuthFlowAndURL(httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
         //this.initialize();
     }
     
-    protected void setClientID(String id){ this.CLIENT_ID = id; }
-    protected void setClientSecret(String secret) { this. CLIENT_SECRET = secret; }
+//    protected void setClientID(String id){ this.CLIENT_ID = id; }
+//    protected void setClientSecret(String secret) { this. CLIENT_SECRET = secret; }
     
-    public void initialize(){
+    
+    public String getAuthorizationURL(){
+        if(flowAndAuthURL == null){
+            logger.log(Level.ERROR, "AuthFlowAndURL hasn't been set!");
+            return null;
+        }
         
-        GoogleAuthorizationCodeFlow authorizationFlow = new GoogleAuthorizationCodeFlow.Builder(
-                                    httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
-                                        .setAccessType("offline").setApprovalPrompt("force").build();
-        
-        String url = authorizationFlow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
-        
-        logger.trace("Desktop.isDesktopSupported(): " + Desktop.isDesktopSupported() +
-                    "\rDesktop.Action.BROWSE: " + Desktop.getDesktop().isSupported(Desktop.Action.BROWSE));
-        
-        //If credentials file not exist it is probably first run
-        if(!credentialsFile.exists()){
-            logger.log(Level.INFO, "Soubor credentials nebyl nalezen vytvarim nove uzivatelske data.");
-            
-            //When it is possible open web browser with url
+        return flowAndAuthURL.getAuthUrl();
+    }
+    
+    public boolean openBrowser(){
+        String url = getAuthorizationURL();
+        if(url == null){
+            logger.log(Level.ERROR, "Authorization url in AuthFlowAndURL hasn't been set");
+            return false;
+        }
+        return openBrowser(url);
+    }
+    
+    public boolean openBrowser(String url){
+        //When it is possible open web browser with url
             if(!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)){
                 logger.log(Level.WARN, "Open autorization URL in browser is not supported");
                 
-                System.out.println("Please open the following URL in your browser then type the authorization code:");
-                System.out.println("  " + url);
-
             } else {
                 try {
                    Desktop.getDesktop().browse( new java.net.URI(url) );
-
+                   return true;
                 } catch (URISyntaxException ex) {
-                    logger.log(Level.ERROR, ex);
-                    
-                    System.out.println("Please open the following URL in your browser then type the authorization code:");
-                    System.out.println("  " + url);
+                    logger.log(Level.ERROR, "Error while opening browser:", ex);
                     
                 } catch (java.io.IOException ex) {
-                    logger.log(Level.ERROR, ex);
+                    logger.log(Level.ERROR, "Error while opening browser:", ex);
+                
                 }
             }
-            
-            //Get code from user
-            System.out.println("Please insert authorization code: ");
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            String authCode = null;
-            try {
-                authCode = br.readLine();
-            } catch (IOException ex) {
-                logger.log(Level.ERROR, ex);
-            }
-            
-            GoogleAuthorizationCodeTokenRequest authCodeTokeReqest =  authorizationFlow.newTokenRequest(authCode);
-            authCodeTokeReqest.setRedirectUri(REDIRECT_URI);
-            
-            //Get authentication Token
-            GoogleTokenResponse flowResponse = null;
-            try {
-                flowResponse = authCodeTokeReqest.execute();
-            } catch (IOException ex) {
-                logger.log(Level.ERROR, "Chyba pri ziskavani authentizacniho tokenu!", ex);
-            }
-            
-            //Create credentials for future use
-            //credentials.setFromTokenResponse(flowResponse);
-
-            //Savecredentials for later use
-            FileCredentialStore credentialStore;
-            try {
-                credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
-                credentialStore.store(DEFAULT_USER_ID, credentials);
-            } catch (IOException ex) {
-                logger.log(Level.ERROR, ex);
-            }
-            
-            logger.log(Level.INFO, "Credentials uspesne vytvoreny a ulozeny v '" + credentialsFile.getAbsolutePath() + "'");
-        } else {
-            
-        //Credentials exist so load informations
-            logger.log(Level.DEBUG, "Credentials file was found loading data.");
-            
-            FileCredentialStore credentialStore = null;
-            try {
-                credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
-            } catch (IOException ex) {
-                logger.log(Level.ERROR, "Chyba pri otevirani credentials file: ", ex);
-            }
-            
-            if (!credentialStore.load(DEFAULT_USER_ID, credentials)) {
-                logger.log(Level.FATAL, "Chyba pri nahravani credentials");
-                return;   //TODO Tady by se mela vratit hodnota umoznujici procest volani funkce pro prvni inicializaci
-            } else {
-                logger.log(Level.TRACE, "Credentials uspesne nahrany: \r\tAccess token: "
-                        + credentials.getAccessToken() + "\r\tRefresh token: "
-                        + credentials.getRefreshToken());
-            }
-            
-            try {
-                if( credentials.refreshToken() ){
-                    logger.log(Level.TRACE, "Token byl uspesne obnoven: \r\tAccess token: " 
-                                + credentials.getAccessToken() + "\r\tRefresh token: "
-                                + credentials.getRefreshToken());
-                } else {
-                    logger.log(Level.FATAL, "Chyba pri obnoveni tokenu!");
-                }
-            } catch (IOException ex) {
-                logger.log(Level.FATAL, "Chyba pri obnoveni tokenu: ", ex);
-            }
-        }
+            return false;
     }
     
     /*
-     * Used at first run or when credentials file is not found.
-     * Open browser
+     * Provede autorizaci na zaklade predaneho tokenu
      */
-    public void createAndSetCredentials(){
+    public boolean autorizeAndSaveCredentials(String authorizationCode){
+         
+        GoogleAuthorizationCodeFlow authorizationFlow = flowAndAuthURL.getAuthFlow();
         
+        GoogleAuthorizationCodeTokenRequest authCodeTokeReqest =  authorizationFlow.newTokenRequest(authorizationCode);
+        authCodeTokeReqest.setRedirectUri(REDIRECT_URI);
+
+        //Get authentication Token
+        GoogleTokenResponse flowResponse = null;
+        try {
+            flowResponse = authCodeTokeReqest.execute();
+        } catch (IOException ex) {
+            logger.log(Level.ERROR, "Chyba pri ziskavani authentizacniho tokenu!", ex);
+        }
+
+        //Create credentials for future use
+        credentials.setFromTokenResponse(flowResponse);
+
+        //Save credentials for later use
+        FileCredentialStore credentialStore;
+        try {
+            credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
+            credentialStore.store(DEFAULT_USER_ID, credentials);
+        } catch (IOException ex) {
+            logger.log(Level.ERROR, ex);
+        }
+
+        logger.log(Level.INFO, "Credentials uspesne vytvoreny a ulozeny v '" + credentialsFile.getAbsolutePath() + "'");
+        
+        return true;
     }
+    
+//    /*
+//     * Used at first run or when credentials file is not found.
+//     * Open browser
+//     */
+//    public void createAndSetCredentials(){
+//        
+//    }
     
     public GoogleCredential getCredentials(){
         return this.credentials;
@@ -208,6 +179,78 @@ public class GDiskManagerImpl implements GDiskManager{
         this.credentialsFile = credentialsFile;
     }
     
+    public GoogleCredential loadCredentials(){
+        if(!checkCredentialsFile()) {
+           return null;
+        }
+        
+        logger.log(Level.DEBUG, "Credentials file was found loading data.");
+            
+        FileCredentialStore credentialStore = null;
+        try {
+            credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
+        } catch (IOException ex) {
+            logger.log(Level.ERROR, "Chyba pri otevirani credentials file: ", ex);
+        }
+
+        if(credentials == null){
+            logger.log(Level.ERROR, "Error while loading credentials. Credentials is null!");
+        }
+        
+        if (!credentialStore.load(DEFAULT_USER_ID, credentials)) {
+            logger.log(Level.FATAL, "Chyba pri nahravani credentials");
+            return null;   //TODO Tady by se mela vratit hodnota umoznujici procest volani funkce pro prvni inicializaci
+        } else {
+            logger.log(Level.TRACE, "Credentials uspesne nahrany: \r\tAccess token: "
+                    + credentials.getAccessToken() + "\r\tRefresh token: "
+                    + credentials.getRefreshToken());
+        }
+        return credentials;
+    }
+    
+    /*
+     * Returns true if credentials file is present and contain correct informations
+     */
+    public boolean checkCredentialsFile(){
+        if(credentialsFile != null){
+            if(!credentialsFile.exists()){
+                logger.log(Level.ERROR, "Credential file doesnt exist in path: '"
+                        + credentialsFile.getAbsolutePath() + "'");
+                return false;
+            }
+            
+            if(!credentialsFile.canRead()){
+                logger.log(Level.ERROR, "Cannot read credentials file in path: '"
+                        + credentialsFile.getAbsolutePath() + "'");
+                return false;
+            }
+            
+            return true;
+        }
+        logger.log(Level.ERROR, "Credentials file hasn't been set!");
+        return false;
+    }
+    
+    /*
+     * Provede refresh tokenu
+     * Musi byt nahrany validni credentials
+     */
+    public boolean refreshToken(){
+        try {
+                if( credentials.refreshToken() ){
+                    logger.log(Level.TRACE, "Token byl uspesne obnoven: \r\tAccess token: " 
+                                + credentials.getAccessToken() + "\r\tRefresh token: "
+                                + credentials.getRefreshToken());
+                    return true;
+                } else {
+                    logger.log(Level.FATAL, "Chyba pri obnoveni tokenu!");
+                    return false;
+                }
+            } catch (IOException ex) {
+                logger.log(Level.FATAL, "Chyba pri obnoveni tokenu: ", ex);
+                return false;
+            }
+    }
     
     /*
      * This method make first initialization of connection to google drive by
@@ -223,6 +266,7 @@ public class GDiskManagerImpl implements GDiskManager{
 //    }
     
     private List<File> retrieveAllFiles(Drive service) {
+        logger.log(Level.TRACE, "Ziskavam seznam vsech souboru na Google Drive muze to chvili trvat.");
         List<File> result = new ArrayList<File>();
         Files.List request = null;;
         try {
@@ -284,6 +328,7 @@ public class GDiskManagerImpl implements GDiskManager{
      * Save content of InputStream to temporary file.
      */
     private java.io.File createTempFile(java.io.InputStream is) {
+        logger.log(Level.TRACE, "Vytvarim docasny soubor.");
         byte[] buffer = new byte[FILE_BUFFER_SIZE];
 
         if(is == null){
@@ -312,9 +357,12 @@ public class GDiskManagerImpl implements GDiskManager{
             logger.error("Error while writing into temporary file: " + ex);
         }
         
+        logger.log(Level.TRACE, "Byl stazen docasny soubor a ulozen do: '" + tempFile.getAbsolutePath() + "'");
         return tempFile;
     }
     
+    
+    //TODO vylepseni - bylo by vhodne nejprve zkontrolovat jestli uz existuje a jestli se zmenil pripadne provest update
     @Override
     public java.io.File getTempFile() {
         if(credentials != null){
@@ -344,6 +392,8 @@ public class GDiskManagerImpl implements GDiskManager{
 
             return createTempFile(is);
         }
+        
+        
         return null;
     }
 
