@@ -365,16 +365,27 @@ public class GDiskManagerWeb implements GDiskManager{
     //TODO vylepseni - bylo by vhodne nejprve zkontrolovat jestli uz existuje a jestli se zmenil pripadne provest update
     @Override
     public java.io.File getTempFile() {
+        if(tempFile == null){
+            tempFile = new java.io.File(TEMP_FILE);
+        }
+        
+        if(tempFile.exists()) {
+            logger.log(Level.DEBUG, "Docasny soubor existuje vracim tento soubor: " + tempFile.getAbsolutePath());
+            return tempFile;
+        }
+        
+        logger.log(Level.DEBUG, "Docasny soubor neexistuje stahuji soubor z Google Drive.");
+        
         if(credentials != null){
             File videoFile = null;
             
             //Create a new authorized API client
             Drive service = new Drive.Builder(httpTransport, jsonFactory, credentials).build();
 
-            //get list of all files and get full informations of requested file
-            List<File> files = retrieveAllFiles(service);
+            //get list of all allDriveFiles and get full informations of requested file
+            List<File> allDriveFiles = retrieveAllFiles(service);
             
-            for (File f: files){
+            for (File f: allDriveFiles){
                 logger.log(Level.TRACE, "Title: " + f.getTitle() + "\tID: " + f.getId());
 
                 
@@ -397,6 +408,11 @@ public class GDiskManagerWeb implements GDiskManager{
         return null;
     }
 
+    public void updateTempFileToGDrive(){
+        
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
     @Override
     public boolean update() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
