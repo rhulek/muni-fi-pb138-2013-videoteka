@@ -4,6 +4,7 @@
  */
 package com.mycompany.videolibrary.experimental;
 
+import com.google.api.services.drive.model.File;
 import com.mycompany.videolibrary.GDiskManager;
 import com.mycompany.videolibrary.GDiskManagerImpl;
 import com.mycompany.videolibrary.GDiskManagerWeb;
@@ -27,20 +28,21 @@ public class GDiskConnectionExample {
      */
     
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //       GDiskManager gDiskManager = new GDiskManagerImpl(); 
 //       gDiskManager.getTempFile();
        
         GDiskManagerWeb manager = new GDiskManagerWeb();
+        java.io.File tempFile = null;
         
-        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            
         if(!manager.checkCredentialsFile()){
             manager.openBrowser();
-
-            System.out.println("Please insert authorization code: ");
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            
             String authCode = null;
             try {
+                System.out.println("Please insert authorization code: ");
                 authCode = br.readLine();
             } catch (IOException ex) {
                 logger.log(Level.ERROR, ex);
@@ -50,8 +52,20 @@ public class GDiskConnectionExample {
         } else {
             logger.log(Level.INFO, "Nahrani credentials: " + manager.loadCredentials());
             manager.refreshToken();
-            manager.getTempFile();
+            
+            if(manager.getGoogleFileID() == null) {     //pokud neni spravne nastaveno GOOGLE_FILE_ID neprovede se správně test na aktuálnost souboru
+                File googleFile = manager.getFileFromGDriveByName("videoteka_data");
+                manager.setGoogleFileID(googleFile.getId());
+            }
+            tempFile = manager.getTempFile();
         }
+        
+        System.out.println("Provedte editaci docasneho souboru: '" + tempFile.getAbsolutePath() + "'");
+        br.readLine();
+        
+        manager.updateTempFileToGDrive();
+ 
+        
         
        System.out.println("\u001b[1;31mThis is red \n And all \n this have only \n\tblack color \n and here is colour again?\u001b[0m");
     }

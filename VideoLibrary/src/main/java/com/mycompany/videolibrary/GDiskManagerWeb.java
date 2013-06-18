@@ -11,12 +11,14 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.Drive.Files;
 import com.google.api.services.drive.DriveScopes;
@@ -43,6 +45,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class GDiskManagerWeb implements GDiskManager{
     private static Logger logger = LogManager.getLogger(GDiskManagerWeb.class.getName());
+    private static String APPLICATION_NAME = "videoteka";
     private static String TEMP_FILE = "tmpFile.odt";
     private static String SERVER_FILE_NAME = "videoteka_data";
     private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
@@ -50,18 +53,22 @@ public class GDiskManagerWeb implements GDiskManager{
     private static String ODF_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
     private static int FILE_BUFFER_SIZE = 2048;
     
-    //TODO nacitat z properities
-    private String CLIENT_ID = "702406823762.apps.googleusercontent.com";
-    private String CLIENT_SECRET = "iKIHHkC-wKEC7JS9YkzmDX_n";
-    private String CREDENTIALS_FILE = "credentials.txt";
-    
-    private GoogleCredential credentials;
-    
     private HttpTransport httpTransport;
     private JsonFactory jsonFactory;
     private java.io.File credentialsFile;
     private java.io.File tempFile;
     private AuthFlowAndURL flowAndAuthURL;
+    private File googleFile;
+    
+    //TODO nacitat z properities
+    private String CLIENT_ID = "702406823762.apps.googleusercontent.com";
+    private String CLIENT_SECRET = "iKIHHkC-wKEC7JS9YkzmDX_n";
+    private String CREDENTIALS_FILE = "credentials.txt";
+    private String GOOGLE_FILE_ID;  //ulozeni by umoznilo pracovat porad se stejnum souborem i v pripade ze uzivatel zmeni nazev, nebo prida soubor se stejnym nazvem
+    
+    private GoogleCredential credentials;
+    
+
     
     public GDiskManagerWeb() {
         logger.log(Level.TRACE, "Constructor invoke.");
@@ -163,6 +170,14 @@ public class GDiskManagerWeb implements GDiskManager{
 //        
 //    }
     
+    public String getGoogleFileID(){
+        return GOOGLE_FILE_ID;
+    }
+    
+    public void setGoogleFileID(String googleFileID){
+        this.GOOGLE_FILE_ID = googleFileID;
+    }
+    
     public GoogleCredential getCredentials(){
         return this.credentials;
     }
@@ -179,6 +194,7 @@ public class GDiskManagerWeb implements GDiskManager{
         this.credentialsFile = credentialsFile;
     }
     
+    @SuppressWarnings({"null", "ConstantConditions"})
     public GoogleCredential loadCredentials(){
         if(!checkCredentialsFile()) {
            return null;
@@ -265,22 +281,23 @@ public class GDiskManagerWeb implements GDiskManager{
 //        
 //    }
     
-    private List<File> retrieveAllFiles(Drive service) {
+    public static List<File> retrieveAllFiles(Drive service) {
         logger.log(Level.TRACE, "Ziskavam seznam vsech souboru na Google Drive muze to chvili trvat.");
         List<File> result = new ArrayList<File>();
-        Files.List request = null;;
+        Files.List request;
         try {
             request = service.files().list();
         } catch (IOException ex) {
             logger.log(Level.ERROR, "Chyba pri ziskavani seznamu souboru: ", ex);
+            return null;
         }
 
         do {
           try {
             FileList files = request.execute();
 
-            result.addAll(files.getItems());
-            request.setPageToken(files.getNextPageToken());
+            result.addAll(files.getItems());                //pridej stranku
+            request.setPageToken(files.getNextPageToken()); //bez na dalsi stranku
           } catch (IOException e) {
             System.out.println("An error occurred: " + e);
             request.setPageToken(null);
@@ -298,9 +315,17 @@ public class GDiskManagerWeb implements GDiskManager{
     /*
      * This method gets Input stream with content of file.
      */
-    public static InputStream downloadFileODF(Drive service, File file) {
+    public static InputStream getFileContentODF(Drive service, File file) {
     
-    if(file == null) return null;
+    if(file == null) {
+        logger.log(Level.ERROR, "File is null");
+        return null;
+    }
+    
+    if(service == null) {
+        logger.log(Level.ERROR, "Service is null");
+        return null;
+    }
     
     //prepare export url
     String odfExportLink = file.getExportLinks().get(ODF_FORMAT_EXPORT_CONSTANT);
@@ -310,6 +335,7 @@ public class GDiskManagerWeb implements GDiskManager{
     }
     
       try {
+        //Prepare response  to server for file content
         HttpResponse resp = service.getRequestFactory()
                                     .buildGetRequest(new GenericUrl(odfExportLink))
                                     .execute();
@@ -317,9 +343,7 @@ public class GDiskManagerWeb implements GDiskManager{
         return resp.getContent();
         
       } catch (IOException e) {
-        // An error occurred.
-          //TODO log it here
-        e.printStackTrace();
+        logger.log(Level.ERROR, "Chyba pri ziskavani obsahu souboru na Google Drive", e);
         return null;
       }
     }
@@ -332,12 +356,12 @@ public class GDiskManagerWeb implements GDiskManager{
         byte[] buffer = new byte[FILE_BUFFER_SIZE];
 
         if(is == null){
-            logger.error("Doslo k chybe pri stahovani souboru.");
+            logger.error("Doslo k chybe pri stahovani souboru. InputSteram is null!");
             return null;
         }
 
         this.tempFile = new java.io.File(TEMP_FILE);
-        java.io.OutputStream outS = null;
+        java.io.OutputStream outS;
 
         try {
             outS = new java.io.FileOutputStream(tempFile);
@@ -361,6 +385,20 @@ public class GDiskManagerWeb implements GDiskManager{
         return tempFile;
     }
     
+    /*
+     * Provede kontrolu jestli soubor na serveru je novejsi nez docasny soubor
+     * Pred volanim metody by bylo vhodne otestovat jestli je nastavene spravne GOOGLE_FILE_ID
+     */
+    public boolean isServerFileNewer(){
+        if(GOOGLE_FILE_ID == null) return false;
+        
+        File serverFile = getFileFromGDriveByID(GOOGLE_FILE_ID);     //nelze pouzit lokalni promennou
+        DateTime time = serverFile.getModifiedDate();
+        
+        logger.debug("\rServer file modified time: \t" + time.getValue() 
+                        + "\rLocal modified time: \t\t" + tempFile.lastModified());
+        return( time.getValue() > tempFile.lastModified() );
+    }
     
     //TODO vylepseni - bylo by vhodne nejprve zkontrolovat jestli uz existuje a jestli se zmenil pripadne provest update
     @Override
@@ -370,12 +408,130 @@ public class GDiskManagerWeb implements GDiskManager{
         }
         
         if(tempFile.exists()) {
-            logger.log(Level.DEBUG, "Docasny soubor existuje vracim tento soubor: " + tempFile.getAbsolutePath());
-            return tempFile;
+            if(!isServerFileNewer()){
+                logger.log(Level.DEBUG, "Docasny soubor existuje a neni starsi nez soubor na serveru vracim tento soubor: " + tempFile.getAbsolutePath());
+                return tempFile;
+            }
+            logger.debug("Docasny soubor je starsi nez soubor na serveru stahji aktualni verzi.");
+            
+        } else {
+            logger.log(Level.DEBUG, "Docasny soubor neexistuje stahuji soubor z Google Drive.");
         }
         
-        logger.log(Level.DEBUG, "Docasny soubor neexistuje stahuji soubor z Google Drive.");
+        if(credentials != null){
+            Drive service = new Drive.Builder(httpTransport, jsonFactory, credentials).setApplicationName(APPLICATION_NAME).build();
+            File videoFile;
+            if(GOOGLE_FILE_ID != null){
+                videoFile = getFileFromGDriveByID(GOOGLE_FILE_ID);
+            } else {
+                videoFile = getFileFromGDriveByName(SERVER_FILE_NAME);
+            }
+            
+            if(videoFile != null){
+                InputStream is = getFileContentODF(service, videoFile);
+                GOOGLE_FILE_ID = videoFile.getId();
+                googleFile = videoFile;
+                
+                return createTempFile(is);
+            }
+            return null;
+        }
         
+        
+        return null;
+    }
+
+    /*
+     * Update temporary file to google drive
+     *      V pripade potreby (pokud neni nastaveno GOOGLE_FILE_ID nebo googleFile je null)
+     *      provede vyhledani souboru podle jmena na serveru
+     */
+    public void updateTempFileToGDrive(){
+        logger.log(Level.TRACE, "Provadim update souboru.");
+        
+        if(GOOGLE_FILE_ID == null){
+            logger.log(Level.WARN, "ID souboru na GDrive je null!!");
+            
+            if(googleFile != null){
+                GOOGLE_FILE_ID = googleFile.getId();
+            } else {
+                googleFile = getFileFromGDriveByName(SERVER_FILE_NAME);
+                if (googleFile == null) return; //doslo k chybe
+                GOOGLE_FILE_ID = googleFile.getId();
+            }
+        }
+        
+        if(credentials != null){
+            Drive service = new Drive.Builder(httpTransport, jsonFactory, credentials).setApplicationName(APPLICATION_NAME).build();
+            if (updateFile(service, GOOGLE_FILE_ID, tempFile) == null) {
+                logger.log(Level.ERROR, "Doslo k chybe pri update souboru na serveru.");
+            }
+        }
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public static File updateFile(Drive service, String fileId, java.io.File fileContent) {
+        try {
+            // First retrieve the file from the API.
+            File file = service.files().get(fileId).execute();
+
+            // File's new content.
+
+            FileContent mediaContent = new FileContent(null, fileContent);
+
+            // Send the request to the API.
+            File updatedFile = service.files().update(fileId, file, mediaContent).execute();
+            return updatedFile;
+            
+        } catch (IOException e) {
+            System.out.println("An error occurred: " + e);
+            return null;
+        }
+    }
+    
+    /*
+     * Returns file from Google Drive specified by parameter
+     * 
+     * @return file specified by parameter or null if not found or error occurs
+     * @param fileID Id of file at Google Drive
+     */
+    public static File getFileFromGDriveByID(String fileID, GoogleCredential credentials, HttpTransport httpTransport, JsonFactory jsonFactory){
+        if(fileID == null) {
+            logger.log(Level.ERROR, "FileID is null!");
+            return null;
+        }
+        
+        Drive service = new Drive.Builder(httpTransport, jsonFactory, credentials).setApplicationName(APPLICATION_NAME).build();
+        try {
+            return service.files().get(fileID).execute();
+        } catch (IOException ex) {
+            logger.log(Level.ERROR, "Error while trying to get file from Google Drive by ID.", ex);
+        }
+        return null;
+    }
+    
+    public File getFileFromGDriveByID(String fileID){
+        return getFileFromGDriveByID(fileID, credentials, httpTransport, jsonFactory);
+    }
+    
+    /*
+    * Retrieve list of all files at Google drive and returns first found file of specified name in parameter
+    * 
+    * @return first found file specified by parameter or null if not found or error occurs
+    * @param filename name of file to find
+    */
+    public File getFileFromGDriveByName(String filename){
+        return getFileFromGDriveByName(filename, credentials, httpTransport, jsonFactory);
+    }
+            
+    /*
+     * Retrieve list of all files at Google drive and returns first found file of specified name in parameter
+     * 
+     * @return first found file specified by parameter or null if not found or error occurs
+     * @param filename name of file to find
+     */
+    public static File getFileFromGDriveByName(String filename, GoogleCredential credentials, HttpTransport httpTransport, JsonFactory jsonFactory){
+            
         if(credentials != null){
             File videoFile = null;
             
@@ -389,28 +545,21 @@ public class GDiskManagerWeb implements GDiskManager{
                 logger.log(Level.TRACE, "Title: " + f.getTitle() + "\tID: " + f.getId());
 
                 
-                if(f.getTitle().equals(SERVER_FILE_NAME)){
+                if(f.getTitle().equals(filename)){
                     logger.info("Soubor nalezen!");
                     try {
                         videoFile = service.files().get(f.getId()).execute();
+                        return videoFile;
                     } catch (IOException ex) {
                         logger.log(Level.ERROR, "Chyba pri ziskavani detailu o souboru z GDrive: ", ex);
+                        return null;
                     }
                 }
             }
-
-            InputStream is = downloadFileODF(service, videoFile);
-
-            return createTempFile(is);
+        } else {
+            logger.log(Level.WARN, "Credentials is null!");
         }
-        
-        
         return null;
-    }
-
-    public void updateTempFileToGDrive(){
-        
-        throw new UnsupportedOperationException("Not supported yet.");
     }
     
     @Override
