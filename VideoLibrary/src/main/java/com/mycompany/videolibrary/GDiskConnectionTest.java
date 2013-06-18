@@ -116,7 +116,7 @@ public class GDiskConnectionTest {
         
         
         //Create a new authorized API client
-        Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).build();
+        Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).setApplicationName("UploadTestApp").build();
         
         File body = new File();
         body.setTitle("My document");
