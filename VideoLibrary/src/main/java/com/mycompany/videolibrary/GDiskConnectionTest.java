@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.awt.Desktop;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +52,7 @@ public class GDiskConnectionTest {
         JsonFactory jsonFactory = new JacksonFactory();
         java.io.File credentialsFile = new java.io.File(CREDENTIALS_FILE_NAME);
         GoogleCredential credential = new GoogleCredential();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         
         
         GoogleAuthorizationCodeFlow authorizationFlow = new GoogleAuthorizationCodeFlow.Builder(
@@ -80,7 +83,8 @@ public class GDiskConnectionTest {
             }
 
             //Save authentication token
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            
+            System.out.println("Prosim vlozte autorizacni kod:");
             String code = br.readLine();
 
             //String code = "4/DUEoZT9RWlD71Kc4klHYlBJFRCu5.UgZmoQ_8UpwXOl05ti8ZT3af2Fu6fQI";
@@ -127,6 +131,24 @@ public class GDiskConnectionTest {
         FileContent mediaContent = new FileContent("text/plain", fileContent);
         
         File file = service.files().insert(body, mediaContent).execute();
-        System.out.println("File ID: " + file.getId());
+        String fileID = file.getId();
+        System.out.println("File ID: " + fileID);
+        
+        System.out.println("Upravuji soubor. Pokracujte stisknutim enter.");
+        br.readLine();
+        
+        // upraveni souboru
+        FileWriter fw = new FileWriter(fileContent, true);
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write("aaaaaaaaaaaaaaaaaaaaa nakonec");
+        bw.flush();
+        
+        System.out.println("Soubor upraven provadim update. Pokracujte stisknutim enter.");
+        br.readLine();
+        
+        File f2 = service.files().update(fileID, file, mediaContent).execute();
+        if(f2 != null){
+            System.out.println("Soubor byl uspesne aktualizovan.");
+        }
     }
 }
