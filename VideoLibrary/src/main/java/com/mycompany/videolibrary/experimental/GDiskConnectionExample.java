@@ -57,13 +57,14 @@ public class GDiskConnectionExample {
                 File googleFile = manager.getFileFromGDriveByName("videoteka_data");
                 manager.setGoogleFileID(googleFile.getId());
             }
-            tempFile = manager.getTempFile();
         }
         
+        tempFile = manager.getTempFile();
         System.out.println("Provedte editaci docasneho souboru: '" + tempFile.getAbsolutePath() + "'");
         br.readLine();
+
         
-        manager.updateTempFileToGDrive();
+        //manager.updateTempFileToGDrive();
  
         
         
