@@ -146,7 +146,7 @@ public class GDiskConnectionTest {
         System.out.println("Soubor upraven provadim update. Pokracujte stisknutim enter.");
         br.readLine();
         
-        File f2 = service.files().update(fileID, file, mediaContent).execute();
+        File f2 = service.files().update(fileID, null, mediaContent).execute();
         if(f2 != null){
             System.out.println("Soubor byl uspesne aktualizovan.");
         }
