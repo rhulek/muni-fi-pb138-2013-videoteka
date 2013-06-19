@@ -2,7 +2,7 @@
  * Class for demonstration of connection to Google API and Google drive.
  * Get access token and store it for future use, then copy file to Google Drive.
  * 
- * Provede import textoveho souboru, pote udělá změnu a provede update
+ * 
  */
 package com.mycompany.videolibrary;
 
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  *
  * @author Martin
  */
-public class GDiskConnectionTest {
+public class GDiskConnectionTestODS {
 
     private static String CLIENT_ID = "702406823762.apps.googleusercontent.com";
     private static String CLIENT_SECRET = "iKIHHkC-wKEC7JS9YkzmDX_n";
@@ -43,7 +43,7 @@ public class GDiskConnectionTest {
     private static String CREDENTIALS_FILE_NAME = "credentials.txt";
     private static String DEFAULT_USER_ID = "defaultUser";
     
-    private static Logger logger = Logger.getLogger(GDiskConnectionTest.class.getName());
+    private static Logger logger = Logger.getLogger(GDiskConnectionTestODS.class.getName());
     private String FILE_TO_COPY = "D:/document.txt";
     
     /**
@@ -80,7 +80,7 @@ public class GDiskConnectionTest {
                     Desktop.getDesktop().browse( new java.net.URI(url) );
 
                 } catch (URISyntaxException ex) {
-                    Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GDiskConnectionTestODS.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
@@ -110,7 +110,7 @@ public class GDiskConnectionTest {
             
         } else {
             
-            Logger.getLogger(GDiskConnectionTest.class.getName()).log(Level.WARNING, "Soubor credentials nalezen nahravam uzivatelska data.");
+            Logger.getLogger(GDiskConnectionTestODS.class.getName()).log(Level.WARNING, "Soubor credentials nalezen nahravam uzivatelska data.");
             
             FileCredentialStore credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
             if (!credentialStore.load(DEFAULT_USER_ID, credential)) {
@@ -124,32 +124,37 @@ public class GDiskConnectionTest {
         //Create a new authorized API client
         Drive service = new Drive.Builder(httpTransport, jsonFactory, credential).setApplicationName("UploadTestApp").build();
         
-        File body = new File();
-        body.setTitle("My document");
-        body.setDescription("A test document");
-        body.setMimeType("text/plain");
+//        File body = new File();
+//        body.setTitle("Tabulka");
+//        body.setDescription("Testovaci tabulka");
+//        body.setMimeType("application/x-vnd.oasis.opendocument.spreadsheet");
         
-        java.io.File fileContent = new java.io.File("D:/document.txt");
-        FileContent mediaContent = new FileContent("text/plain", fileContent);
+        java.io.File fileContent = new java.io.File("tmpFile.ods");
+        FileContent mediaContent = new FileContent("application/x-vnd.oasis.opendocument.spreadsheet", fileContent);
         
-        File file = service.files().insert(body, mediaContent).execute();
-        String fileID = file.getId();
-        System.out.println("File ID: " + fileID);
-        
-        System.out.println("Upravuji soubor. Pokracujte stisknutim enter.");
-        br.readLine();
+//        Drive.Files.Insert insert = service.files().insert(body, mediaContent);
+//        insert.setConvert(Boolean.TRUE);
+//        
+//        File file = insert.execute();
+//        String fileID = file.getId();
+//        System.out.println("File ID: " + fileID);
+//        
+//        System.out.println("Upravuji soubor. Pokracujte stisknutim enter.");
+//        br.readLine();
         
         
         // upraveni souboru
-        FileWriter fw = new FileWriter(fileContent, true);
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write("aaaaaaaaaaaaaaaaaaaaa nakonec");
-        bw.flush();
+//        FileWriter fw = new FileWriter(fileContent, true);
+//        BufferedWriter bw = new BufferedWriter(fw);
+//        bw.write("aaaaaaaaaaaaaaaaaaaaa nakonec");
+//        bw.flush();
         
         System.out.println("Soubor upraven provadim update. Pokracujte stisknutim enter.");
         br.readLine();
         
-        File f2 = service.files().update(fileID, null, mediaContent).execute();
+        Drive.Files.Update update = service.files().update("0AotGtmQ-kiV4dGJtLXQ0R3VELWNkSWF5QkNEX1o4enc", null, mediaContent);
+        update.setConvert(Boolean.TRUE);
+        File f2 = update.execute();
         if(f2 != null){
             System.out.println("Soubor byl uspesne aktualizovan.");
         }
