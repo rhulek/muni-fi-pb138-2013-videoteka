@@ -67,7 +67,7 @@ public class GDiskConnectionExample {
         manager.updateTempFileToGDrive();
  
         
-        
-       System.out.println("\u001b[1;31mThis is red \n And all \n this have only \n\tblack color \n and here is colour again?\u001b[0m");
+        logger.debug("A to je vse pratele tady dady da!");
+       //System.out.println("\u001b[1;31mThis is red \n And all \n this have only \n\tblack color \n and here is colour again?\u001b[0m");
     }
 }

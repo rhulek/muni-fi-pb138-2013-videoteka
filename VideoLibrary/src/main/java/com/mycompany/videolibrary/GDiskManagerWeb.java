@@ -475,13 +475,13 @@ public class GDiskManagerWeb implements GDiskManager{
     public static File updateFile(Drive service, String fileId, java.io.File fileContent) {
         try {
             // First retrieve the file from the API.
-            File file = service.files().get(fileId).execute();
+            //File file = service.files().get(fileId).execute();
             
             // File's new content.
-            FileContent mediaContent = new FileContent("application/x-vnd.oasis.opendocument.spreadsheet", fileContent);
+            FileContent mediaContent = new FileContent(ODF_FORMAT_EXPORT_CONSTANT, fileContent);
 
             // Send the request to the API.
-            Files.Update update = service.files().update(fileId, file, mediaContent);
+            Files.Update update = service.files().update(fileId, null, mediaContent);
             update.getConvert();
             logger.trace("Hodnota nastaveni konverze: " +  update.getConvert());
             update.setConvert(Boolean.TRUE);
