@@ -46,12 +46,12 @@ import org.apache.logging.log4j.Logger;
 public class GDiskManagerWeb implements GDiskManager{
     private static Logger logger = LogManager.getLogger(GDiskManagerWeb.class.getName());
     private static String APPLICATION_NAME = "videoteka";
-    private static String TEMP_FILE = "tmpFile.odt";
+    private static String TEMP_FILE = "tmpFile.ods";
     private static String SERVER_FILE_NAME = "videoteka_data";
     private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     private static String DEFAULT_USER_ID = "defaultUser";
     private static String ODF_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
-    private static String mimeTypeUpload = "text/odf";
+    //private static String MIME_TYPE_UPLOAD = "text/ods";
     private static int FILE_BUFFER_SIZE = 2048;
     
     private HttpTransport httpTransport;
@@ -334,6 +334,7 @@ public class GDiskManagerWeb implements GDiskManager{
         logger.error("ODF export link is null!");
         return null;
     }
+    logger.log(Level.TRACE, "Export link: " + odfExportLink);
     
       try {
         //Prepare response  to server for file content
