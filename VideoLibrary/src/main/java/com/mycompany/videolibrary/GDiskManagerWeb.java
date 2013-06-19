@@ -51,6 +51,7 @@ public class GDiskManagerWeb implements GDiskManager{
     private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     private static String DEFAULT_USER_ID = "defaultUser";
     private static String ODF_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
+    private static String mimeTypeUpload = "text/odf";
     private static int FILE_BUFFER_SIZE = 2048;
     
     private HttpTransport httpTransport;
@@ -64,7 +65,7 @@ public class GDiskManagerWeb implements GDiskManager{
     private String CLIENT_ID = "702406823762.apps.googleusercontent.com";
     private String CLIENT_SECRET = "iKIHHkC-wKEC7JS9YkzmDX_n";
     private String CREDENTIALS_FILE = "credentials.txt";
-    private String GOOGLE_FILE_ID;  //ulozeni by umoznilo pracovat porad se stejnum souborem i v pripade ze uzivatel zmeni nazev, nebo prida soubor se stejnym nazvem
+    private String GOOGLE_FILE_ID = "0AotGtmQ-kiV4dGJtLXQ0R3VELWNkSWF5QkNEX1o4enc";  //ulozeni by umoznilo pracovat porad se stejnum souborem i v pripade ze uzivatel zmeni nazev, nebo prida soubor se stejnym nazvem
     
     private GoogleCredential credentials;
     
@@ -230,7 +231,7 @@ public class GDiskManagerWeb implements GDiskManager{
     public boolean checkCredentialsFile(){
         if(credentialsFile != null){
             if(!credentialsFile.exists()){
-                logger.log(Level.ERROR, "Credential file doesnt exist in path: '"
+                logger.log(Level.WARN, "Credential file doesn't exist in path: '"
                         + credentialsFile.getAbsolutePath() + "'");
                 return false;
             }
@@ -474,13 +475,18 @@ public class GDiskManagerWeb implements GDiskManager{
         try {
             // First retrieve the file from the API.
             File file = service.files().get(fileId).execute();
-
+            
             // File's new content.
-
-            FileContent mediaContent = new FileContent(null, fileContent);
+            FileContent mediaContent = new FileContent("application/x-vnd.oasis.opendocument.spreadsheet", fileContent);
 
             // Send the request to the API.
-            File updatedFile = service.files().update(fileId, file, mediaContent).execute();
+            Files.Update update = service.files().update(fileId, file, mediaContent);
+            update.getConvert();
+            logger.trace("Hodnota nastaveni konverze: " +  update.getConvert());
+            update.setConvert(Boolean.TRUE);
+            
+            
+            File updatedFile = update.execute();
             return updatedFile;
             
         } catch (IOException e) {

@@ -64,7 +64,7 @@ public class GDiskConnectionExample {
         br.readLine();
 
         
-        //manager.updateTempFileToGDrive();
+        manager.updateTempFileToGDrive();
  
         
         
