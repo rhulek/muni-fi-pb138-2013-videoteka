@@ -13,7 +13,6 @@ import java.util.Map;
  */
 public class Category {
     private String name;
-    private int maxSizeOfMedium;
     private Map<Integer, Medium> mediums;
 
     public Category(String name) {
@@ -31,14 +30,6 @@ public class Category {
 
     public void setName(String Name) {
         this.name = Name;
-    }
-
-    public int getMaxSizeOfMedium() {
-        return maxSizeOfMedium;
-    }
-
-    public void setMaxSizeOfMedium(int maxSizeOfMedium) {
-        this.maxSizeOfMedium = maxSizeOfMedium;
     }
 
     public Map<Integer, Medium> getMediums() {
