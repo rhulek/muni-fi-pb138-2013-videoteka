@@ -6,9 +6,12 @@ package com.mycompany.videoteka.spring;
 
 import com.mycompany.videolibrary.Category;
 import com.mycompany.videolibrary.GDiskManagerWeb;
+import com.mycompany.videolibrary.Medium;
+import com.mycompany.videolibrary.Movie;
 import com.mycompany.videolibrary.ODFParser;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -70,7 +73,27 @@ public class MainController {
         }
         
         logger.log(Level.TRACE, "dekodovane jmeno kategorie z url: " + decodedCategoryName);
-        Category category = parser.getCategory(decodedCategoryName);
+//        Category category = parser.getCategory(decodedCategoryName);
+        Category category = new Category("Pejsek a kocicka");
+        List<Movie> filmy = new ArrayList<Movie>();
+        filmy.add(new Movie(10, "Macha sebestova"));
+        filmy.add(new Movie(1, "Na samote u lesa"));
+        filmy.add(new Movie(3, "Nosorozec Tom"));
+        
+        Medium med1 = new Medium(335, "DVD", filmy);
+        
+        List<Movie> filmy2 = new ArrayList<Movie>();
+        filmy2.add(new Movie(7, "Cerveny trakturek"));
+        filmy2.add(new Movie(7, "Darbujan a pandrhola"));
+        
+        Medium med2 = new Medium(55, "Blue Ray", filmy2);
+        
+        category.addMedium(med1);
+        category.addMedium(med2);
+        
+        
+        logger.log(Level.TRACE, "Posilam kategorii: \r" + category);
+        
         model.addAttribute("category", category);
         return "showCategory";
     }

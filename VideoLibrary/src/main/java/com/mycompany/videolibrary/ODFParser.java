@@ -126,8 +126,6 @@ public class ODFParser {
             logger.log(Level.DEBUG, head.getCellByIndex(i).getDisplayText());
         }
         logger.log(Level.DEBUG, "Collumns: " + collumns);
-        
-        category.setMaxSizeOfMedium(collumns);
 
         int rowCount = rowList.size();
         for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
