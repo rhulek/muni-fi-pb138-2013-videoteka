@@ -154,7 +154,9 @@ public class ODFParser {
           
             //Vytvoprit nove medium
             Medium medium = new Medium();
-            medium.setId( firstCell.getDoubleValue().intValue() );
+            //medium.setId( firstCell.getDoubleValue().intValue() );  //Throw IllegalArgumentException if the cell type is not "float".
+            medium.setId( Integer.getInteger( firstCell.getDisplayText() ) );
+            
             //medium.setType(); //TODO provest parsovani poznamky
             
             int collumns = row.getCellCount();

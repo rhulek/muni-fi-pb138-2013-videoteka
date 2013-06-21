@@ -27,7 +27,8 @@
         </table>
         
         <a href="${pageContext.servletContext.contextPath}/addFilm/${catName}"> Pridat medium </a><br/><br/>
-        <a href="${pageContext.servletContext.contextPath}/showCategories"> Zpet na seznam kategorii </a>
+        <a href="${pageContext.servletContext.contextPath}/category/showAll"> Zpet na seznam kategorii </a>
+        
         
     </body>
 </html>

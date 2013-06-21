@@ -59,7 +59,7 @@ public class InitController {
 //        String msg = "Token byl uspesne nahran a obnoven. Nyni muzete pracovat s aplikaci. \r"
 //                + manager.getCredentials().getRefreshToken() + " " + Calendar.getInstance().getTime();
 //        model.addAttribute("msg", msg);
-        return "redirect:showCategories";
+        return "redirect:/category/showAll";
         
 //        return new ModelAndView("infoPage").addObject("msg", "Token byl uspesne nahran a obnoven. Nyni muzete pracovat s aplikaci. \r" + manager.getCredentials().getRefreshToken());
 //        return new ModelAndView("errorPage").addObject("msg", "file://localhost/D:/Fotky/bonsai_by_johnbruk03_normalni_verze.JPG");

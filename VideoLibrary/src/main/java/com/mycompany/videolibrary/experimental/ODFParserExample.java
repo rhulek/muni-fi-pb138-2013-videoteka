@@ -22,7 +22,14 @@ public class ODFParserExample {
         
         List<String> categories = parser.getAllCategoryNames();
         
+        for(String categoryName: categories){
+            System.out.println(categoryName);
+        }
+               
         Category category = parser.getCategory(categories.get(0));
+
+        
+ 
         
         System.out.println(category);
     }

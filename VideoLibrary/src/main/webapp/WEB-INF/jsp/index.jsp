@@ -22,9 +22,15 @@
         <br/>
         Context path: <c:out value="${pageContext.servletContext.contextPath}"/><br/>
         
-        <c:forEach items="${categoriesList}" var="item">
-        <a href="${pageContext.servletContext.contextPath}/category/${item}"> <c:out value="${item}" /> </a> <br/>
-        
-        </c:forEach>
+        <table>
+            <c:forEach items="${categoriesList}" var="item">
+                <tr>
+                    <td><a href="${pageContext.servletContext.contextPath}/category/${item}"> <c:out value="${item}" /> </a></td>
+                    <td><a href="${pageContext.servletContext.contextPath}/category/delete/${item}"> Smazat </a></td>
+                    <td><a href="${pageContext.servletContext.contextPath}/category/showRenameForm/${item}"> Přejmenovat </a></td>
+                </tr>
+            </c:forEach>
+        </table>
+        <td><a href="${pageContext.servletContext.contextPath}/category/addCategory"> Přidat kategorii TODO </a></td>
     </body>
 </html>
