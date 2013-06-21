@@ -227,7 +227,28 @@ public class ODFParser {
 ////        throw new UnsupportedOperationException("Not inplemented yet!");
 //    }
     
-    public void addFilm(Medium film){
+    public void addMedium(Medium medium, Category category) {
+        throw new UnsupportedOperationException("Not inplemented yet!");
+    }
+    
+    public void deleteMedium(Medium medium, Category category) {
+        throw new UnsupportedOperationException("Not inplemented yet!");
+    }
+    
+    public List<Medium> findMediumsByMovieName(String name) {
+        throw new UnsupportedOperationException("Not inplemented yet!");
+    } 
+    //public List<Medium> findMediumsBy... 
+    
+    public void addCategory(Category category) {
+        throw new UnsupportedOperationException("Not inplemented yet!");
+    }
+    
+    public void renameCategory(Category category, String categoryNewName) {
+        throw new UnsupportedOperationException("Not inplemented yet!");
+    }
+    
+    public void deleteCategory(Category category) {
         throw new UnsupportedOperationException("Not inplemented yet!");
     }
     
