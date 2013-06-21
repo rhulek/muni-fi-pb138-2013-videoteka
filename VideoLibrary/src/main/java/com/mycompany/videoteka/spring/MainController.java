@@ -4,72 +4,74 @@
  */
 package com.mycompany.videoteka.spring;
 
+import com.mycompany.videolibrary.Category;
 import com.mycompany.videolibrary.GDiskManagerWeb;
+import com.mycompany.videolibrary.ODFParser;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
  * @author Martin
  */
-
 @Controller
+@RequestMapping(value = "/")
 public class MainController {
-    private static Logger logger = LogManager.getLogger(MainController.class.getName());
+    private static Logger logger = LogManager.getLogger(InitController.class.getName());
     
     @Autowired
     private GDiskManagerWeb manager;
     
-    //Provede registraci aplikace, pripadne nahrani credentials a refresh tokenu
-    @RequestMapping(value= {"/", "hello" }, method = RequestMethod.GET)
-    public ModelAndView startVideostore(){
-        logger.log(Level.DEBUG, "startVideostore(): Logujeme Vstup do funkce!");
+    @Autowired
+    private ODFParser parser;
+    
+    @RequestMapping(value = {"/showCategories"}, method = RequestMethod.GET)
+    public ModelAndView showIndex(){
         
-        if(manager == null){
-            logger.log(Level.ERROR, "GDiskManager je null!");
-            return new ModelAndView("errorPage").addObject("msg", "GdiskManager je null!!!");
-            
+        if(parser == null){
+            logger.log(Level.ERROR, "Parser je null!");
+            return new ModelAndView("errorPage").addObject("msg", "MainController - showIndex(): parser je null!");
         }
-        logger.log(Level.INFO, "GDiskManager je ok!");
         
-        if(manager.loadCredentials() == null){
-            manager.openBrowser();
-            return new ModelAndView("insertCode");
-        } else {
-            
-            if(!manager.refreshToken()){
-                return new ModelAndView("errorPage").addObject("msg", "Chyba pri obnovovani tokenu");
-            }
-        }
-
+        List<String> categoriesNames = parser.getAllCategoryNames();
+        ModelAndView index = new ModelAndView("index");
         
-        return new ModelAndView("newTestPage").addObject("msg", "Token byl uspesne nahran a obnoven. Nyni muzete pracovat s aplikaci. \r" + manager.getCredentials().getRefreshToken());
-//        return new ModelAndView("errorPage").addObject("msg", "file://localhost/D:/Fotky/bonsai_by_johnbruk03_normalni_verze.JPG");
+        index.addObject("categoriesList", categoriesNames);
+        return index;
     }
     
-    //TODO Provest autorizaci a ulozeni credentials pro budouci pouziti
-    @RequestMapping(value = "autorize", method = RequestMethod.POST)
-    public ModelAndView autorizeApp(@RequestParam("authCode") String code){
-        logger.log(Level.INFO, "Byl ziskan autorizacni kod: '" + code + "'");
+    @RequestMapping(value = "category/{categoryName}", method = {RequestMethod.GET, RequestMethod.PUT})
+    public String showCategory(@PathVariable String categoryName, Model model){
         
-        if(manager.autorizeAndSaveCredentials(code)){
-            return new ModelAndView("newTestPage").addObject("msg", "Aplikace uspesne autorizovana.");
-        } else {
-            return new ModelAndView("errorPage").addObject("msg", "Chyba pri autorizaci aplikace!");
+        if(categoryName == null){
+            logger.log(Level.ERROR, "Requested parameter categoryName is missing!");
+            model.addAttribute("msg", "Requested parameter categoryName is missing!");
         }
-    }
-    
-    
-    @RequestMapping(value = "*", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
-    public ModelAndView fallbackMethod(){
-        logger.log(Level.DEBUG, "fallbackMethod(): Je proveden nezachyceny request!!!");
-        return new ModelAndView("newTestPage").addObject("msg", "Byla zavolana fallback metoda.");
+        
+        
+        String decodedCategoryName;
+        try {
+            decodedCategoryName = URLDecoder.decode(categoryName, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            logger.log(Level.ERROR, "Error during decoding category name from url.", ex);
+            model.addAttribute("msg", "Error during decoding category name from url.");
+            return "errorPage";
+        }
+        
+        logger.log(Level.TRACE, "dekodovane jmeno kategorie z url: " + decodedCategoryName);
+        Category category = parser.getCategory(decodedCategoryName);
+        model.addAttribute("category", category);
+        return "showCategory";
     }
 }

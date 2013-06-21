@@ -44,9 +44,12 @@
           p:suffix=".jsp" />
 
     <bean id="gDiskManager" class="com.mycompany.videolibrary.GDiskManagerWeb">
-        
     </bean>
 
+    <bean id="odfParser" class="com.mycompany.videolibrary.ODFParser">
+        <constructor-arg type="java.lang.String" value="tmpFile.ods" />
+    </bean>
+    
    <!--
     The index controller.
     -->

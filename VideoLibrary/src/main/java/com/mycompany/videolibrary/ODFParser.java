@@ -30,6 +30,10 @@ public class ODFParser {
     private String documentPath;
     private SpreadsheetDocument document;
 
+    public ODFParser(){
+        
+    }
+    
     public ODFParser(String documentPath) {
         this.documentPath = documentPath;
     }
@@ -55,7 +59,7 @@ public class ODFParser {
             return true;
         }
         
-        logger.log(Level.INFO, "document is null. Loading document: ");
+        logger.log(Level.INFO, "document is null. Loading document: " + documentPath);
             
         if(documentPath == null){
             logger.log(Level.ERROR, "Document path is null!");
@@ -107,18 +111,22 @@ public class ODFParser {
 
         List<Row> rowList = table.getRowList();
 
+        logger.log(Level.TRACE, "Pocet radku tabulky: " + rowList.size());
         Category category = new Category(categoryName);
 
         int rowCount = rowList.size();
-        for(int i=1; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
+        for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
 
+            logger.log(Level.TRACE, "Zpracovavam " + i + " radek.");
             //Vytvoprit nove medium
             Medium medium = new Medium();
 
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
-
-            medium.setId( Integer.getInteger( firstCell.getDisplayText() ) );
+            String firstCellValue = firstCell.getDisplayText();
+            
+            logger.log(Level.TRACE, "Hodnota prvni bunky: " + firstCellValue);
+            medium.setId( Integer.getInteger( firstCellValue ) );
             //medium.setType(); //TODO provest parsovani poznamky
 
             int collumns = row.getCellCount();
@@ -131,7 +139,8 @@ public class ODFParser {
                 logger.log(Level.TRACE, "Bunka: " + movieName);
                 
                 if( movieName.trim().length() > 0 ){
-                    movies.add( new Movie(null, movieName) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
+                    logger.log(Level.TRACE, "Pridavam bunku: " + movieName);
+                    movies.add( new Movie(j, movieName) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
                 }
             }
             medium.setMovies(movies);

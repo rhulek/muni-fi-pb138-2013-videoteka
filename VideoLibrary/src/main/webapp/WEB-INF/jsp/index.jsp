@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="header.jsp" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -17,5 +18,13 @@
             <tt>web.xml</tt>.</p>
         
         
+        <br/>
+        <br/>
+        Context path: <c:out value="${pageContext.servletContext.contextPath}"/><br/>
+        
+        <c:forEach items="${categoriesList}" var="item">
+        <a href="${pageContext.servletContext.contextPath}/category/${item}"> <c:out value="${item}" /> </a> <br/>
+        
+        </c:forEach>
     </body>
 </html>
