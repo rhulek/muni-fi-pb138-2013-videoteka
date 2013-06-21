@@ -92,7 +92,7 @@ public class ODFParser {
         
         return categorNames;
     }
-    
+
      public Category getCategory(String categoryName){
         if(!loadDocument()){
             return null;
@@ -108,6 +108,21 @@ public class ODFParser {
         List<Row> rowList = table.getRowList();
 
         Category category = new Category(categoryName);
+        
+        
+        int collumns = 0;
+        Row head = rowList.get(0);
+        
+        for(int i = 0; i < head.getCellCount(); i++){
+            if(head.getCellByIndex(i) == null || head.getCellByIndex(i).getDisplayText().equals("")) {
+                break;
+            }
+            collumns++;
+            logger.log(Level.DEBUG, head.getCellByIndex(i).getDisplayText());
+        }
+        logger.log(Level.DEBUG, "Collumns: " + collumns);
+        
+        category.setMaxSizeOfMedium(collumns);
 
         int rowCount = rowList.size();
         for(int i=1; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
@@ -117,16 +132,21 @@ public class ODFParser {
 
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
+            
+            if(firstCell == null || firstCell.getDisplayText().equals(""))
+                break;
 
             medium.setId( Integer.getInteger( firstCell.getDisplayText() ) );
             //medium.setType(); //TODO provest parsovani poznamky
 
-            int collumns = row.getCellCount();
+            //int collumns = row.getCellCount();
             List<Movie> movies = new ArrayList<Movie>();
 
             for(int j = 1; j < collumns; j++){  //je potreba preskocit prvni sloupec, ktery obsahuje ID
                 Cell cell = row.getCellByIndex(j);
-
+                
+                if(cell == null || cell.getDisplayText().equals(""))
+                    continue;
                 String movieName = cell.getDisplayText();
                 logger.log(Level.TRACE, "Bunka: " + movieName);
                 
