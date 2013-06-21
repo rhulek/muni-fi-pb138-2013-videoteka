@@ -272,6 +272,9 @@ public class ODFParser {
 //    }
     
     public void addMedium(Medium medium, Category category) {
+        if(!loadDocument()){
+            return;
+        }
         Category actualCat = getCategory(category.getName());
         Table table = document.getTableByName(actualCat.getName());
         
@@ -289,13 +292,39 @@ public class ODFParser {
             row.getCellByIndex(i).setStringValue(medium.getMovies().get(i-1).getName());
                         //TODO: dodelat ukladani poznamky
         }
+        actualCat.addMedium(medium);
+       
+        changeHeader(table);
         category.setMediums(actualCat.getMediums());
         
         saveDocument();
     }
     
     public void deleteMedium(Medium medium, Category category) {
-        throw new UnsupportedOperationException("Not inplemented yet!");
+        if(!loadDocument()){
+            return;
+        }
+        Table table = document.getTableByName(category.getName());
+        
+        List<Row> rowList = table.getRowList();
+
+        int rowCount = rowList.size();
+        for(int i=1; i < rowCount; i++) {
+            Cell cell = rowList.get(i).getCellByIndex(0);
+            if(cell == null || cell.getStringValue().equals("")) {
+                break;
+            }
+            
+            if(cell.getDoubleValue().intValue() == medium.getId()) {
+
+                table.removeRowsByIndex(i, 1);
+                changeHeader(table);
+                saveDocument();
+                break;
+            }
+                
+        }
+        
     }
     
     public List<Medium> findMediumsByMovieName(String name) {
@@ -335,6 +364,26 @@ public class ODFParser {
         saveDocument();
     }
     
+    private void changeHeader(Table table) {
+        //uprava hlavicky
+        Category cat = getCategory(table.getTableName());
+        
+        int mediumMaxCount = 0;
+        for(Map.Entry<Integer, Medium> entry : cat.getMediums().entrySet()) {
+            if(entry.getValue().getMovies().size() > mediumMaxCount)
+                mediumMaxCount = entry.getValue().getMovies().size();
+        }   
+  
+        
+        Row firstRow = table.getRowByIndex(0);  
+        for(int i = 1; i < firstRow.getCellCount(); i++) {
+            if(i < mediumMaxCount+1)
+                firstRow.getCellByIndex(i).setStringValue("Film "+i);
+            else
+                firstRow.getCellByIndex(i).setStringValue("");
+        }
+        
+    }
     
     public void parse(){
         try {
