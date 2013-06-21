@@ -76,6 +76,30 @@ public class ODFParser {
         
     }
     
+    public boolean saveDocument() {
+        if(document == null){
+            logger.log(Level.ERROR, "Document neni nahran.");
+            return false;
+        }
+        
+        
+            
+        if(documentPath == null){
+            logger.log(Level.ERROR, "Document path is null!");
+            return false;
+        }
+        
+        try {
+            document.save(documentPath);
+            return true;
+        } catch (Exception ex) {
+            logger.log(Level.ERROR, "Chyba pri ukladani dokumentu: '" + documentPath + "'", ex);
+            return false;
+        }
+    }
+    
+    
+    
     public List<String> getAllCategoryNames(){
         if(!loadDocument()){
             return null;
@@ -115,42 +139,35 @@ public class ODFParser {
         Category category = new Category(categoryName);
         
         
-        int collumns = 0;
-        Row head = rowList.get(0);
-        
-        for(int i = 0; i < head.getCellCount(); i++){
-            if(head.getCellByIndex(i) == null || head.getCellByIndex(i).getDisplayText().equals("")) {
-                break;
-            }
-            collumns++;
-            logger.log(Level.DEBUG, head.getCellByIndex(i).getDisplayText());
-        }
-        logger.log(Level.DEBUG, "Collumns: " + collumns);
+
 
         int rowCount = rowList.size();
         for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
 
-            logger.log(Level.TRACE, "Zpracovavam " + i + " radek.");
-            //Vytvoprit nove medium
-            Medium medium = new Medium();
+            
 
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
             
             if(firstCell == null || firstCell.getDisplayText().equals(""))
                 break;
-
-            medium.setId( Integer.getInteger( firstCell.getDisplayText() ) );
+          
+            //Vytvoprit nove medium
+            Medium medium = new Medium();
+            medium.setId( firstCell.getDoubleValue().intValue() );
             //medium.setType(); //TODO provest parsovani poznamky
-
-            //int collumns = row.getCellCount();
+            
+            int collumns = row.getCellCount();
             List<Movie> movies = new ArrayList<Movie>();
 
+            
+            
             for(int j = 1; j < collumns; j++){  //je potreba preskocit prvni sloupec, ktery obsahuje ID
                 Cell cell = row.getCellByIndex(j);
+
                 
                 if(cell == null || cell.getDisplayText().equals(""))
-                    continue;
+                    break;
                 String movieName = cell.getDisplayText();
                 logger.log(Level.TRACE, "Bunka: " + movieName);
                 
@@ -253,7 +270,26 @@ public class ODFParser {
 //    }
     
     public void addMedium(Medium medium, Category category) {
-        throw new UnsupportedOperationException("Not inplemented yet!");
+        Category actualCat = getCategory(category.getName());
+        Table table = document.getTableByName(actualCat.getName());
+        
+        Row row;
+        if(actualCat.getMediums().size()+1 >= table.getRowCount()) {
+            row = table.appendRow();
+        } else {
+            row = table.insertRowsBefore(actualCat.getMediums().size()+1, 1).get(0);
+        }
+        
+        logger.log(Level.DEBUG, actualCat.getMediums().size());
+        
+        row.getCellByIndex(0).setDoubleValue((double)medium.getId());
+        for(int i = 1; i < medium.getMovies().size()+1; i++) {
+            row.getCellByIndex(i).setStringValue(medium.getMovies().get(i-1).getName());
+                        //TODO: dodelat ukladani poznamky
+        }
+        category.setMediums(actualCat.getMediums());
+        
+        saveDocument();
     }
     
     public void deleteMedium(Medium medium, Category category) {
@@ -266,15 +302,35 @@ public class ODFParser {
     //public List<Medium> findMediumsBy... 
     
     public void addCategory(Category category) {
-        throw new UnsupportedOperationException("Not inplemented yet!");
+        if(!loadDocument()){
+            return;
+        }
+        
+        Table.TableBuilder builder = document.getTableBuilder();
+        Table table = builder.newTable(1, 1);
+        table.setTableName(category.getName());
+        table.getCellByPosition(0, 0).setStringValue("Id");
+
+        saveDocument();
     }
     
     public void renameCategory(Category category, String categoryNewName) {
-        throw new UnsupportedOperationException("Not inplemented yet!");
+        if(!loadDocument()){
+            return;
+        }
+        
+        document.getTableByName(category.getName()).setTableName(categoryNewName);
+        category.setName(categoryNewName);
+        saveDocument();
     }
     
     public void deleteCategory(Category category) {
-        throw new UnsupportedOperationException("Not inplemented yet!");
+        if(!loadDocument()){
+            return;
+        }
+        
+        document.getTableByName(category.getName()).remove();
+        saveDocument();
     }
     
     
