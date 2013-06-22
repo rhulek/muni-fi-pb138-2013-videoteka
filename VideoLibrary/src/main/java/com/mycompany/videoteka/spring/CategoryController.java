@@ -6,6 +6,7 @@ package com.mycompany.videoteka.spring;
 
 import com.mycompany.videolibrary.Category;
 import com.mycompany.videolibrary.GDiskManagerWeb;
+import com.mycompany.videolibrary.Helper;
 import com.mycompany.videolibrary.Medium;
 import com.mycompany.videolibrary.Movie;
 import com.mycompany.videolibrary.ODFParser;
@@ -65,7 +66,7 @@ public class CategoryController {
         }
         
         
-        String decodedCategoryName = decode(categoryName);
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
         if(decodedCategoryName == null){
             model.addAttribute("msg", "Error during decoding category name from url.");
             return "errorPage";
@@ -113,8 +114,8 @@ public class CategoryController {
     public String renameCategory(@PathVariable String categoryName, @RequestParam String newName, Model model){
         logger.log(Level.TRACE, "Prejenovavam kategorii: '" + categoryName + "' na: '" + newName + "'");
         
-        String decodedCategoryName = decode(categoryName);
-        String decodedNewName = decode(newName);
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
+        String decodedNewName = Helper.decodeEscapedString(newName);
         if(decodedCategoryName == null || newName == null){
             model.addAttribute("msg", "Error during decoding category name from url.");
             return "errorPage";
@@ -135,7 +136,7 @@ public class CategoryController {
 
         logger.log(Level.TRACE, "delete: " + delete);
         
-        String decodedCategoryName = decode(categoryName);
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
             if(decodedCategoryName == null){
             model.addAttribute("msg", "Error during decoding category name from url.");
             return "errorPage";
@@ -159,8 +160,8 @@ public class CategoryController {
             return "addCategory";
         }
         
-        logger.log(Level.TRACE, "Ziskany nazev kategori: " + categoryName);
-        String decodedCategoryName = decode(categoryName);
+        logger.log(Level.TRACE, "Ziskan nazev kategorie: " + categoryName);
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
             if(decodedCategoryName == null){
             model.addAttribute("msg", "Error during decoding category name from url.");
             return "errorPage";
@@ -170,18 +171,4 @@ public class CategoryController {
         return "redirect:/category/showAll";
     }
     
-    private String decode(String stringToDecode){
-        logger.log(Level.TRACE, "Dekoduji string: '" + stringToDecode + "'");
-        
-        String decodedString;
-        try {
-            decodedString = URLDecoder.decode(stringToDecode, "UTF-8");
-            logger.log(Level.TRACE, "Dekodovany string: '" + decodedString + "'");
-            return decodedString;
-            
-        } catch (UnsupportedEncodingException ex) {
-            logger.log(Level.ERROR, "Error during decoding category name from url.", ex);
-            return null;
-        }
-    }
 }

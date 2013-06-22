@@ -30,6 +30,9 @@
                 </tr>
             </c:forEach>
         </table>
-        <td><a href="${pageContext.servletContext.contextPath}/category/addCategory"> Přidat kategorii TODO </a></td>
+        <br/>
+        <a href="${pageContext.servletContext.contextPath}/category/addCategory"> Přidat kategorii </a>
+        <br/>
+        <a href="${pageContext.servletContext.contextPath}/medium/addMedium"> Přidat medium </a>
     </body>
 </html>
