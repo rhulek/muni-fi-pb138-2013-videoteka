@@ -7,6 +7,7 @@ package com.mycompany.videolibrary;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Level;
@@ -138,13 +139,9 @@ public class ODFParser {
         logger.log(Level.TRACE, "Pocet radku tabulky: " + rowList.size());
         Category category = new Category(categoryName);
         
-        
-
-
         int rowCount = rowList.size();
+       
         for(int i=1; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
-
-            
 
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
@@ -159,11 +156,9 @@ public class ODFParser {
             
             //medium.setType(); //TODO provest parsovani poznamky
        
-            int collumns = row.getCellCount();
+             int collumns = row.getCellCount();
             List<Movie> movies = new ArrayList<Movie>();
-
-            
-            
+           
             for(int j = 1; j < collumns; j++){  //je potreba preskocit prvni sloupec, ktery obsahuje ID
                 Cell cell = row.getCellByIndex(j);
 
@@ -180,6 +175,7 @@ public class ODFParser {
             }
             medium.setMovies(movies);
             category.addMedium(medium);
+            
         }
 
         return category;
@@ -327,9 +323,29 @@ public class ODFParser {
         
     }
     
-    public List<Medium> findMediumsByMovieName(String name) {
-        throw new UnsupportedOperationException("Not inplemented yet!");
-    } 
+    public List<Medium> findMediaByMovieName(String name) {
+        if(!loadDocument()){
+            return null;
+        } 
+        List<Table> tables = document.getTableList();
+      
+        if(tables == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+        }
+        List<Medium> media = new ArrayList<Medium>();
+        for(Table table: tables){
+            String catName = table.getTableName();
+            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+            for(Medium medium :categoryMedia){
+                if(medium.containsMovie(name)){
+                    media.add(medium);
+                }
+            }
+        }
+        return media;
+        
+    }
+    
     //public List<Medium> findMediumsBy... 
     
     public void addCategory(Category category) {
