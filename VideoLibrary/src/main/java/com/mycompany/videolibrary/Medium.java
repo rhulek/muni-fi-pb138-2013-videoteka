@@ -53,6 +53,16 @@ public class Medium {
         movies.add(movie);
     }
     
+    public boolean containsMovie(String name){
+        if(name == null){
+            return false;
+        }
+        for(Movie movie : movies){
+            return movie.getName().equals(name);
+        }
+        return false;
+    }
+    
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();

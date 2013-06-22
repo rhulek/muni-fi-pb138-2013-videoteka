@@ -4,7 +4,10 @@
  */
 package com.mycompany.videolibrary;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,6 +45,41 @@ public class Category {
     
     public void addMedium(Medium medium){
         mediums.put(medium.getId(), medium);
+    }
+    
+    public List<Medium> getAllMedia(){
+        Iterator it = mediums.entrySet().iterator();
+        List<Medium> media = new ArrayList<Medium>();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            Medium medium = (Medium)pairs.getValue();
+            media.add(medium);
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        return media;       
+    }
+    
+    public List<Medium> getAllMediaOfCategoryContainingMovie(String movieName){
+        if(mediums == null){
+            return null;
+        }
+        if(mediums.isEmpty()){
+            return null;
+        }
+        if(movieName == null){
+            return null;
+        }
+        Iterator it = mediums.entrySet().iterator();
+        List<Medium> media = new ArrayList<Medium>();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            Medium medium = (Medium)pairs.getValue();
+            if(medium.containsMovie(movieName)){
+                media.add(medium);
+            }
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        return media;       
     }
     
     @Override
