@@ -13,7 +13,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Smazání kategorie!</h1>
+        <h1>Smazání kategorie - varování!</h1>
         <p>Skutečně si přejete smazat kategorii <c:out value="${categoryName}"/>? </p>
         <p>Budou smazány i všechny položky kategorie. Tuto operaci nelze vrátit zpět!</p>
         
