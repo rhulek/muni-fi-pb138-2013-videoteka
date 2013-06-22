@@ -44,19 +44,15 @@ public class Category {
     }
     
     public void addMedium(Medium medium){
+        if(medium.getId() == null){
+            System.err.println("addMedium medium with null id");
+        }
         mediums.put(medium.getId(), medium);
+        
     }
     
     public List<Medium> getAllMedia(){
-        Iterator it = mediums.entrySet().iterator();
-        List<Medium> media = new ArrayList<Medium>();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            Medium medium = (Medium)pairs.getValue();
-            media.add(medium);
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-        return media;       
+        return new ArrayList<Medium>(mediums.values());    
     }
     
     public List<Medium> getAllMediaOfCategoryContainingMovie(String movieName){
