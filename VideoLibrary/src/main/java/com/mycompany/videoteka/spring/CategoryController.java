@@ -6,6 +6,7 @@ package com.mycompany.videoteka.spring;
 
 import com.mycompany.videolibrary.Category;
 import com.mycompany.videolibrary.GDiskManagerWeb;
+import com.mycompany.videolibrary.Helper;
 import com.mycompany.videolibrary.Medium;
 import com.mycompany.videolibrary.Movie;
 import com.mycompany.videolibrary.ODFParser;
@@ -65,31 +66,43 @@ public class CategoryController {
         }
         
         
-        String decodedCategoryName = decode(categoryName);
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
         if(decodedCategoryName == null){
             model.addAttribute("msg", "Error during decoding category name from url.");
             return "errorPage";
         }
         
         logger.log(Level.TRACE, "dekodovane jmeno kategorie z url: " + decodedCategoryName);
-//        Category category = parser.getCategory(decodedCategoryName);
-        Category category = new Category("Pejsek a kocicka");
-        List<Movie> filmy = new ArrayList<Movie>();
-        filmy.add(new Movie(10, "Macha sebestova"));
-        filmy.add(new Movie(1, "Na samote u lesa"));
-        filmy.add(new Movie(3, "Nosorozec Tom"));
+        Category category = parser.getCategory(decodedCategoryName);
         
-        Medium med1 = new Medium(335, "DVD", filmy);
+//        Category category = parser.getStaticTestCategory();
         
-        List<Movie> filmy2 = new ArrayList<Movie>();
-        filmy2.add(new Movie(7, "Cerveny trakturek"));
-        filmy2.add(new Movie(7, "Darbujan a pandrhola"));
-        
-        Medium med2 = new Medium(55, "Blue Ray", filmy2);
-        
-        category.addMedium(med1);
-        category.addMedium(med2);
-        
+//       Category category = new Category("Pejsek a kocicka");
+//        List<Movie> filmy = new ArrayList<Movie>();
+//        filmy.add(new Movie(10, "Macha sebestova"));
+//        filmy.add(new Movie(1, "Na samote u lesa"));
+//        filmy.add(new Movie(3, "Nosorozec Tom"));
+//        
+//        Medium med1 = new Medium(335, "DVD", filmy);
+//        
+//        List<Movie> filmy2 = new ArrayList<Movie>();
+//        filmy2.add(new Movie(7, "Cerveny trakturek"));
+//        filmy2.add(new Movie(7, "Darbujan a pandrhola"));
+//        
+//        Medium med2 = new Medium(55, "Blue Ray", filmy2);
+//        
+//        
+//        List<Movie> filmy3 = new ArrayList<Movie>();
+//        filmy3.add(new Movie(7, "žluťoučký"));
+//        filmy3.add(new Movie(7, "filmeček"));
+//        filmy3.add(new Movie(7, "Maňáskového divadka"));
+//        filmy3.add(new Movie(7, "říčníků"));
+//        
+//        Medium med3 = new Medium(55, "Blue Ray", filmy3);
+//        
+//        category.addMedium(med1);
+//        category.addMedium(med2);
+//        category.addMedium(med3);     
         
         logger.log(Level.TRACE, "Posilam kategorii: \r" + category);
         
@@ -101,8 +114,8 @@ public class CategoryController {
     public String renameCategory(@PathVariable String categoryName, @RequestParam String newName, Model model){
         logger.log(Level.TRACE, "Prejenovavam kategorii: '" + categoryName + "' na: '" + newName + "'");
         
-        String decodedCategoryName = decode(categoryName);
-        String decodedNewName = decode(newName);
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
+        String decodedNewName = Helper.decodeEscapedString(newName);
         if(decodedCategoryName == null || newName == null){
             model.addAttribute("msg", "Error during decoding category name from url.");
             return "errorPage";
@@ -123,12 +136,13 @@ public class CategoryController {
 
         logger.log(Level.TRACE, "delete: " + delete);
         
-        String decodedCategoryName = decode(categoryName);
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
             if(decodedCategoryName == null){
             model.addAttribute("msg", "Error during decoding category name from url.");
             return "errorPage";
         }
 
+        //Zobrazit upozorneni o smazani a potvrzeni
         if(delete == null){
             model.addAttribute("categoryName", decodedCategoryName);
             return "deleteCategoryConfirm";
@@ -146,28 +160,15 @@ public class CategoryController {
             return "addCategory";
         }
         
-        String decodedCategoryName = decode(categoryName);
+        logger.log(Level.TRACE, "Ziskan nazev kategorie: " + categoryName);
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
             if(decodedCategoryName == null){
             model.addAttribute("msg", "Error during decoding category name from url.");
             return "errorPage";
         }
-            
+        logger.log(Level.TRACE, "Vytvarim kategorii: " + decodedCategoryName);
         parser.addCategory(new Category(decodedCategoryName));
         return "redirect:/category/showAll";
     }
     
-    private String decode(String stringToDecode){
-        logger.log(Level.TRACE, "Dekoduji string: '" + stringToDecode + "'");
-        
-        String decodedString;
-        try {
-            decodedString = URLDecoder.decode(stringToDecode, "UTF-8");
-            logger.log(Level.TRACE, "Dekodovany string: '" + decodedString + "'");
-            return decodedString;
-            
-        } catch (UnsupportedEncodingException ex) {
-            logger.log(Level.ERROR, "Error during decoding category name from url.", ex);
-            return null;
-        }
-    }
 }

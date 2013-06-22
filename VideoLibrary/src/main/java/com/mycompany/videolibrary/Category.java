@@ -18,6 +18,10 @@ public class Category {
     private String name;
     private Map<Integer, Medium> mediums;
 
+    public Category() {
+        this(null);
+    }
+
     public Category(String name) {
         this(name, new HashMap<Integer, Medium>());
     }

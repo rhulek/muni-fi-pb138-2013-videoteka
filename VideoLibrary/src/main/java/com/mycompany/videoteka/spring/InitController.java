@@ -5,6 +5,7 @@
 package com.mycompany.videoteka.spring;
 
 import com.mycompany.videolibrary.GDiskManagerWeb;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
 import org.apache.logging.log4j.Level;
@@ -35,6 +36,12 @@ public class InitController {
     public String startVideostore(Model model){
         logger.log(Level.DEBUG, "startVideostore(): Logujeme Vstup do funkce!");
         
+        logger.log(Level.DEBUG, "Kodovani je: " + Charset.defaultCharset());
+        logger.log(Level.DEBUG, "file.encoding=" + System.getProperty("file.encoding"));
+        
+        System.setProperty("file.encoding", "UTF-8");
+        logger.log(Level.DEBUG, "Nastavene kodovani je: " + Charset.defaultCharset());
+        logger.log(Level.DEBUG, "Nastaveny file.encoding=" + System.getProperty("file.encoding"));
         if(manager == null){
             logger.log(Level.ERROR, "GDiskManager je null!");
             
@@ -43,6 +50,7 @@ public class InitController {
             
         }
         logger.log(Level.INFO, "GDiskManager je ok!");
+
         
         if(manager.loadCredentials() == null){
             manager.openBrowser();

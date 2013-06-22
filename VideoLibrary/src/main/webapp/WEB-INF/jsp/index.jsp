@@ -1,11 +1,10 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" language="java"%>
 <%@include file="header.jsp" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Welcome to Spring Web MVC project</title>
     </head>
 
@@ -31,6 +30,9 @@
                 </tr>
             </c:forEach>
         </table>
-        <td><a href="${pageContext.servletContext.contextPath}/category/addCategory"> Přidat kategorii TODO </a></td>
+        <br/>
+        <a href="${pageContext.servletContext.contextPath}/category/addCategory"> Přidat kategorii </a>
+        <br/>
+        <a href="${pageContext.servletContext.contextPath}/medium/addMedium"> Přidat medium </a>
     </body>
 </html>

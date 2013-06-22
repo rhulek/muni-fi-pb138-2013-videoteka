@@ -4,11 +4,13 @@
  */
 package com.mycompany.videolibrary;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +38,8 @@ public class ODFParser {
     }
     
     public ODFParser(String documentPath) {
+        logger.log(Level.DEBUG, "Default charset:" + Charset.defaultCharset());
+        logger.log(Level.DEBUG, "file.encoding=" + System.getProperty("file.encoding"));
         this.documentPath = documentPath;
     }
 
@@ -195,6 +199,36 @@ public class ODFParser {
 
     }
      
+    public Category getStaticTestCategory(){
+        Category category = new Category("Pejsek a kocicka");
+        List<Movie> filmy = new ArrayList<Movie>();
+        filmy.add(new Movie(10, "Macha sebestova"));
+        filmy.add(new Movie(1, "Na samote u lesa"));
+        filmy.add(new Movie(3, "Nosorozec Tom"));
+        
+        Medium med1 = new Medium(335, "DVD", filmy);
+        
+        List<Movie> filmy2 = new ArrayList<Movie>();
+        filmy2.add(new Movie(7, "Cerveny trakturek"));
+        filmy2.add(new Movie(7, "Darbujan a pandrhola"));
+        
+        Medium med2 = new Medium(55, "Blue Ray", filmy2);
+        
+        
+        List<Movie> filmy3 = new ArrayList<Movie>();
+        filmy3.add(new Movie(7, "žluťoučký"));
+        filmy3.add(new Movie(7, "filmeček"));
+        filmy3.add(new Movie(7, "Maňáskového divadka"));
+        filmy3.add(new Movie(7, "říčníků"));
+        
+        Medium med3 = new Medium(55, "Blue Ray", filmy3);
+        
+        category.addMedium(med1);
+        category.addMedium(med2);
+        category.addMedium(med3);
+        
+        return category;
+    }
 //    public Category getCategory(String categoryName){
 //        if(!loadDocument()){
 //            return null;
@@ -409,6 +443,7 @@ public class ODFParser {
             return;
         }
         
+        logger.log(Level.TRACE, "Vytvarim kategorii: " + category.getName());
         Table.TableBuilder builder = document.getTableBuilder();
         Table table = builder.newTable(1, 1);
         table.setTableName(category.getName());

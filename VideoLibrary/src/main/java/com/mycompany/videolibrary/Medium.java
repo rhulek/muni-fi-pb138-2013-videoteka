@@ -14,7 +14,8 @@ public class Medium {
     private Integer id;
     private String type;
     private List<Movie> movies;
-
+    private Category category;
+    
     public Medium(){
         
     }
@@ -24,6 +25,15 @@ public class Medium {
         this.type = type;
         this.movies = movies;
     }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+    
     
     public Integer getId() {
         return id;
