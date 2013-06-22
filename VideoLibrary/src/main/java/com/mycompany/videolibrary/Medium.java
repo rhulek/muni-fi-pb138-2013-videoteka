@@ -58,7 +58,9 @@ public class Medium {
             return false;
         }
         for(Movie movie : movies){
-            return movie.getName().equals(name);
+            if(movie.getName().equals(name)){
+                return true;
+            }
         }
         return false;
     }

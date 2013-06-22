@@ -336,15 +336,18 @@ public class ODFParser {
         for(Table table: tables){
             String catName = table.getTableName();
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
-            for(Medium medium :categoryMedia){
+            for(Medium medium : categoryMedia){
                 if(medium.containsMovie(name)){
                     media.add(medium);
                 }
             }
         }
-        return media;
-        
+        return media;  
     }
+    
+    public void parse(Category category) {
+    }
+    
     
     //public List<Medium> findMediumsBy... 
     
