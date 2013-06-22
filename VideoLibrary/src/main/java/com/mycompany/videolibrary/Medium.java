@@ -65,6 +65,18 @@ public class Medium {
         return false;
     }
     
+    public Movie getMovie(String movieName){
+        if(movieName == null){
+            return null;
+        }
+        for(Movie movie : movies){
+            if(movie.getName().equals(movieName)){
+                return movie;
+            }
+        }
+        return null;
+    }
+    
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();

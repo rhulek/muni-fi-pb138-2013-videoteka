@@ -165,12 +165,25 @@ public class ODFParser {
                 
                 if(cell == null || cell.getDisplayText().equals(""))
                     break;
+                
+                
+                String movieComment = cell.getNoteText();
+                
                 String movieName = cell.getDisplayText();
                 logger.log(Level.TRACE, "Bunka: " + movieName);
                 
+                if(movieComment != null){
+                     logger.log(Level.TRACE, "Comment: " + movieComment);
+                }
+                
+               
+                
                 if( movieName.trim().length() > 0 ){
                     logger.log(Level.TRACE, "Pridavam bunku: " + movieName);
-                    movies.add( new Movie(j, movieName) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
+                    Movie movie = new Movie(j, movieName);
+                    movie.setComment(movieComment);
+                    movies.add(movie);
+                    //movies.add( new Movie(j, movieName) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
                 }
             }
             medium.setMovies(movies);
@@ -319,8 +332,7 @@ public class ODFParser {
                 break;
             }
                 
-        }
-        
+        }    
     }
     
     public List<Medium> findMediaByMovieName(String name) {
@@ -344,9 +356,50 @@ public class ODFParser {
         }
         return media;  
     }
-    
-    public void parse(Category category) {
+
+        public Movie findMovieByName(String name) {
+        if(!loadDocument()){
+            return null;
+        } 
+        List<Table> tables = document.getTableList();
+      
+        if(tables == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+        }
+        for(Table table: tables){
+            String catName = table.getTableName();
+            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+            for(Medium medium : categoryMedia){
+                if(medium.containsMovie(name)){
+                    return medium.getMovie(name);
+                }
+            }
+        }
+        return null;  
     }
+       /* 
+        public String findMetaInfoAboutMovie(String name) {
+        if(!loadDocument()){
+            return null;
+        } 
+        List<Table> tables = document.getTableList();
+      
+        if(tables == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+        }
+        for(Table table: tables){
+            String catName = table.getTableName();
+            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+            for(Medium medium : categoryMedia){
+                if(medium.containsMovie(name)){
+                    return "";
+                }
+            }
+        }
+        return null;  
+    }   
+    * */
+        
     
     
     //public List<Medium> findMediumsBy... 

@@ -12,6 +12,7 @@ package com.mycompany.videolibrary;
 public class Movie {
     private Integer id;
     private String name;
+    private String comment;
 
     public Movie(){
     
@@ -38,8 +39,16 @@ public class Movie {
         this.name = name;
     }
     
+    public void setComment(String comment){
+        this.comment = comment;
+    }
+    
+    public String getComment(){
+        return comment;
+    }
+    
     @Override
     public String toString(){
-        return "(" + id + " " + name + ")";
+        return "(" + id + " " + name + ")" + "comment " + comment;
     }
 }
