@@ -59,7 +59,7 @@ public class Category {
         return new ArrayList<Medium>(mediums.values());    
     }
     
-    public List<Medium> getAllMediaOfCategoryContainingMovie(String movieName){
+    public List<Medium> getAllMediaContainingMovie(String movieName){
         if(mediums == null){
             return null;
         }

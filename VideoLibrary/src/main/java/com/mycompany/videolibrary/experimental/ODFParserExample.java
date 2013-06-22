@@ -38,7 +38,11 @@ public class ODFParserExample {
         logger.log(Level.INFO, "Kategorie ziskaná z getStaticTestCategory(): " + category2);
         System.out.println( category2 );
         
- 
+        List<Medium> media = parser.findMediaByMovieName("Homer Doma");
+               
+        for(Medium medium : media){
+            System.out.println("Medium " + medium);
+        }
         
         
     }
