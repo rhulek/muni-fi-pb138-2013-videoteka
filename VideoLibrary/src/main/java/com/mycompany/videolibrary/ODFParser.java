@@ -142,7 +142,7 @@ public class ODFParser {
 
 
         int rowCount = rowList.size();
-        for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
+        for(int i=1; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
 
             
 
@@ -154,11 +154,11 @@ public class ODFParser {
           
             //Vytvoprit nove medium
             Medium medium = new Medium();
-            //medium.setId( firstCell.getDoubleValue().intValue() );  //Throw IllegalArgumentException if the cell type is not "float".
-            medium.setId( Integer.getInteger( firstCell.getDisplayText() ) );
+            medium.setId( firstCell.getDoubleValue().intValue() );  //Throw IllegalArgumentException if the cell type is not "float".
+            //medium.setId( Integer.getInteger( firstCell.getDisplayText() ) );
             
             //medium.setType(); //TODO provest parsovani poznamky
-            
+       
             int collumns = row.getCellCount();
             List<Movie> movies = new ArrayList<Movie>();
 
