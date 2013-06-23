@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dom4j.DocumentException;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.draw.Textbox;
@@ -169,12 +170,36 @@ public class ODFParser {
                 
                 if(cell == null || cell.getDisplayText().equals(""))
                     break;
-                String movieName = cell.getDisplayText();
+                
+                
+               
+                
+                
+                String[] lines = cell.getDisplayText().split("\r");
+                String movieName = lines[lines.length - 1];
+                
+
                 logger.log(Level.TRACE, "Bunka: " + movieName);
+                
+                String movieComment = cell.getNoteText();
+                
+                
+                if(movieComment != null){
+                     logger.log(Level.TRACE, "Comment: " + movieComment); 
+                }                
                 
                 if( movieName.trim().length() > 0 ){
                     logger.log(Level.TRACE, "Pridavam bunku: " + movieName);
-                    movies.add( new Movie(j, movieName) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
+                    Movie movie = new Movie(j, movieName);
+                    if(movieComment != null){
+                        try{
+                            movie.setMetaInfo(movieComment);
+                        }catch(DocumentException ex){
+                          logger.log(Level.ERROR, ex);
+                        }
+                    }      
+                    movies.add(movie);
+                    //movies.add( new Movie(j, movieName) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
                 }
             }
             medium.setMovies(movies);
@@ -321,7 +346,7 @@ public class ODFParser {
         row.getCellByIndex(0).setDoubleValue((double)medium.getId());
         for(int i = 1; i < medium.getMovies().size()+1; i++) {
             row.getCellByIndex(i).setStringValue(medium.getMovies().get(i-1).getName());
-                        //TODO: dodelat ukladani poznamky
+            row.getCellByIndex(i).setNoteText(medium.getMovies().get(i-1).getName()); 
         }
         actualCat.addMedium(medium);
        
@@ -354,8 +379,7 @@ public class ODFParser {
                 break;
             }
                 
-        }
-        
+        }    
     }
     
     public List<Medium> findMediaByMovieName(String name) {
@@ -372,6 +396,7 @@ public class ODFParser {
             String catName = table.getTableName();
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
             for(Medium medium : categoryMedia){
+
                 if(medium.containsMovie(name)){
                     media.add(medium);
                 }
@@ -379,9 +404,50 @@ public class ODFParser {
         }
         return media;  
     }
-    
-    public void parse(Category category) {
+
+        public Movie findMovieByName(String name) {
+        if(!loadDocument()){
+            return null;
+        } 
+        List<Table> tables = document.getTableList();
+      
+        if(tables == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+        }
+        for(Table table: tables){
+            String catName = table.getTableName();
+            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+            for(Medium medium : categoryMedia){
+                if(medium.containsMovie(name)){
+                    return medium.getMovie(name);
+                }
+            }
+        }
+        return null;  
     }
+       /* 
+        public String findMetaInfoAboutMovie(String name) {
+        if(!loadDocument()){
+            return null;
+        } 
+        List<Table> tables = document.getTableList();
+      
+        if(tables == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+        }
+        for(Table table: tables){
+            String catName = table.getTableName();
+            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+            for(Medium medium : categoryMedia){
+                if(medium.containsMovie(name)){
+                    return "";
+                }
+            }
+        }
+        return null;  
+    }   
+    * */
+        
     
     
     //public List<Medium> findMediumsBy... 

@@ -29,7 +29,7 @@ public class ODFParserExample {
         for(String categoryName: categories){
             System.out.println(categoryName);
         }
-  */             
+           
         Category category = parser.getCategory(categories.get(0));
 
         System.out.println(category);
@@ -37,12 +37,20 @@ public class ODFParserExample {
         Category category2 = parser.getStaticTestCategory();
         logger.log(Level.INFO, "Kategorie ziskaná z getStaticTestCategory(): " + category2);
         System.out.println( category2 );
+        */  
         
+           Category category = parser.getCategory(categories.get(0));
+ 
         List<Medium> media = parser.findMediaByMovieName("Homer Doma");
-               
+        
+       
         for(Medium medium : media){
-            System.out.println("Medium " + medium);
+            System.out.println("Medium: " + medium);
         }
+
+     
+        
+        
         
         
     }
