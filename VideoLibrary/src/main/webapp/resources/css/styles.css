@@ -1,0 +1,88 @@
+body {
+    background-color: black;
+    background-image: url("../images/grunge-bg.jpg");
+    background-position: top center;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+    font-size: 0.75em;
+}
+
+h3 {
+    text-transform: uppercase;
+}
+
+a img, a:hover img {
+    border: none;
+}
+
+#heading, #footer .content, #main .content {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+#heading {
+    position: relative;
+    height: 190px;
+}
+
+#logo-link {
+    position: absolute;
+    top: 20px;
+    left: 50px;
+}
+
+#banner-img {
+    position: absolute;
+    top: -80px;
+    right: 5px; 
+}
+
+#slogan {
+    font-family: 'Georgia';
+    font-style: italic;
+    color: #ccc;
+    font-size: 18px;
+    position: absolute;
+    top: 100px;
+    left: 40px;
+}
+
+#main .content {
+    min-height: 500px;
+    padding: 2em;
+   
+}
+
+.auth-code-form-input {
+    width: 500px;
+}
+
+#main.light-theme {
+    background-color: #f0eeee;
+}
+
+
+#footer {
+    color: #ccc;
+    border-top: solid 3px #fff;
+}
+
+#footer .content {
+    position: relative;
+    padding: 15px 0; 
+}
+
+#footer-decor-img {
+    position: absolute;
+    top: -348px;
+    left: 50px;
+}
+
+#footer .content .block1,
+#footer .content .block2,
+#footer .content .block3 {
+    width: 330px;
+    float: left;
+}
