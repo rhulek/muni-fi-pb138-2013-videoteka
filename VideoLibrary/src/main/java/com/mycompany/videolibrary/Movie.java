@@ -2,6 +2,7 @@ package com.mycompany.videolibrary;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.dom4j.Document;
@@ -22,7 +23,6 @@ import org.xml.sax.InputSource;
 public class Movie {
     private Integer id;
     private String name;
-    private String comment;
     private Map<String, String> metaInfo;
 
     public Movie(){
@@ -50,21 +50,22 @@ public class Movie {
         this.name = name;
     }
     
-    public void setComment(String comment){
-        this.comment = comment;
-    }
-    
-    public String getComment(){
-        return comment;
-    }
-    
-    public void setMetaInfo(String metaInfo) throws DocumentException{
+    public void setMetaInfo(String metaInfoString) throws DocumentException{
+        if(metaInfo == null){
+            metaInfo = new HashMap<String, String>();
+        }
+        
         SAXReader xmlReader = new SAXReader();
-        StringReader stringR = new StringReader(metaInfo);
+        StringReader stringR = new StringReader(metaInfoString);
         Document doc = xmlReader.read(new InputSource(stringR));
         Element root = doc.getRootElement();
-        System.out.println("Root: " + root.getText());
         
+        for(Object e : doc.getRootElement().elements()){
+            String key = ((Element)e).getName().trim();
+            String value = ((Element)e).getText().trim();
+            metaInfo.put(key, value);
+        }
+                
         /*
          <multimediaData>
             <multimediumType>
@@ -79,7 +80,7 @@ public class Movie {
           </multimediaData>
          */
     }
-    
+       
     public void setMetaInfo(Map<String, String> metaInfo){
         this.metaInfo = metaInfo;
     }
@@ -90,6 +91,6 @@ public class Movie {
     
     @Override
     public String toString(){
-        return "(" + id + " " + name + ")" + "comment " + comment;
+        return "(" + id + " " + name + ")";
     }  
 }

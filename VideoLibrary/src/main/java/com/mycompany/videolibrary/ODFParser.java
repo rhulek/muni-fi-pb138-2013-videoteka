@@ -191,7 +191,6 @@ public class ODFParser {
                 if( movieName.trim().length() > 0 ){
                     logger.log(Level.TRACE, "Pridavam bunku: " + movieName);
                     Movie movie = new Movie(j, movieName);
-                    movie.setComment(movieComment);
                     if(movieComment != null){
                         try{
                             movie.setMetaInfo(movieComment);
