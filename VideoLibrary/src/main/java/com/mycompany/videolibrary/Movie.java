@@ -3,6 +3,7 @@ package com.mycompany.videolibrary;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.dom4j.Document;
@@ -103,6 +104,22 @@ public class Movie {
             return true;
         }
         return false;
+    }
+    
+    public String getMetaInfoXML(){
+        if(metaInfo == null){
+            return null;
+        }
+        Iterator it = metaInfo.entrySet().iterator();
+        String output = "<multimediaData>";
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            pair.getValue();
+            output = output + "<" + pair.getKey() + ">" + pair.getValue() + "</" + pair.getKey() + ">";      
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+         output = output + "</multimediaData>";
+        return output;
     }
     
     @Override

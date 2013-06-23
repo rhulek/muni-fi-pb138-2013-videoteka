@@ -346,7 +346,7 @@ public class ODFParser {
         row.getCellByIndex(0).setDoubleValue((double)medium.getId());
         for(int i = 1; i < medium.getMovies().size()+1; i++) {
             row.getCellByIndex(i).setStringValue(medium.getMovies().get(i-1).getName());
-                        //TODO: dodelat ukladani poznamky
+            row.getCellByIndex(i).setNoteText(medium.getMovies().get(i-1).getName()); 
         }
         actualCat.addMedium(medium);
        
