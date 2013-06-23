@@ -173,11 +173,14 @@ public class ODFParser {
                 
                 String movieComment = cell.getNoteText();
                 
-                String movieName = cell.getDisplayText();
+                
+                String[] lines = cell.getDisplayText().split("\r");
+                String movieName = lines[lines.length - 1];
+                
                 logger.log(Level.TRACE, "Bunka: " + movieName);
                 
                 if(movieComment != null){
-                     logger.log(Level.TRACE, "Comment: " + movieComment);
+                     logger.log(Level.TRACE, "Comment: " + movieComment); 
                 }
                 
                
