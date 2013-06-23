@@ -174,7 +174,10 @@ public class ODFParser {
                 
                
                 
-                String movieName = cell.getDisplayText();
+                
+                String[] lines = cell.getDisplayText().split("\r");
+                String movieName = lines[lines.length - 1];
+                
 
                 logger.log(Level.TRACE, "Bunka: " + movieName);
                 
@@ -182,7 +185,7 @@ public class ODFParser {
                 
                 
                 if(movieComment != null){
-                     logger.log(Level.TRACE, "Comment: " + movieComment);
+                     logger.log(Level.TRACE, "Comment: " + movieComment); 
                 }                
                 
                 if( movieName.trim().length() > 0 ){
@@ -394,10 +397,7 @@ public class ODFParser {
             String catName = table.getTableName();
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
             for(Medium medium : categoryMedia){
-                
-               // System.out.println("ContainsMovie " + name);
-               // System.out.println("in medium " + medium);
-                
+
                 if(medium.containsMovie(name)){
                     media.add(medium);
                 }
