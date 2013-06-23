@@ -5,13 +5,18 @@
 package com.mycompany.videolibrary;
 
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +29,8 @@ import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -172,18 +179,27 @@ public class ODFParser {
                     break;
                 
                 
-               
-                
-                
-                String[] lines = cell.getDisplayText().split("\r");
-                String movieName = lines[lines.length - 1];
-                
 
-                logger.log(Level.TRACE, "Bunka: " + movieName);
+               
+
+                
+                String movieName = "";
+                
+                
                 
                 String movieComment = cell.getNoteText();
+                NodeList nodes = cell.getOdfElement().getChildNodes();
+                for(int k = 0; k < nodes.getLength(); k++) {
+                    Node node = nodes.item(k); 
+                    if(nodes.item(k).getLocalName().equals("p")) {
+                        movieName = node.getTextContent();
+                    }
+                    
+                   
+                }
                 
                 
+            
                 if(movieComment != null){
                      logger.log(Level.TRACE, "Comment: " + movieComment); 
                 }                
@@ -191,7 +207,7 @@ public class ODFParser {
                 if( movieName.trim().length() > 0 ){
                     logger.log(Level.TRACE, "Pridavam bunku: " + movieName);
                     Movie movie = new Movie(j, movieName);
-                    if(movieComment != null){
+                    if(movieComment != null && !movieComment.equals("")){
                         try{
                             movie.setMetaInfo(movieComment);
                         }catch(DocumentException ex){
@@ -346,7 +362,7 @@ public class ODFParser {
         row.getCellByIndex(0).setDoubleValue((double)medium.getId());
         for(int i = 1; i < medium.getMovies().size()+1; i++) {
             row.getCellByIndex(i).setStringValue(medium.getMovies().get(i-1).getName());
-            row.getCellByIndex(i).setNoteText(medium.getMovies().get(i-1).getName()); 
+            row.getCellByIndex(i).setNoteText(medium.getMovies().get(i-1).getMetaInfoXML()); 
         }
         actualCat.addMedium(medium);
        
@@ -404,8 +420,10 @@ public class ODFParser {
         }
         return media;  
     }
+    
+    
 
-        public Movie findMovieByName(String name) {
+    public Movie findMovieByName(String name) {
         if(!loadDocument()){
             return null;
         } 
@@ -424,6 +442,128 @@ public class ODFParser {
             }
         }
         return null;  
+    }
+    
+    public List<Medium> findMediaByMovieNameInCategory(String name, Category cat) {
+        if(!loadDocument()){
+            return null;
+        } 
+        Table table = document.getTableByName(cat.getName());
+      
+        if(table == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat tabulku!");
+        }
+        List<Medium> media = new ArrayList<Medium>();
+
+        String catName = table.getTableName();
+        List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+        for (Medium medium : categoryMedia) {
+
+            if (medium.containsMovie(name)) {
+                media.add(medium);
+            }
+        }
+
+        return media;  
+    }
+    
+      public Movie findMovieByNameInCategory(String name, Category cat) {
+        if(!loadDocument()){
+            return null;
+        } 
+        Table table = document.getTableByName(cat.getName());
+      
+        if(table == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat tabulku!");
+          }
+
+          String catName = table.getTableName();
+          List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+          for (Medium medium : categoryMedia) {
+              if (medium.containsMovie(name)) {
+                  return medium.getMovie(name);
+              }
+          }
+
+          return null;  
+    }
+    
+    public List<Movie> findMoviesByMeta(Map<String, String> meta) {
+        if(!loadDocument()){
+            return null;
+        } 
+        List<Table> tables = document.getTableList();
+      
+        if(tables == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+        }
+        List<Movie> movies = new ArrayList<Movie>();
+        
+        for(Table table: tables){
+            String catName = table.getTableName();
+            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+            for(Medium medium : categoryMedia){
+                for(Movie movie : medium.getMovies()) {
+                    boolean check = false;
+                    for(Entry<String, String> entry : meta.entrySet()){ 
+                        if(movie.hasNoteProperty(entry.getKey())) {
+                            if(movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
+                                check = true;
+                                continue;
+                            }
+                        }
+                        check = false;
+                        break;
+                    }
+                    
+                    if(check) {
+                        movies.add(movie);
+                    }
+                }
+            }
+        }
+        return movies; 
+    }
+    
+    
+    public List<Medium> findMediumByMeta(Map<String, String> meta) {
+        if(!loadDocument()){
+            return null;
+        } 
+        List<Table> tables = document.getTableList();
+      
+        if(tables == null){            
+            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+        }
+        List<Medium> mediums = new ArrayList<Medium>();
+        
+        for(Table table: tables){
+            String catName = table.getTableName();
+            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+            for(Medium medium : categoryMedia){
+                boolean check = false;
+                for(Movie movie : medium.getMovies()) {
+                    
+                    for(Entry<String, String> entry : meta.entrySet()){ 
+                        if(movie.hasNoteProperty(entry.getKey())) {
+                            if(movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
+                                check = true;
+                                continue;
+                            }
+                        }
+                        check = false;
+                        break;
+                    }
+                    
+                    
+                }
+                
+                if(check) {
+                    mediums.add(medium);
+                }
+            }
+        }
+        return mediums; 
     }
        /* 
         public String findMetaInfoAboutMovie(String name) {
@@ -462,6 +602,12 @@ public class ODFParser {
         Table table = builder.newTable(1, 1);
         table.setTableName(category.getName());
         table.getCellByPosition(0, 0).setStringValue("Id");
+        
+        List<Medium> mediums = category.getAllMedia();
+        
+        for(Medium medium: mediums){
+            addMedium(medium, category);
+        }
 
         saveDocument();
     }

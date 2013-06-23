@@ -68,7 +68,7 @@ public class Movie {
         Element root = doc.getRootElement();
         
         for(Object e : doc.getRootElement().elements()){
-            String key = ((Element)e).getName().trim();
+            String key = ((Element)e).attributeValue("name").trim();
             String value = ((Element)e).getText().trim();
             metaInfo.put(key, value);
         }
@@ -115,7 +115,7 @@ public class Movie {
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             pair.getValue();
-            output = output + "<" + pair.getKey() + ">" + pair.getValue() + "</" + pair.getKey() + ">";      
+            output = output + "<data name=\"" + pair.getKey() + "\">" + pair.getValue() + "</data>";      
             it.remove(); // avoids a ConcurrentModificationException
         }
          output = output + "</multimediaData>";
