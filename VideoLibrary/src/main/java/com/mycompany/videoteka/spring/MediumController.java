@@ -31,28 +31,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping(value = "medium")
 public class MediumController {
-     private static Logger logger = LogManager.getLogger(MediumController.class.getName());
-    
-    @Autowired
-    private GDiskManagerWeb manager;
+    private static Logger logger = LogManager.getLogger(MediumController.class.getName());
     
     @Autowired
     private ODFParser parser;
     
     @RequestMapping(value = "addMedium", method = RequestMethod.POST)
-    public String addMedium(@ModelAttribute Medium newMedium, @RequestParam String category, Model model){
-        logger.log(Level.TRACE, "nove medium: " + newMedium);
-        logger.log(Level.TRACE, "Zvolena kategorie: " + category);
+    public String addMedium(@ModelAttribute Medium newMedium, Model model){
+        logger.log(Level.TRACE, "nove medium: " + newMedium + " Ma nastavenou kategorii: " + newMedium.getCategory());
+//        logger.log(Level.TRACE, "Zvolena kategorie: " + category);
 //        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
 //        if(decodedCategoryName == null){
 //            model.addAttribute("msg", "Error during decoding category name from url.");
 //            return "errorPage";
 //        }
         newMedium.trimEmptyMovies();
-        newMedium.setId(0);
         logger.log(Level.TRACE, "nove medium po trimu: " + newMedium);
         
-        parser.addMedium(newMedium, new Category(category) );
+        //parser.addMedium(newMedium, newMedium.getCategory() );
         return "redirect:/category/showAll";
     }
     

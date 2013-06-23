@@ -15,8 +15,8 @@
             <tr>
                 <td> 
                     <form action="${pageContext.servletContext.contextPath}/medium/delete" id="deleteBackingForm" method="POST">
-                        <input type="" name="mediumID" id="mediumID" value="${med.value.id}"/>
-                        <input type="" name="categoryName" id="categoryName" value="${category.name}"/>
+                        <input disabled="true" type="" name="mediumID" id="mediumID" value="${med.value.id}"/>
+                        <input disabled="true" type="" name="categoryName" id="categoryName" value="${category.name}"/>
                         <input type="submit" value="Smazat"/>
                     </form>
                 

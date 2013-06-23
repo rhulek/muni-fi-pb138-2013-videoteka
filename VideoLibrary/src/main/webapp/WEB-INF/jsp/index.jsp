@@ -37,5 +37,7 @@
         <a href="${pageContext.servletContext.contextPath}/category/addCategory"> Přidat kategorii </a>
         <br/>
         <a href="${pageContext.servletContext.contextPath}/medium/addMedium/empty"> Přidat medium </a>
+         <br/>
+        <a href="${pageContext.servletContext.contextPath}/search"> Hledat film </a>
     </body>
 </html>
