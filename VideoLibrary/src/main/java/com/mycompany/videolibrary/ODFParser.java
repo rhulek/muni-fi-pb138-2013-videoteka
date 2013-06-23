@@ -191,6 +191,7 @@ public class ODFParser {
                 }
             }
             medium.setMovies(movies);
+            medium.setCategory(category);
             category.addMedium(medium);
             
         }

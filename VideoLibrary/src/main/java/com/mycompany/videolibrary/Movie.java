@@ -1,5 +1,8 @@
 package com.mycompany.videolibrary;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -51,4 +54,5 @@ public class Movie {
     public String toString(){
         return "(" + id + " " + name + ")" + "comment " + comment;
     }
+    
 }

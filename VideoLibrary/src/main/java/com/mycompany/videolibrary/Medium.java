@@ -4,6 +4,7 @@
  */
 package com.mycompany.videolibrary;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -109,4 +110,13 @@ public class Medium {
         return builder.toString();
     }
     
+        public void trimEmptyMovies(){
+        List<Movie> newMovies = new ArrayList<Movie>();
+        for(Movie movie: movies){
+            if(movie.getName() != null && !movie.getName().trim().isEmpty()){
+                newMovies.add(movie);
+            }
+        }
+        movies = newMovies;
+    }
 }

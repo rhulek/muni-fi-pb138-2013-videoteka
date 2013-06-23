@@ -25,7 +25,12 @@
             </c:forEach>
         </table>
         
-        <a href="${pageContext.servletContext.contextPath}/medium/addMedium/${catName}"> Pridat medium </a><br/><br/>
+        <%-- <c:set var="preselected" value="${category.name}" scope="application"/> --%>
+        <!--
+            Preselected je priznak, ktery rika kontroleru jestli jsme prisli z nejake kategorie a tedy jestli parametr v URL je validni
+            nazev kategorie a ta ma byt predvyplnena ve formulari k vytvoreni noveho media.
+        -->
+        <a href="${pageContext.servletContext.contextPath}/medium/addMedium/${catName}?preselected=true"> Pridat medium </a><br/><br/>
         <a href="${pageContext.servletContext.contextPath}/category/showAll"> Zpet na seznam kategorii </a>
         
         

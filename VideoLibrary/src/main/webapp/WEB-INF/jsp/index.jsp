@@ -33,6 +33,6 @@
         <br/>
         <a href="${pageContext.servletContext.contextPath}/category/addCategory"> Přidat kategorii </a>
         <br/>
-        <a href="${pageContext.servletContext.contextPath}/medium/addMedium"> Přidat medium </a>
+        <a href="${pageContext.servletContext.contextPath}/medium/addMedium/empty"> Přidat medium </a>
     </body>
 </html>

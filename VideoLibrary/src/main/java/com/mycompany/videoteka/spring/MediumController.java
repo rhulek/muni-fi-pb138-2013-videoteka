@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,31 +40,54 @@ public class MediumController {
     private ODFParser parser;
     
     @RequestMapping(value = "addMedium", method = RequestMethod.POST)
-    public String addMedium(@ModelAttribute Medium newMedium, Model model){
+    public String addMedium(@ModelAttribute Medium newMedium, @RequestParam String category, Model model){
         logger.log(Level.TRACE, "nove medium: " + newMedium);
-        
+        logger.log(Level.TRACE, "Zvolena kategorie: " + category);
 //        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
 //        if(decodedCategoryName == null){
 //            model.addAttribute("msg", "Error during decoding category name from url.");
 //            return "errorPage";
 //        }
+        newMedium.trimEmptyMovies();
+        newMedium.setId(0);
+        logger.log(Level.TRACE, "nove medium po trimu: " + newMedium);
         
+        parser.addMedium(newMedium, new Category(category) );
         return "redirect:/category/showAll";
     }
     
-    @RequestMapping(value = "addMedium", method = RequestMethod.GET)
-    public String showAddMediumForm(Model model){
-        logger.log(Level.TRACE, "Vytvarim backing object");
+    /*
+     * Vezme request na zobrazeni formulare pro pridani media
+     * pokud je categoryName
+     */
+    @RequestMapping(value = {"addMedium/{categoryName}"}, method = RequestMethod.GET)
+    public String showAddMediumForm(@PathVariable String categoryName, @RequestParam(required = false, value = "preselected") boolean preselected, Model model){
+        logger.log(Level.TRACE, "Vytvarim backing object preselected:" + preselected);
+        
+        List<String> categories = parser.getAllCategoryNames();
+        
+        String selectedCategory = "";
+        if(preselected){       //pokud je categoryName = empty znamenato ze jsme neprisli ze zadne konkretni kategorie
+
+            selectedCategory = Helper.decodeEscapedString(categoryName);
+            if(selectedCategory == null){
+                model.addAttribute("msg", "Error during decoding category name from url.");
+                return "errorPage";
+            }
+            categories.remove(selectedCategory);
+            logger.log(Level.TRACE, "Byla predvybrana kategorie: " + selectedCategory);
+        }
         
         List<Movie> movies = new ArrayList<Movie>();
         for(int i=0; i < 5; i++){
             movies.add(new Movie());
         }
         Medium medium = new Medium(null, null, movies);
-        medium.setCategory(new Category("tradaa"));
+        medium.setCategory(new Category(selectedCategory));
         
         model.addAttribute("newMedium", medium);
-        
+        model.addAttribute("categories", categories);
+        model.addAttribute("selectedCategory", selectedCategory);
         return "addMedium";
     }
     
