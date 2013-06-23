@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dom4j.DocumentException;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.draw.Textbox;
@@ -171,21 +172,30 @@ public class ODFParser {
                     break;
                 
                 
-                String movieComment = cell.getNoteText();
+               
                 
                 String movieName = cell.getDisplayText();
+
                 logger.log(Level.TRACE, "Bunka: " + movieName);
+                
+                String movieComment = cell.getNoteText();
+                
                 
                 if(movieComment != null){
                      logger.log(Level.TRACE, "Comment: " + movieComment);
-                }
-                
-               
+                }                
                 
                 if( movieName.trim().length() > 0 ){
                     logger.log(Level.TRACE, "Pridavam bunku: " + movieName);
                     Movie movie = new Movie(j, movieName);
                     movie.setComment(movieComment);
+                    if(movieComment != null){
+                        try{
+                            movie.setMetaInfo(movieComment);
+                        }catch(DocumentException ex){
+                          logger.log(Level.ERROR, ex);
+                        }
+                    }      
                     movies.add(movie);
                     //movies.add( new Movie(j, movieName) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
                 }
@@ -384,6 +394,10 @@ public class ODFParser {
             String catName = table.getTableName();
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
             for(Medium medium : categoryMedia){
+                
+               // System.out.println("ContainsMovie " + name);
+               // System.out.println("in medium " + medium);
+                
                 if(medium.containsMovie(name)){
                     media.add(medium);
                 }
