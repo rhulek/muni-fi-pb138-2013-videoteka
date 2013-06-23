@@ -5,11 +5,14 @@
 
 <html>
     <head>
-        <title>Welcome to Spring Web MVC project</title>
+        <title>Videotéka - přehled kategorií</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        
+        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/styles.css" type="text/css" />
     </head>
 
     <body>
-        <p>Hello! This is the default welcome page for a Spring Web MVC project.</p>
+        <p>Category - show all - Hello! This is the default welcome page for a Spring Web MVC project.</p>
         <p><i>To display a different welcome page for this project, modify</i>
             <tt>index.jsp</tt> <i>, or create your own welcome page then change
                 the redirection in</i> <tt>redirect.jsp</tt> <i>to point to the new

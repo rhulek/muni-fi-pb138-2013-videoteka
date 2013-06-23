@@ -82,8 +82,8 @@ public class MediumController {
         for(int i=0; i < 5; i++){
             movies.add(new Movie());
         }
-        Medium medium = new Medium(null, null, movies);
-        medium.setCategory(new Category(selectedCategory));
+        
+        Medium medium = new Medium(null, null, movies, new Category(selectedCategory));
         
         model.addAttribute("newMedium", medium);
         model.addAttribute("categories", categories);
@@ -91,4 +91,12 @@ public class MediumController {
         return "addMedium";
     }
     
+    //Pro zjednodušení se odesílá ID media a jméno kategorie jako formulář
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    public String deleteMedium(@RequestParam String categoryName, @RequestParam Integer mediumID, Model model){
+        logger.log(Level.TRACE, "Mazu medium: " + mediumID + " z kategorie: " + categoryName);
+        
+        parser.deleteMedium(new Medium(mediumID, null, null, new Category(categoryName)));
+        return "redirect:/category/" + categoryName;
+    }
 }

@@ -13,7 +13,14 @@
         <table border="1">
             <c:forEach items="${category.mediums}" var="med">
             <tr>
-                <td> <a href="${pageContext.servletContext.contextPath}/deleteMedium/${catName}/${med.value.id}"> Smazat </a> </td>
+                <td> 
+                    <form action="${pageContext.servletContext.contextPath}/medium/delete" id="deleteBackingForm" method="POST">
+                        <input type="" name="mediumID" id="mediumID" value="${med.value.id}"/>
+                        <input type="" name="categoryName" id="categoryName" value="${category.name}"/>
+                        <input type="submit" value="Smazat"/>
+                    </form>
+                
+                </td>
                 <td>
 
                 <c:out value="${med.value.id}">Tady by melo byt ID kterte je ale null</c:out></td>
@@ -24,6 +31,11 @@
             </tr>
             </c:forEach>
         </table>
+        
+        <form action="${pageContext.servletContext.contextPath}/medium/delete" id="deleteBackingForm" method="POST">
+            <input type="hidden" name="mediumID" id="mediumID" value="666"/>
+            <input type="hidden" name="categoryName" id="categoryName" value="7777"/>
+        </form>
         
         <%-- <c:set var="preselected" value="${category.name}" scope="application"/> --%>
         <!--
