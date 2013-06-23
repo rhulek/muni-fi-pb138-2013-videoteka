@@ -18,13 +18,23 @@ public class Medium {
     private Category category;
     
     public Medium(){
-        
+        this(null);
+    }
+
+    public Medium(Integer id) {
+        this(id, null, null, null);
     }
     
-    public Medium(Integer id, String type, List<Movie> movies) {
+    
+    public Medium(Integer id, String type, List<Movie> movies, Category category) {
         this.id = id;
         this.type = type;
-        this.movies = movies;
+        if(movies == null){
+            this.movies = new ArrayList<Movie>();
+        } else {
+            this.movies = movies;
+        }
+        this.category = category;
     }
 
     public Category getCategory() {
@@ -84,13 +94,13 @@ public class Medium {
         
         builder.append("id(" + id + "),");
         builder.append("type(" + type + "),");
+        builder.append("category(" + category.getName() + "),");
         builder.append("movies(");
         
         for(Movie m: movies){
             builder.append(m.toString());
             builder.append(",");
         }
-        
         builder.append(")");
         
         builder.append("]");

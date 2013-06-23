@@ -194,13 +194,13 @@ public class ODFParser {
         filmy.add(new Movie(1, "Na samote u lesa"));
         filmy.add(new Movie(3, "Nosorozec Tom"));
         
-        Medium med1 = new Medium(335, "DVD", filmy);
+        Medium med1 = new Medium(335, "DVD", filmy, category);
         
         List<Movie> filmy2 = new ArrayList<Movie>();
         filmy2.add(new Movie(7, "Cerveny trakturek"));
         filmy2.add(new Movie(7, "Darbujan a pandrhola"));
         
-        Medium med2 = new Medium(55, "Blue Ray", filmy2);
+        Medium med2 = new Medium(55, "Blue Ray", filmy2, category);
         
         
         List<Movie> filmy3 = new ArrayList<Movie>();
@@ -209,7 +209,7 @@ public class ODFParser {
         filmy3.add(new Movie(7, "Maňáskového divadka"));
         filmy3.add(new Movie(7, "říčníků"));
         
-        Medium med3 = new Medium(55, "Blue Ray", filmy3);
+        Medium med3 = new Medium(55, "Blue Ray", filmy3, category);
         
         category.addMedium(med1);
         category.addMedium(med2);
@@ -331,11 +331,11 @@ public class ODFParser {
         saveDocument();
     }
     
-    public void deleteMedium(Medium medium, Category category) {
+    public void deleteMedium(Medium medium) {
         if(!loadDocument()){
             return;
         }
-        Table table = document.getTableByName(category.getName());
+        Table table = document.getTableByName(medium.getCategory().getName());
         
         List<Row> rowList = table.getRowList();
 
