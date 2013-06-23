@@ -50,6 +50,12 @@ public class Movie {
         this.name = name;
     }
     
+    /**
+     * Parsuje text strukturovany jako xml na hashMapu obsahujici jednotlive vlastnosti a hodnoty.
+     * 
+     * @param metaInfoString
+     * @throws DocumentException 
+     */
     public void setMetaInfo(String metaInfoString) throws DocumentException{
         if(metaInfo == null){
             metaInfo = new HashMap<String, String>();
@@ -65,20 +71,6 @@ public class Movie {
             String value = ((Element)e).getText().trim();
             metaInfo.put(key, value);
         }
-                
-        /*
-         <multimediaData>
-            <multimediumType>
-                Hudební klip
-            </multimediumType>
-            <dataFormat>
-                DivX
-            </dataFormat>
-            <otherExtensionPoint>
-                    DivX
-            </otherExtensionPoint>
-          </multimediaData>
-         */
     }
        
     public void setMetaInfo(Map<String, String> metaInfo){
@@ -87,6 +79,30 @@ public class Movie {
     
     public Map<String, String> getMetaInfo(){
         return metaInfo;
+    }
+    
+    /**
+     * Vyhleda v hashMape pozadovanou meta informaci a v pripade existence vrati jeji hodnotu
+     * @param propertyName
+     * @return 
+     */
+    public String getNoteProperty(String propertyName){
+        if(metaInfo != null){
+            return metaInfo.get(propertyName);
+        }
+        return null;
+    }
+    
+    /**
+     * Zjistuje zda hashMapa obsahuje danou meta informaci
+     * @param propertyName
+     * @return 
+     */
+    public Boolean hasNoteProperty(String propertyName){
+         if(metaInfo != null){
+            return true;
+        }
+        return false;
     }
     
     @Override
