@@ -590,22 +590,30 @@ public class ODFParser {
         
     
     
-    //public List<Medium> findMediumsBy... 
-    
+
+    /*
+     * Vytvori kategorii pokud neexistuje a prida media
+     * nebo jen prida media pokud kategorie existuje
+     */
     public void addCategory(Category category) {
         if(!loadDocument()){
             return;
         }
-        
-        logger.log(Level.TRACE, "Vytvarim kategorii: " + category.getName());
-        Table.TableBuilder builder = document.getTableBuilder();
-        Table table = builder.newTable(1, 1);
-        table.setTableName(category.getName());
-        table.getCellByPosition(0, 0).setStringValue("Id");
-        
+
+
+        if (document.getTableByName(category.getName()) == null) {
+
+            logger.log(Level.TRACE, "Vytvarim kategorii: " + category.getName());
+            Table.TableBuilder builder = document.getTableBuilder();
+            Table table = builder.newTable(1, 1);
+            table.setTableName(category.getName());
+            table.getCellByPosition(0, 0).setStringValue("Id");
+
+        }
+
         List<Medium> mediums = category.getAllMedia();
-        
-        for(Medium medium: mediums){
+
+        for (Medium medium : mediums) {
             addMedium(medium, category);
         }
 
