@@ -488,7 +488,7 @@ public class ODFParser {
           return null;  
     }
     
-    public List<Movie> findMoviesByMeta(Map<String, String> meta) {
+    public List<Movie> findMoviesByNameAndMeta(String movieName, Map<String, String> meta) {
         if(!loadDocument()){
             return null;
         } 
@@ -504,7 +504,15 @@ public class ODFParser {
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
             for(Medium medium : categoryMedia){
                 for(Movie movie : medium.getMovies()) {
-                    boolean check = false;
+                    //boolean check = false;
+                    
+                    if (movieName.equals("") || movie.getName().equals(movieName)) {
+                        if(movie.getMetaInfo().values().containsAll(meta.values())) {
+                            movies.add(movie);
+                        }
+                    }
+                    
+                    /*
                     for(Entry<String, String> entry : meta.entrySet()){ 
                         if(movie.hasNoteProperty(entry.getKey())) {
                             if(movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
@@ -519,6 +527,7 @@ public class ODFParser {
                     if(check) {
                         movies.add(movie);
                     }
+                    */
                 }
             }
         }
@@ -526,7 +535,7 @@ public class ODFParser {
     }
     
     
-    public List<Medium> findMediumByMeta(Map<String, String> meta) {
+    public List<Medium> findMediumByNameAndMeta(String movieName, Map<String, String> meta) {
         if(!loadDocument()){
             return null;
         } 
@@ -544,18 +553,26 @@ public class ODFParser {
                 boolean check = false;
                 for(Movie movie : medium.getMovies()) {
                     
-                    for(Entry<String, String> entry : meta.entrySet()){ 
-                        if(movie.hasNoteProperty(entry.getKey())) {
-                            if(movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
-                                check = true;
-                                continue;
-                            }
+                    if (movieName.equals("") || movie.getName().equals(movieName)) {
+                        if(movie.getMetaInfo().values().containsAll(meta.values())) {
+                            check = true;
                         }
-                        check = false;
-                        break;
                     }
-                    
-                    
+                     
+                    /*
+                    if (movieName.equals("") || movie.getName().equals(movieName)) {
+                        for (Entry<String, String> entry : meta.entrySet()) {
+                            if (movie.hasNoteProperty(entry.getKey())) {
+                                if (movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
+                                    check = true;
+                                    continue;
+                                }
+                            }
+                            check = false;
+                            break;
+                        }
+                    }
+                    */
                 }
                 
                 if(check) {

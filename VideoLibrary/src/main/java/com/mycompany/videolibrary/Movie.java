@@ -100,8 +100,8 @@ public class Movie {
      * @return 
      */
     public Boolean hasNoteProperty(String propertyName){
-         if(metaInfo != null){
-            return true;
+        if(metaInfo != null){
+            return metaInfo.containsKey(propertyName);
         }
         return false;
     }
