@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<root>
+    <genre>
+        <content>Music video</content>
+        <content>Action</content>
+        <content>Adventure</content>
+        <content>Comedy</content>
+        <content>Crime</content>
+        <content>Document</content>
+        <content>Erotica</content>
+        <content>Fantasy</content>
+        <content>Historical</content>
+        <content>Horror</content>
+        <content>Mystery</content>
+        <content>Political</content>
+        <content>Romance</content>
+        <content>Sci-fi</content>
+        <content>Thriller</content>
+    </genre>
+    
+    <codec>
+        <content>H.264</content>
+        <content>DivX</content>
+        <content>Xvid</content>
+        <content>FFmpeg</content>
+        <content>3ivx</content>
+        <content>x264</content>
+        <content>WMV</content>
+    </codec>
+        
+    <container>
+        <content>3gp</content>
+        <content>3g2</content>
+        <content>avi</content>
+        <content>wma</content>
+        <content>wmv</content>
+        <content>divx</content>
+        <content>flv</content>
+        <content>mkv</content>
+        <content>mp4</content>
+        <content>m2p</content>
+        <content>mpeg</content>
+        <content>mov</content>
+    </container>
+    
+     <bitrate>
+        <content>16 kbit/s</content>
+        <content>128–384 kbit/s</content>
+        <content>1.5 Mbit/s</content>
+        <content>3.5 Mbit/s</content>
+        <content>9.8 Mbit/s</content>
+        <content>8 to 15 Mbit/s</content>
+        <content>19 Mbit/s</content>
+        <content>24 Mbit/s</content>
+        <content>25 Mbit/s</content>
+        <content>29.4 Mbit/s</content>
+        <content>40 Mbit/s</content>
+    </bitrate>
+</root>

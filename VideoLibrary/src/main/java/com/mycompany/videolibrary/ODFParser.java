@@ -4,6 +4,9 @@
  */
 package com.mycompany.videolibrary;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,7 +23,10 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.draw.Textbox;
@@ -496,7 +502,6 @@ public class ODFParser {
         return movies; 
     }
     
-    
     public List<Medium> findMediumByNameAndMeta(String movieName, Map<String, String> meta) {
         if(!loadDocument()){
             return null;
@@ -544,6 +549,24 @@ public class ODFParser {
         }
         return mediums; 
     }
+    
+    /**
+     * Dokument popisuje napr. tato metadata: genre, codec, container, bitrate
+     * 
+     * @param metaInfoCategory
+     * @return Domenu hodnot zadanych metadat
+     * @throws DocumentException 
+     */
+    public List<String> getAvailableMetaData(String metaInfoCategory) throws DocumentException{      
+        SAXReader xmlReader = new SAXReader(); 
+        Document doc = xmlReader.read(new File("movieMetaData.xml"));
+        List<String> metaData = new ArrayList<String>();
+        for(Object e : doc.getRootElement().element(metaInfoCategory).elements("content")){
+            metaData.add(((Element)e).getText());
+        }
+        return metaData;
+    }
+    
        /* 
         public String findMetaInfoAboutMovie(String name) {
         if(!loadDocument()){
