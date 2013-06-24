@@ -6,7 +6,6 @@ package com.mycompany.videoteka.spring;
 
 import com.mycompany.videolibrary.Medium;
 import com.mycompany.videolibrary.ODFParser;
-import com.mycompany.videolibrary.SearchBackingBean;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

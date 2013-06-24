@@ -12,5 +12,7 @@
     <body>
         <h1>Tééést Page</h1>
         <h2> <c:out value="${msg}"/> </h2>
+        file://d:/IMG_0011.JPG
+        <a href="${msg}">${msg}</a>
     </body>
 </html>
