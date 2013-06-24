@@ -86,7 +86,7 @@ public class InitController {
         }
     }
     
-    
+
 //    @RequestMapping(value = "*", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
 //    public ModelAndView fallbackMethod(){
 //        logger.log(Level.DEBUG, "fallbackMethod(): Je proveden nezachyceny request!!!");

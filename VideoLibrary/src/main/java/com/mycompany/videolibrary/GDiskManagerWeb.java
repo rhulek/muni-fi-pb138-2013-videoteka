@@ -26,6 +26,7 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import java.awt.Desktop;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +51,7 @@ public class GDiskManagerWeb implements GDiskManager{
     private static String SERVER_FILE_NAME = "videoteka_data";
     private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     private static String DEFAULT_USER_ID = "defaultUser";
-    private static String ODF_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
+    public static String ODS_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
     //private static String MIME_TYPE_UPLOAD = "text/ods";
     private static int FILE_BUFFER_SIZE = 2048;
     
@@ -329,7 +330,7 @@ public class GDiskManagerWeb implements GDiskManager{
     }
     
     //prepare export url
-    String odfExportLink = file.getExportLinks().get(ODF_FORMAT_EXPORT_CONSTANT);
+    String odfExportLink = file.getExportLinks().get(ODS_FORMAT_EXPORT_CONSTANT);
     if(odfExportLink == null){
         logger.error("ODF export link is null!");
         return null;
@@ -400,6 +401,22 @@ public class GDiskManagerWeb implements GDiskManager{
         logger.debug("\rServer file modified time: \t" + time.getValue() 
                         + "\rLocal modified time: \t\t" + tempFile.lastModified());
         return( time.getValue() > tempFile.lastModified() );
+    }
+    
+    public InputStream getTempFileInputStream(){
+        java.io.File file = getTempFile();
+        
+        if(file == null){
+            logger.log(Level.ERROR, "Nepodarilo se ziskat docasny soubor!");
+        } else {
+            try {
+                return new FileInputStream(file);
+            } catch (FileNotFoundException ex) {
+                logger.log(Level.ERROR, "Soubor: '" + file.getAbsolutePath() + "' nebyl nalezen", ex);
+            }
+        }
+        
+        return null;
     }
     
     //TODO vylepseni - bylo by vhodne nejprve zkontrolovat jestli uz existuje a jestli se zmenil pripadne provest update
@@ -478,7 +495,7 @@ public class GDiskManagerWeb implements GDiskManager{
             //File file = service.files().get(fileId).execute();
             
             // File's new content.
-            FileContent mediaContent = new FileContent(ODF_FORMAT_EXPORT_CONSTANT, fileContent);
+            FileContent mediaContent = new FileContent(ODS_FORMAT_EXPORT_CONSTANT, fileContent);
 
             // Send the request to the API.
             Files.Update update = service.files().update(fileId, null, mediaContent);
