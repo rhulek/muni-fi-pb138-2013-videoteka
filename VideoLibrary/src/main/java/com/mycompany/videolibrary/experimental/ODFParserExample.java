@@ -43,6 +43,9 @@ public class ODFParserExample {
         metaInfo2.put("Codec", "H.264");
         metaInfo2.put("Container", "mkv");
         
+        java.io.File importedFile = new java.io.File("videoteka.ods");
+        
+        parser.merge(importedFile);
         //System.out.print(parser.findMediumByMeta(metaInfo2));
         
         //parser.addMedium(new Medium(50, null, new ArrayList(Arrays.asList(movie1))), category);

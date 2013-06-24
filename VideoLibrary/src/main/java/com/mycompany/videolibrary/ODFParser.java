@@ -134,7 +134,11 @@ public class ODFParser {
         return categorNames;
     }
 
-     public Category getCategory(String categoryName){
+    public Category getCategory(String categoryName){
+        return getCategory(categoryName, this.document);
+    }
+    
+     public Category getCategory(String categoryName, SpreadsheetDocument document){
         if(!loadDocument()){
             return null;
         }
@@ -258,54 +262,7 @@ public class ODFParser {
         
         return category;
     }
-//    public Category getCategory(String categoryName){
-//        if(!loadDocument()){
-//            return null;
-//        }
-//        
-//        List<Table> tableList = document.getTableList();
-//        
-//        if(tableList == null){
-//            logger.log(Level.ERROR, "getTableList() returned null!");
-//            return null;
-//        }
-//        
-//        for (Table table: tableList){
-//            
-//            if(table.getTableName().equals(categoryName)){
-//                List<Row> rowList = table.getRowList();
-//                
-//                Category category = new Category(categoryName);
-//                
-//                int rowCount = rowList.size();
-//                for(int i=1; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
-//                    
-//                    //Vytvoprit nove medium
-//                    Medium medium = new Medium();
-//                    
-//                    Row row = rowList.get(i);
-//                    Cell firstCell = row.getCellByIndex(0);
-//                    
-//                    medium.setId( Integer.getInteger( firstCell.getDisplayText() ) );
-//                    //medium.setType(); //TODO provest parsovani poznamky
-//                    
-//                    int collumns = row.getCellCount();
-//                    List<Movie> movies = new ArrayList<Movie>();
-//                    
-//                    for(int j = 1; j < collumns; j++){  //je potreba preskocit prvni sloupec, ktery obsahuje ID
-//                        Cell cell = row.getCellByIndex(j);
-//                        
-//                        movies.add( new Movie(null, cell.getDisplayText()) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
-//                    }
-//                    medium.setMovies(movies);
-//                    category.addMedium(medium);
-//                }
-//                
-//                return category;
-//            }
-//        }
-//        return null;
-//    }
+
     
 //    public List<Medium> getAllFilms(){
 //
@@ -343,7 +300,11 @@ public class ODFParser {
 ////        throw new UnsupportedOperationException("Not inplemented yet!");
 //    }
     
-    public void addMedium(Medium medium, Category category) {
+    public void addMedium(Medium medium, Category category){
+        addMedium(medium, category, this.document);
+    }
+    
+    public void addMedium(Medium medium, Category category, SpreadsheetDocument document) {
         if(!loadDocument()){
             return;
         }
@@ -398,6 +359,9 @@ public class ODFParser {
         }    
     }
     
+    /*
+     * Vrati vsechny media obsahujici zadany film
+     */
     public List<Medium> findMediaByMovieName(String name) {
         if(!loadDocument()){
             return null;
@@ -422,7 +386,9 @@ public class ODFParser {
     }
     
     
-
+    /*
+     * Vrati prvni nalezeny film
+     */
     public Movie findMovieByName(String name) {
         if(!loadDocument()){
             return null;
@@ -590,8 +556,10 @@ public class ODFParser {
         
     
     
-    //public List<Medium> findMediumsBy... 
-    
+    /*
+     * Test if category allready exist. If not create this category.
+     * Otherwise only put all media from category.
+     */
     public void addCategory(Category category) {
         if(!loadDocument()){
             return;
@@ -650,6 +618,33 @@ public class ODFParser {
                 firstRow.getCellByIndex(i).setStringValue("");
         }
         
+    }
+    
+    /*
+     * Imports content of file passed as attribute
+     */
+    public void merge(java.io.File fileToImport){
+        logger.log(Level.DEBUG, "Importuju data ze souboru: " + fileToImport.getAbsolutePath());
+        if(fileToImport == null) {
+            return;
+        }
+        
+        SpreadsheetDocument importedDocument;
+        try {
+            importedDocument = SpreadsheetDocument.loadDocument(fileToImport);
+        } catch (Exception ex) {
+            logger.log(Level.ERROR, "Chyba pri nahravani importovaneho souboru souboru.", ex);
+            return;
+        }
+        
+        loadDocument();
+        
+        List<Table> importTables = importedDocument.getTableList();
+        
+        for(Table table: importTables){
+            //do aktuálně nastaveného souboru v this.document přidá kategorii z importedDocument
+            addCategory( getCategory(table.getTableName(), importedDocument) );
+        }
     }
 }
     
