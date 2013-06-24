@@ -454,7 +454,7 @@ public class ODFParser {
           return null;  
     }
     
-    public List<Movie> findMoviesByMeta(Map<String, String> meta) {
+    public List<Movie> findMoviesByNameAndMeta(String movieName, Map<String, String> meta) {
         if(!loadDocument()){
             return null;
         } 
@@ -470,7 +470,15 @@ public class ODFParser {
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
             for(Medium medium : categoryMedia){
                 for(Movie movie : medium.getMovies()) {
-                    boolean check = false;
+                    //boolean check = false;
+                    
+                    if (movieName.equals("") || movie.getName().equals(movieName)) {
+                        if(movie.getMetaInfo().values().containsAll(meta.values())) {
+                            movies.add(movie);
+                        }
+                    }
+                    
+                    /*
                     for(Entry<String, String> entry : meta.entrySet()){ 
                         if(movie.hasNoteProperty(entry.getKey())) {
                             if(movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
@@ -485,6 +493,7 @@ public class ODFParser {
                     if(check) {
                         movies.add(movie);
                     }
+                    */
                 }
             }
         }
@@ -492,7 +501,7 @@ public class ODFParser {
     }
     
     
-    public List<Medium> findMediumByMeta(Map<String, String> meta) {
+    public List<Medium> findMediumByNameAndMeta(String movieName, Map<String, String> meta) {
         if(!loadDocument()){
             return null;
         } 
@@ -510,18 +519,26 @@ public class ODFParser {
                 boolean check = false;
                 for(Movie movie : medium.getMovies()) {
                     
-                    for(Entry<String, String> entry : meta.entrySet()){ 
-                        if(movie.hasNoteProperty(entry.getKey())) {
-                            if(movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
-                                check = true;
-                                continue;
-                            }
+                    if (movieName.equals("") || movie.getName().equals(movieName)) {
+                        if(movie.getMetaInfo().values().containsAll(meta.values())) {
+                            check = true;
                         }
-                        check = false;
-                        break;
                     }
-                    
-                    
+                     
+                    /*
+                    if (movieName.equals("") || movie.getName().equals(movieName)) {
+                        for (Entry<String, String> entry : meta.entrySet()) {
+                            if (movie.hasNoteProperty(entry.getKey())) {
+                                if (movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
+                                    check = true;
+                                    continue;
+                                }
+                            }
+                            check = false;
+                            break;
+                        }
+                    }
+                    */
                 }
                 
                 if(check) {
@@ -556,24 +573,30 @@ public class ODFParser {
         
     
     
+
     /*
-     * Test if category allready exist. If not create this category.
-     * Otherwise only put all media from category.
+     * Vytvori kategorii pokud neexistuje a prida media
+     * nebo jen prida media pokud kategorie existuje
      */
     public void addCategory(Category category) {
         if(!loadDocument()){
             return;
         }
-        
-        logger.log(Level.TRACE, "Vytvarim kategorii: " + category.getName());
-        Table.TableBuilder builder = document.getTableBuilder();
-        Table table = builder.newTable(1, 1);
-        table.setTableName(category.getName());
-        table.getCellByPosition(0, 0).setStringValue("Id");
-        
+
+
+        if (document.getTableByName(category.getName()) == null) {
+
+            logger.log(Level.TRACE, "Vytvarim kategorii: " + category.getName());
+            Table.TableBuilder builder = document.getTableBuilder();
+            Table table = builder.newTable(1, 1);
+            table.setTableName(category.getName());
+            table.getCellByPosition(0, 0).setStringValue("Id");
+
+        }
+
         List<Medium> mediums = category.getAllMedia();
-        
-        for(Medium medium: mediums){
+
+        for (Medium medium : mediums) {
             addMedium(medium, category);
         }
 
