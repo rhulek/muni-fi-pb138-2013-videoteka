@@ -135,14 +135,14 @@ public class ODFParser {
     }
 
     public Category getCategory(String categoryName){
+        if(!loadDocument()){
+            return null;
+        }
         return getCategory(categoryName, this.document);
     }
     
      public Category getCategory(String categoryName, SpreadsheetDocument document){
-        if(!loadDocument()){
-            return null;
-        }
-        
+
         Table table = document.getTableByName(categoryName);
         
         if(table == null){
@@ -300,11 +300,7 @@ public class ODFParser {
 ////        throw new UnsupportedOperationException("Not inplemented yet!");
 //    }
     
-    public void addMedium(Medium medium, Category category){
-        addMedium(medium, category, this.document);
-    }
-    
-    public void addMedium(Medium medium, Category category, SpreadsheetDocument document) {
+    public void addMedium(Medium medium, Category category) {
         if(!loadDocument()){
             return;
         }
@@ -648,15 +644,12 @@ public class ODFParser {
      */
     public void merge(java.io.File fileToImport){
         logger.log(Level.DEBUG, "Importuju data ze souboru: " + fileToImport.getAbsolutePath());
-        if(fileToImport == null) {
-            return;
-        }
         
         SpreadsheetDocument importedDocument;
         try {
             importedDocument = SpreadsheetDocument.loadDocument(fileToImport);
         } catch (Exception ex) {
-            logger.log(Level.ERROR, "Chyba pri nahravani importovaneho souboru souboru.", ex);
+            logger.log(Level.ERROR, "Chyba pri nahravani importovaneho souboru souboru: " + fileToImport.getName(), ex);
             return;
         }
         
@@ -666,7 +659,11 @@ public class ODFParser {
         
         for(Table table: importTables){
             //do aktuálně nastaveného souboru v this.document přidá kategorii z importedDocument
-            addCategory( getCategory(table.getTableName(), importedDocument) );
+            Category cat = getCategory(table.getTableName(), importedDocument);
+            logger.log(Level.TRACE, "kopiruji kategorii:_______________________ \r"
+                    + cat);
+            
+            addCategory( cat );
         }
     }
 }
