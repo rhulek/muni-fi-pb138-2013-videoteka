@@ -38,6 +38,7 @@ import org.odftoolkit.simple.text.Section;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+
 /**
  *
  * @author Martin
@@ -47,6 +48,8 @@ public class ODFParser {
     private String documentPath;
     private SpreadsheetDocument document;
 
+    public static String SERVICE_TAB_NAME = "service_tab";
+    
     public ODFParser(){
         
     }
@@ -149,6 +152,11 @@ public class ODFParser {
     
      public Category getCategory(String categoryName, SpreadsheetDocument document){
 
+         if(categoryName.equals(SERVICE_TAB_NAME)){
+             logger.log(Level.INFO, "SERVICE_TAB table can't be parsed as a category");
+             return null;
+         }
+         
         Table table = document.getTableByName(categoryName);
         
         if(table == null){
@@ -310,6 +318,7 @@ public class ODFParser {
         if(!loadDocument()){
             return;
         }
+        
         //Category actualCat = getCategory(category.getName());
         
         
@@ -358,6 +367,7 @@ public class ODFParser {
     
     
     private void addMediumToTable(Medium medium, Table table, int rowIndex) {
+                
         Row row;
         if (rowIndex >= table.getRowCount()) {
             row = table.appendRow();
@@ -588,30 +598,10 @@ public class ODFParser {
         }
         return mediums; 
     }
-    
-    /**
-     * Dokument popisuje napr. tato metadata: genre, codec, container, bitrate
-     * 
-     * @param metaInfoCategory
-     * @return Domenu hodnot zadanych metadat
-     * @throws DocumentException 
-     * 
-     * MetaDataDomain
-     */
-    public List<String> getAvailableMetaData(String metaInfoCategory) throws DocumentException{      
-        SAXReader xmlReader = new SAXReader(); 
-        Document doc = xmlReader.read(new File("movieMetaData.xml"));
-        List<String> metaData = new ArrayList<String>();
-        for(Object e : doc.getRootElement().element(metaInfoCategory).elements("content")){
-            metaData.add(((Element)e).getText());
-        }
-        return metaData;
-    }
-    
-     public List<String> metaDataDomain(String domainName){
+        
+     public List<String> getMetaDataDomain(String domainName){
 
-        String tableName = "MetaDataDomain"; 
-        Table table = document.getTableByName(tableName);
+        Table table = document.getTableByName(SERVICE_TAB_NAME);
         
         if(table == null){
             logger.log(Level.ERROR, "getTableByName returned null!");
@@ -630,11 +620,20 @@ public class ODFParser {
             
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
+            if(firstCell.getStringValue().isEmpty()){
+                break;
+            }
+            
             if(firstCell.getStringValue().equals(domainName)){
                  int collumns = row.getCellCount();
                   for(int j=1; j < collumns; j++){ 
-                      Cell cell = row.getCellByIndex(j);
+                       Cell cell = row.getCellByIndex(j);
+                       if(cell.getStringValue().isEmpty()){
+                            return metaDataDomain;
+                        }
+                      
                       metaDataDomain.add(cell.getStringValue());
+                      
                   }
                   return metaDataDomain;
             }
@@ -645,6 +644,13 @@ public class ODFParser {
     }
      
 
+     public void setServiceTab(String serviceTabName){
+         this.SERVICE_TAB_NAME = serviceTabName;
+     }
+     
+     public String getServiceTab(){
+         return SERVICE_TAB_NAME;
+     }
     
        /* 
         public String findMetaInfoAboutMovie(String name) {
