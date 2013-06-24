@@ -163,7 +163,7 @@ public class ODFParser {
         
         int rowCount = rowList.size();
        
-        for(int i=1; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
+        for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
 
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
@@ -310,29 +310,69 @@ public class ODFParser {
         if(!loadDocument()){
             return;
         }
-        Category actualCat = getCategory(category.getName());
-        Table table = document.getTableByName(actualCat.getName());
+        //Category actualCat = getCategory(category.getName());
         
+        
+        Table table = document.getTableByName(category.getName());
+        List<Row> rowList = table.getRowList();
+        int size = 0;
+        for(Row row : rowList) {
+            Cell firstCell = row.getCellByIndex(0);
+            if(firstCell == null || firstCell.getDisplayText().equals("")) {
+                break;
+            }
+            size++;
+        }
+        
+        addMediumToTable(medium, table, size);
+
+       
+        saveDocument();
+    }
+    
+    public void addAllMediums(List<Medium> mediums, Category category) {
+        if(!loadDocument()){
+            return;
+        }
+        //Category actualCat = getCategory(category.getName());
+        
+        
+        Table table = document.getTableByName(category.getName());
+        List<Row> rowList = table.getRowList();
+        int size = 0;
+        for(Row row : rowList) {
+            Cell firstCell = row.getCellByIndex(0);
+            if(firstCell == null || firstCell.getDisplayText().equals("")) {
+                break;
+            }
+            size++;
+        }
+        for (Medium medium : mediums) {
+            
+            addMediumToTable(medium, table, size);
+            size++;
+        }
+       
+        saveDocument();
+    }
+    
+    
+    private void addMediumToTable(Medium medium, Table table, int rowIndex) {
         Row row;
-        if(actualCat.getMediums().size()+1 >= table.getRowCount()) {
+        if (rowIndex >= table.getRowCount()) {
             row = table.appendRow();
         } else {
-            row = table.insertRowsBefore(actualCat.getMediums().size()+1, 1).get(0);
+            row = table.insertRowsBefore(rowIndex, 1).get(0);
         }
-        
-        logger.log(Level.DEBUG, actualCat.getMediums().size());
-        
-        row.getCellByIndex(0).setDoubleValue((double)medium.getId());
-        for(int i = 1; i < medium.getMovies().size()+1; i++) {
-            row.getCellByIndex(i).setStringValue(medium.getMovies().get(i-1).getName());
-            row.getCellByIndex(i).setNoteText(medium.getMovies().get(i-1).getMetaInfoXML()); 
+
+        logger.log(Level.DEBUG, rowIndex);
+
+        row.getCellByIndex(0).setDoubleValue((double) medium.getId());
+        for (int i = 1; i < medium.getMovies().size() + 1; i++) {
+            row.getCellByIndex(i).setStringValue(medium.getMovies().get(i - 1).getName());
+            row.getCellByIndex(i).setNoteText(medium.getMovies().get(i - 1).getMetaInfoXML());
         }
-        actualCat.addMedium(medium);
-       
-        changeHeader(table);
-        category.setMediums(actualCat.getMediums());
-        
-        saveDocument();
+
     }
     
     public void deleteMedium(Medium medium) {
@@ -344,7 +384,7 @@ public class ODFParser {
         List<Row> rowList = table.getRowList();
 
         int rowCount = rowList.size();
-        for(int i=1; i < rowCount; i++) {
+        for(int i=0; i < rowCount; i++) {
             Cell cell = rowList.get(i).getCellByIndex(0);
             if(cell == null || cell.getStringValue().equals("")) {
                 break;
@@ -353,7 +393,6 @@ public class ODFParser {
             if(cell.getDoubleValue().intValue() == medium.getId()) {
 
                 table.removeRowsByIndex(i, 1);
-                changeHeader(table);
                 saveDocument();
                 break;
             }
@@ -607,17 +646,16 @@ public class ODFParser {
 
             logger.log(Level.TRACE, "Vytvarim kategorii: " + category.getName());
             Table.TableBuilder builder = document.getTableBuilder();
-            Table table = builder.newTable(1, 1);
+            Table table = builder.newTable();
             table.setTableName(category.getName());
-            table.getCellByPosition(0, 0).setStringValue("Id");
 
         }
 
         List<Medium> mediums = category.getAllMedia();
 
-        for (Medium medium : mediums) {
-            addMedium(medium, category);
-        }
+        
+        addAllMediums(mediums, category);
+        
 
         saveDocument();
     }
@@ -641,26 +679,6 @@ public class ODFParser {
         saveDocument();
     }
     
-    private void changeHeader(Table table) {
-        //uprava hlavicky
-        Category cat = getCategory(table.getTableName());
-        
-        int mediumMaxCount = 0;
-        for(Map.Entry<Integer, Medium> entry : cat.getMediums().entrySet()) {
-            if(entry.getValue().getMovies().size() > mediumMaxCount)
-                mediumMaxCount = entry.getValue().getMovies().size();
-        }   
-  
-        
-        Row firstRow = table.getRowByIndex(0);  
-        for(int i = 1; i < firstRow.getCellCount(); i++) {
-            if(i < mediumMaxCount+1)
-                firstRow.getCellByIndex(i).setStringValue("Film "+i);
-            else
-                firstRow.getCellByIndex(i).setStringValue("");
-        }
-        
-    }
     
     /*
      * Imports content of file passed as attribute
