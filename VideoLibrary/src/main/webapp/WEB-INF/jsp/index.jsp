@@ -3,6 +3,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 
+<style>
+    a {font-size: large}
+</style>
+
 <html>
     <head>
         <title>Videotéka - přehled kategorií</title>
@@ -39,5 +43,9 @@
         <a href="${pageContext.servletContext.contextPath}/medium/addMedium/empty"> Přidat medium </a>
          <br/>
         <a href="${pageContext.servletContext.contextPath}/search"> Hledat film </a>
+         <br/>
+        <a href="${baseURL}/file/export"> Export </a>
+         <br/>
+        <a href="${baseURL}/file/import"> Import </a>
     </body>
 </html>

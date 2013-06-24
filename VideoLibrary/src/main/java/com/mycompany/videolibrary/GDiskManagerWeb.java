@@ -52,7 +52,7 @@ public class GDiskManagerWeb implements GDiskManager{
     private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     private static String DEFAULT_USER_ID = "defaultUser";
     public static String ODS_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
-    //private static String MIME_TYPE_UPLOAD = "text/ods";
+    public static String IMPORTED_FILE_NAME = "imported.ods";
     private static int FILE_BUFFER_SIZE = 2048;
     
     private HttpTransport httpTransport;
@@ -351,11 +351,11 @@ public class GDiskManagerWeb implements GDiskManager{
       }
     }
     
-    /*
+     /*
      * Save content of InputStream to temporary file.
      */
-    private java.io.File createTempFile(java.io.InputStream is) {
-        logger.log(Level.TRACE, "Vytvarim docasny soubor.");
+    public static java.io.File createFile(java.io.InputStream is, String filePath) {
+        logger.log(Level.TRACE, "Vytvarim docasny soubor: " + filePath);
         byte[] buffer = new byte[FILE_BUFFER_SIZE];
 
         if(is == null){
@@ -363,11 +363,11 @@ public class GDiskManagerWeb implements GDiskManager{
             return null;
         }
 
-        this.tempFile = new java.io.File(TEMP_FILE);
+        java.io.File outFile = new java.io.File(filePath);
         java.io.OutputStream outS;
 
         try {
-            outS = new java.io.FileOutputStream(tempFile);
+            outS = new java.io.FileOutputStream(outFile);
 
         } catch (FileNotFoundException ex) {
             logger.log(Level.ERROR, "Error while creating temporary file", ex);
@@ -384,9 +384,46 @@ public class GDiskManagerWeb implements GDiskManager{
             logger.error("Error while writing into temporary file: " + ex);
         }
         
-        logger.log(Level.TRACE, "Byl stazen docasny soubor a ulozen do: '" + tempFile.getAbsolutePath() + "'");
-        return tempFile;
+        logger.log(Level.TRACE, "Byl stazen docasny soubor a ulozen do: '" + outFile.getAbsolutePath() + "'");
+        return outFile;
     }
+    
+    /*
+     * Save content of InputStream to temporary file.
+     */
+//    private java.io.File createTempFile(java.io.InputStream is) {
+//        logger.log(Level.TRACE, "Vytvarim docasny soubor.");
+//        byte[] buffer = new byte[FILE_BUFFER_SIZE];
+//
+//        if(is == null){
+//            logger.error("Doslo k chybe pri stahovani souboru. InputSteram is null!");
+//            return null;
+//        }
+//
+//        this.tempFile = new java.io.File(TEMP_FILE);
+//        java.io.OutputStream outS;
+//
+//        try {
+//            outS = new java.io.FileOutputStream(tempFile);
+//
+//        } catch (FileNotFoundException ex) {
+//            logger.log(Level.ERROR, "Error while creating temporary file", ex);
+//            return null;
+//        }
+//
+//        //copy content from input stream
+//        try{
+//            int read = 0;
+//                while( (read = is.read(buffer)) != -1 ){
+//                outS.write(buffer, 0, read);
+//            }
+//        } catch (java.io.IOException ex ){
+//            logger.error("Error while writing into temporary file: " + ex);
+//        }
+//        
+//        logger.log(Level.TRACE, "Byl stazen docasny soubor a ulozen do: '" + tempFile.getAbsolutePath() + "'");
+//        return tempFile;
+//    }
     
     /*
      * Provede kontrolu jestli soubor na serveru je novejsi nez docasny soubor
@@ -451,7 +488,8 @@ public class GDiskManagerWeb implements GDiskManager{
                 GOOGLE_FILE_ID = videoFile.getId();
                 googleFile = videoFile;
                 
-                return createTempFile(is);
+                tempFile = createFile(is, TEMP_FILE);
+                return tempFile;
             }
             return null;
         }
