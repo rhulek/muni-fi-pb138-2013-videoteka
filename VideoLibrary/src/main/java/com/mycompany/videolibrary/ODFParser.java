@@ -598,7 +598,40 @@ public class ODFParser {
         }
         return mediums; 
     }
+     
+     public Map<String, List<String>> getServiceTabData(){
+        Table table = document.getTableByName(SERVICE_TAB_NAME);
         
+        if(table == null){
+            logger.log(Level.ERROR, "getTableByName returned null!");
+            return null;
+        }
+        List<Row> rowList = table.getRowList();
+        int rowCount = rowList.size();
+        Map<String, List<String>> output = new HashMap<String, List<String>>();      
+        for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
+            
+            Row row = rowList.get(i);
+            Cell firstCell = row.getCellByIndex(0);
+            if(firstCell.getStringValue().isEmpty()){
+                break;
+            }
+            List<String> values = new ArrayList<String>();
+            
+            int collumns = row.getCellCount();
+            for(int j=1; j < collumns; j++){ 
+                Cell cell = row.getCellByIndex(j);
+                if(cell.getStringValue().isEmpty()){
+                    break;
+                }
+                values.add(cell.getStringValue());
+            }
+            output.put(firstCell.getStringValue(), values);
+        }  
+        return output;
+     }
+    
+    
      public List<String> getMetaDataDomain(String domainName){
 
         Table table = document.getTableByName(SERVICE_TAB_NAME);
@@ -609,8 +642,6 @@ public class ODFParser {
         }
 
         List<Row> rowList = table.getRowList();
-
-        logger.log(Level.TRACE, "Pocet radku tabulky: " + rowList.size());
         
         int rowCount = rowList.size();
        
