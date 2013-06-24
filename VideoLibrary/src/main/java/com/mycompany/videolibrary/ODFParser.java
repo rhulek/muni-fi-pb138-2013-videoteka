@@ -595,6 +595,8 @@ public class ODFParser {
      * @param metaInfoCategory
      * @return Domenu hodnot zadanych metadat
      * @throws DocumentException 
+     * 
+     * MetaDataDomain
      */
     public List<String> getAvailableMetaData(String metaInfoCategory) throws DocumentException{      
         SAXReader xmlReader = new SAXReader(); 
@@ -605,6 +607,44 @@ public class ODFParser {
         }
         return metaData;
     }
+    
+     public List<String> metaDataDomain(String domainName){
+
+        String tableName = "MetaDataDomain"; 
+        Table table = document.getTableByName(tableName);
+        
+        if(table == null){
+            logger.log(Level.ERROR, "getTableByName returned null!");
+            return null;
+        }
+
+        List<Row> rowList = table.getRowList();
+
+        logger.log(Level.TRACE, "Pocet radku tabulky: " + rowList.size());
+        
+        int rowCount = rowList.size();
+       
+        List<String> metaDataDomain = new ArrayList<String>();
+        
+        for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
+            
+            Row row = rowList.get(i);
+            Cell firstCell = row.getCellByIndex(0);
+            if(firstCell.getStringValue().equals(domainName)){
+                 int collumns = row.getCellCount();
+                  for(int j=1; j < collumns; j++){ 
+                      Cell cell = row.getCellByIndex(j);
+                      metaDataDomain.add(cell.getStringValue());
+                  }
+                  return metaDataDomain;
+            }
+            
+        }  
+        return metaDataDomain;
+
+    }
+     
+
     
        /* 
         public String findMetaInfoAboutMovie(String name) {
