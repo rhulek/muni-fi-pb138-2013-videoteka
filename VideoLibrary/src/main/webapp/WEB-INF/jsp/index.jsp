@@ -1,33 +1,16 @@
-<%@page contentType="text/html" pageEncoding="UTF-8" language="java"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
-
-<style>
-    a {font-size: large}
-</style>
-
-<html>
-    <head>
-        <title>Videotéka - přehled kategorií</title>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        
-        <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/resources/css/styles.css" type="text/css" />
-    </head>
-
-    <body>
-        <p>Category - show all - Hello! This is the default welcome page for a Spring Web MVC project.</p>
-        <p><i>To display a different welcome page for this project, modify</i>
-            <tt>index.jsp</tt> <i>, or create your own welcome page then change
-                the redirection in</i> <tt>redirect.jsp</tt> <i>to point to the new
-                welcome page and also update the welcome-file setting in</i>
-            <tt>web.xml</tt>.</p>
-        
-        
-        <br/>
-        <br/>
+   "http://www.w3.org/TR/html4/loose.dtd">
+<t:pageTemplate>
+    <jsp:attribute name="pageTitle">Přehled kategorií</jsp:attribute>
+    <jsp:attribute name="theme">dark-theme</jsp:attribute>
+    <jsp:attribute name="headingType">compact</jsp:attribute>
+    <jsp:attribute name="headingMenuItemActive">catalog</jsp:attribute>
+    <jsp:attribute name="scndMenuItemActive">categoryShowAll</jsp:attribute>
+    
+    <jsp:body>
         Context path: <c:out value="${pageContext.servletContext.contextPath}"/><br/>
-        
         <table>
             <c:forEach items="${categoriesList}" var="item">
                 <tr>
@@ -37,15 +20,6 @@
                 </tr>
             </c:forEach>
         </table>
-        <br/>
-        <a href="${pageContext.servletContext.contextPath}/category/addCategory"> Přidat kategorii </a>
-        <br/>
-        <a href="${pageContext.servletContext.contextPath}/medium/addMedium/empty"> Přidat medium </a>
-         <br/>
-        <a href="${pageContext.servletContext.contextPath}/search"> Hledat film </a>
-         <br/>
-        <a href="${baseURL}/file/export"> Export </a>
-         <br/>
-        <a href="${baseURL}/file/import"> Import </a>
-    </body>
-</html>
+    </jsp:body>
+        
+</t:pageTemplate>

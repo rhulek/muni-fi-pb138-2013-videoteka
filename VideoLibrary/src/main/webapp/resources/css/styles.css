@@ -6,7 +6,16 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
-    font-size: 0.75em;
+    font-size: 0.8em;
+}
+
+#wrapper {
+    
+}
+
+h1 {
+    font-size: 2em;
+    text-transform: uppercase;
 }
 
 h3 {
@@ -25,6 +34,10 @@ a img, a:hover img {
 #heading {
     position: relative;
     height: 190px;
+}
+
+#heading.compact {
+    height: 100px;
 }
 
 #logo-link {
@@ -50,8 +63,8 @@ a img, a:hover img {
 }
 
 #main .content {
-    min-height: 500px;
     padding: 2em;
+    padding-bottom: 350px;
    
 }
 
@@ -61,6 +74,11 @@ a img, a:hover img {
 
 #main.light-theme {
     background-color: #f0eeee;
+}
+
+#main.dark-theme {
+    background: none;
+    color: #fff;
 }
 
 
@@ -85,4 +103,118 @@ a img, a:hover img {
 #footer .content .block3 {
     width: 330px;
     float: left;
+}
+
+
+/*******************
+  BEGIN: navlist - main navigation
+*******************/
+
+#navcontainer {
+    position: absolute;
+    top: 20px;
+    right: 50px;
+}
+
+ul#navlist {
+    margin-left: 0;
+    padding-left: 0;
+    white-space: nowrap;
+    }
+
+#navlist li {
+    display: inline;
+    list-style-type: none;
+    }
+
+#navlist a { 
+    padding: 20px 20px;
+    margin: 0 -10px;
+    font-size: 1.4em;
+    }
+
+#navlist a:link, #navlist a:visited {
+    color: #fff;
+    text-decoration: none;
+    background-image: url("../images/main-nav-item-bg-normal.png");
+    background-repeat: no-repeat;
+    background-position: center -35px;
+    }
+
+#navlist a:hover, #navlist .active a {
+    color: #fff;
+    background-image: url("../images/main-nav-item-bg.png");
+    text-decoration: none;
+    }
+    
+    
+/*******************
+  END: navlist - main navigation
+*******************/
+
+/*******************
+  BEGIN: navlist-scnd - secnd navigation
+*******************/
+
+#navcontainer-scnd { 
+    width: 245px;
+}
+
+#navcontainer-scnd ul {
+    margin-left: 0;
+    padding-left: 0;
+    list-style-type: none;
+    font-family: Arial, Helvetica, sans-serif;
+    }
+
+#navcontainer-scnd a {
+    display: block;
+    padding: 3px;
+    width: 230px;
+    text-transform: uppercase;
+    color: #fff;
+    }
+
+#navcontainer-scnd a:link, #navlist-scnd a:visited {
+    color: #EEE;
+    text-decoration: none;
+    }
+
+#navcontainer-scnd a:hover, #navcontainer-scnd .active a {
+    color: #f19300;
+    }
+    
+    
+/*******************
+  END: navlist-scnd - secnd navigation
+*******************/
+
+/*******************
+  BEGIN:two column layoyt
+*******************/
+
+.two-column-layout .column1 {
+    width: 250px;
+    float: left;
+}
+
+.two-column-layout .column2 {
+    margin-left: 270px;
+    width: 730px;
+}
+
+hr.cleaner {
+      clear:both;
+      height:1px;
+      margin: -1px 0 0 0; padding:0;
+      border:none;
+      visibility: hidden;
+      }
+
+/*******************
+  END:two column layoyt
+*******************/
+
+#navcontainer-scnd h3 {
+    border-bottom: solid 1px #ccc;
 }

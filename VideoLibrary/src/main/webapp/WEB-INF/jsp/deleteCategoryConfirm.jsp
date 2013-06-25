@@ -6,14 +6,15 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <h1>Smazání kategorie - varování!</h1>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<t:pageTemplate>
+    <jsp:attribute name="pageTitle">Smazání kategorie - varování!</jsp:attribute>
+    <jsp:attribute name="theme">dark-theme</jsp:attribute>
+    <jsp:attribute name="headingType">compact</jsp:attribute>
+    <jsp:attribute name="headingMenuItemActive">catalog</jsp:attribute>
+    
+    <jsp:body>
         <p>Skutečně si přejete smazat kategorii <c:out value="${categoryName}"/>? </p>
         <p>Budou smazány i všechny položky kategorie. Tuto operaci nelze vrátit zpět!</p>
         
@@ -22,7 +23,6 @@
             <input type="submit" value="Ano SMAZAT"/>
             <a href="${pageContext.servletContext.contextPath}/category/showAll"> <input type="button" value="Probůh to ne! Rychle pryč!"/> </a>
         </form>
+    </jsp:body>
         
-        
-    </body>
-</html>
+</t:pageTemplate>

@@ -6,14 +6,16 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <h1>Import knihovny</h1>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<t:pageTemplate>
+    <jsp:attribute name="pageTitle">Import knihovny</jsp:attribute>
+    <jsp:attribute name="theme">dark-theme</jsp:attribute>
+    <jsp:attribute name="headingType">compact</jsp:attribute>
+    <jsp:attribute name="headingMenuItemActive">catalog</jsp:attribute>
+    <jsp:attribute name="scndMenuItemActive">import</jsp:attribute>
+    
+    <jsp:body>
         <form:form action="${baseURL}/file/import" method="POST" commandName="importBean" enctype="multipart/form-data">
             
             Zvolte prosim soubor: <input type="file" name="filePath"/><br/>
@@ -24,5 +26,6 @@
         </form:form>
             
         <a href="${baseURL}/category/showAll"> Zpet na seznam kategorii </a>
-    </body>
-</html>
+    </jsp:body>
+        
+</t:pageTemplate>

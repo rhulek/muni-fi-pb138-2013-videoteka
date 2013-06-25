@@ -1,12 +1,14 @@
-<%@page contentType="text/html" pageEncoding="UTF-8" language="java"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>
-
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>JSP Page</title>
-    </head>
-    <body>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<t:pageTemplate>
+    <jsp:attribute name="pageTitle">Detail kategorie</jsp:attribute>
+    <jsp:attribute name="theme">dark-theme</jsp:attribute>
+    <jsp:attribute name="headingType">compact</jsp:attribute>
+    <jsp:attribute name="headingMenuItemActive">catalog</jsp:attribute>
+    
+    <jsp:body>
         <c:set var="catName" value="${category.name}" scope="page"/>
         <h1><c:out value="${catName}"/></h1>
         
@@ -44,7 +46,6 @@
         -->
         <a href="${pageContext.servletContext.contextPath}/medium/addMedium/${catName}?preselected=true"> Pridat medium </a><br/><br/>
         <a href="${pageContext.servletContext.contextPath}/category/showAll"> Zpet na seznam kategorii </a>
+    </jsp:body>
         
-        
-    </body>
-</html>
+</t:pageTemplate>
