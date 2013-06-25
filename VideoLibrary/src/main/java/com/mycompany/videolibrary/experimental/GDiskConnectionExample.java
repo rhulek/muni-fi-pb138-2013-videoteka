@@ -8,6 +8,7 @@ import com.google.api.services.drive.model.File;
 import com.mycompany.videolibrary.GDiskManager;
 import com.mycompany.videolibrary.GDiskManagerImpl;
 import com.mycompany.videolibrary.GDiskManagerWeb;
+import com.mycompany.videolibrary.ODFParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -67,6 +68,16 @@ public class GDiskConnectionExample {
         manager.updateTempFileToGDrive();
  
         
+        ODFParser parser = new ODFParser(tempFile.getName());
+        
+        logger.log(Level.DEBUG, parser.getCategory("BluRay"));
+        
+        //test nahrazeni souboru
+        manager.replaceTempFile(new java.io.File("videoteka.ods"));
+        
+        logger.log(Level.DEBUG, parser.getCategory("BluRay"));
+        
+        //logger.log(Level.FATAL, "temFile is exist: " + manager.getTempFile().exists());
         logger.debug("A to je vse pratele tady dady da!");
        //System.out.println("\u001b[1;31mThis is red \n And all \n this have only \n\tblack color \n and here is colour again?\u001b[0m");
     }

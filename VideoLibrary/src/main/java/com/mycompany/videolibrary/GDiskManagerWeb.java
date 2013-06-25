@@ -44,7 +44,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Martin
  */
-public class GDiskManagerWeb implements GDiskManager{
+public class GDiskManagerWeb {
     private static Logger logger = LogManager.getLogger(GDiskManagerWeb.class.getName());
     private static String APPLICATION_NAME = "videoteka";
     private static String TEMP_FILE = "tmpFile.ods";
@@ -90,7 +90,9 @@ public class GDiskManagerWeb implements GDiskManager{
 //    protected void setClientID(String id){ this.CLIENT_ID = id; }
 //    protected void setClientSecret(String secret) { this. CLIENT_SECRET = secret; }
     
-    
+    /*
+     * Returns authorization URL
+     */
     public String getAuthorizationURL(){
         if(flowAndAuthURL == null){
             logger.log(Level.ERROR, "AuthFlowAndURL hasn't been set!");
@@ -100,6 +102,9 @@ public class GDiskManagerWeb implements GDiskManager{
         return flowAndAuthURL.getAuthUrl();
     }
     
+    /*
+     * Opens web browser with authorization URL
+     */
     public boolean openBrowser(){
         String url = getAuthorizationURL();
         if(url == null){
@@ -109,6 +114,9 @@ public class GDiskManagerWeb implements GDiskManager{
         return openBrowser(url);
     }
     
+    /*
+     * Opens Web browser with specified URL if this is supported by OS
+     */
     public boolean openBrowser(String url){
         //When it is possible open web browser with url
             if(!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)){
@@ -130,7 +138,7 @@ public class GDiskManagerWeb implements GDiskManager{
     }
     
     /*
-     * Provede autorizaci na zaklade predaneho tokenu
+     * Provede autorizaci na zaklade predaneho tokenu a ziskane data ulozi o souboru
      */
     public boolean autorizeAndSaveCredentials(String authorizationCode){
          
@@ -164,14 +172,7 @@ public class GDiskManagerWeb implements GDiskManager{
         return true;
     }
     
-//    /*
-//     * Used at first run or when credentials file is not found.
-//     * Open browser
-//     */
-//    public void createAndSetCredentials(){
-//        
-//    }
-    
+   
     public String getGoogleFileID(){
         return GOOGLE_FILE_ID;
     }
@@ -196,6 +197,9 @@ public class GDiskManagerWeb implements GDiskManager{
         this.credentialsFile = credentialsFile;
     }
     
+    /*
+     * Loads credentials from file specified inside this class
+     */
     @SuppressWarnings({"null", "ConstantConditions"})
     public GoogleCredential loadCredentials(){
         if(!checkCredentialsFile()) {
@@ -212,12 +216,13 @@ public class GDiskManagerWeb implements GDiskManager{
         }
 
         if(credentials == null){
-            logger.log(Level.ERROR, "Error while loading credentials. Credentials is null!");
+            logger.log(Level.ERROR, "Error while loading credentials. Credentials variable is null!");
+            return null;
         }
-        
+
         if (!credentialStore.load(DEFAULT_USER_ID, credentials)) {
             logger.log(Level.FATAL, "Chyba pri nahravani credentials");
-            return null;   //TODO Tady by se mela vratit hodnota umoznujici procest volani funkce pro prvni inicializaci
+            return null;
         } else {
             logger.log(Level.TRACE, "Credentials uspesne nahrany: \r\tAccess token: "
                     + credentials.getAccessToken() + "\r\tRefresh token: "
@@ -271,18 +276,9 @@ public class GDiskManagerWeb implements GDiskManager{
     }
     
     /*
-     * This method make first initialization of connection to google drive by
-     * requestiong access and refresh tokens throught opening web browser with URL if possible.
-     * Otherwise print request for manually opening URL at users' browser.
+     * Return all files which contains account on Google Drive
+     * @return files which contains account on Google Drive
      */
-//    private String firstRun(boolean printMSG){
-//        
-//    }
-//    
-//    private void getToken(){
-//        
-//    }
-    
     public static List<File> retrieveAllFiles(Drive service) {
         logger.log(Level.TRACE, "Ziskavam seznam vsech souboru na Google Drive muze to chvili trvat.");
         List<File> result = new ArrayList<File>();
@@ -310,12 +306,10 @@ public class GDiskManagerWeb implements GDiskManager{
         return result;
     }
         
-    private void synchronize(){
-        //provede synchronizaci lokalniho souboru a souboru na GDrive
-    }
     
     /*
-     * This method gets Input stream with content of file.
+     * This method gets InputStream with content of file.
+     * @return InputStream containing file content
      */
     public static InputStream getFileContentODF(Drive service, File file) {
     
@@ -380,6 +374,7 @@ public class GDiskManagerWeb implements GDiskManager{
                 while( (read = is.read(buffer)) != -1 ){
                 outS.write(buffer, 0, read);
             }
+            outS.close();
         } catch (java.io.IOException ex ){
             logger.error("Error while writing into temporary file: " + ex);
         }
@@ -388,42 +383,6 @@ public class GDiskManagerWeb implements GDiskManager{
         return outFile;
     }
     
-    /*
-     * Save content of InputStream to temporary file.
-     */
-//    private java.io.File createTempFile(java.io.InputStream is) {
-//        logger.log(Level.TRACE, "Vytvarim docasny soubor.");
-//        byte[] buffer = new byte[FILE_BUFFER_SIZE];
-//
-//        if(is == null){
-//            logger.error("Doslo k chybe pri stahovani souboru. InputSteram is null!");
-//            return null;
-//        }
-//
-//        this.tempFile = new java.io.File(TEMP_FILE);
-//        java.io.OutputStream outS;
-//
-//        try {
-//            outS = new java.io.FileOutputStream(tempFile);
-//
-//        } catch (FileNotFoundException ex) {
-//            logger.log(Level.ERROR, "Error while creating temporary file", ex);
-//            return null;
-//        }
-//
-//        //copy content from input stream
-//        try{
-//            int read = 0;
-//                while( (read = is.read(buffer)) != -1 ){
-//                outS.write(buffer, 0, read);
-//            }
-//        } catch (java.io.IOException ex ){
-//            logger.error("Error while writing into temporary file: " + ex);
-//        }
-//        
-//        logger.log(Level.TRACE, "Byl stazen docasny soubor a ulozen do: '" + tempFile.getAbsolutePath() + "'");
-//        return tempFile;
-//    }
     
     /*
      * Provede kontrolu jestli soubor na serveru je novejsi nez docasny soubor
@@ -440,6 +399,10 @@ public class GDiskManagerWeb implements GDiskManager{
         return( time.getValue() > tempFile.lastModified() );
     }
     
+    /*
+     * Create InpuStream from temporary file - just wrapping method
+     * return InputStream from temporary file
+     */
     public InputStream getTempFileInputStream(){
         java.io.File file = getTempFile();
         
@@ -456,8 +419,10 @@ public class GDiskManagerWeb implements GDiskManager{
         return null;
     }
     
-    //TODO vylepseni - bylo by vhodne nejprve zkontrolovat jestli uz existuje a jestli se zmenil pripadne provest update
-    @Override
+    /*
+     * Returns local temporary file. If not exists, or is older than file on Google Drive
+     * downloads actual file from Google Drive
+     */
     public java.io.File getTempFile() {
         if(tempFile == null){
             tempFile = new java.io.File(TEMP_FILE);
@@ -527,6 +492,13 @@ public class GDiskManagerWeb implements GDiskManager{
         //throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    /*
+     * General method. Update on Google Drive (any) file with contetent passed as arguments.
+     * 
+     * @param service - service containing valid connection to Google Drive
+     * @param fileID - id of file at Google Drive to be updated
+     * @param fileContent - content which will be sent to Google Drive
+     */
     public static File updateFile(Drive service, String fileId, java.io.File fileContent) {
         try {
             // First retrieve the file from the API.
@@ -552,9 +524,9 @@ public class GDiskManagerWeb implements GDiskManager{
     }
     
     /*
-     * Returns file from Google Drive specified by parameter
+     * Common function for retrieving information about file from Google Drive.
      * 
-     * @return file specified by parameter or null if not found or error occurs
+     * @return file specified by parameter or null if not found or error occurs. Contains only file infomration NO Content
      * @param fileID Id of file at Google Drive
      */
     public static File getFileFromGDriveByID(String fileID, GoogleCredential credentials, HttpTransport httpTransport, JsonFactory jsonFactory){
@@ -624,9 +596,31 @@ public class GDiskManagerWeb implements GDiskManager{
         return null;
     }
     
-    @Override
-    public boolean update() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    /*
+     * This method delete old temporary file.
+     * Rename new file passed in parameter and set it as actual temp file.
+     * Also sets inner variable "java.io.File tempFile".
+     * It's good to call updateTempFileToGDrive() to propagate changes to Google Drive.
+     * 
+     * 
+     */
+    public void replaceTempFile(java.io.File newTempFile){
+        if(newTempFile == null){
+            logger.log(Level.ERROR, "New temporary file passed in parameter is null!");
+            return;
+        }
+        
+        if(!tempFile.delete()){
+            logger.log(Level.ERROR, "Failed to delete temporary file: " + tempFile.getAbsolutePath());
+            return;
+        }
+        
+        java.io.File newNamedFile = new java.io.File(tempFile.getName());
+        if( !newTempFile.renameTo(newNamedFile) ){
+            logger.log(Level.ERROR, "Failed to rename file.");
+        }
+
+        tempFile = newNamedFile;
+        //tempFile = newTempFile;
     }
-    
 }

@@ -48,7 +48,7 @@ public class MediumController {
         newMedium.trimEmptyMovies();
         logger.log(Level.TRACE, "nove medium po trimu: " + newMedium);
         
-        //parser.addMedium(newMedium, newMedium.getCategory() );
+        parser.addMedium(newMedium, newMedium.getCategory() );
         return "redirect:/category/showAll";
     }
     

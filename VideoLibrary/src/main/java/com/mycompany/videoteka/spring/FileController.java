@@ -39,6 +39,9 @@ public class FileController {
     @Autowired
     private GDiskManagerWeb manager;
     
+    @Autowired
+    private ODFParser parser;
+    
     //Odesle soubor klientovi
     @RequestMapping("export")
     public String sendToClient(HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -86,20 +89,22 @@ public class FileController {
                             + multipartFile.getContentType() + "\r import option: "
                             + importOption);
     
-        //        Files file = new Files();
-    //        file.setFilename(multipartFile.getOriginalFilename());
-    //        file.setNotes(ServletRequestUtils.getStringParameter(request, "notes"));
-    //        file.setType(multipartFile.getContentType());
-    //        file.setFile(multipartFile.getBytes());
-    // 
-    //        this.filesService.save(file);
-    // 
-    //        return new ModelAndView("redirect:files.htm");
-        
+        java.io.File importedFile = null;
         try {
-            GDiskManagerWeb.createFile( multipartFile.getInputStream(), GDiskManagerWeb.IMPORTED_FILE_NAME);
+            //Ulozi soubor na disk pro dalsi zpracovani
+            importedFile = GDiskManagerWeb.createFile( multipartFile.getInputStream(), GDiskManagerWeb.IMPORTED_FILE_NAME);
         } catch (IOException ex) {
             logger.log(Level.ERROR, "Chyba pri ukladani importovaneho souboru:", ex);
+        }
+        
+        if(ImportFileBackingBean.APPEND_TO_FILE_OPTION.equals(importOption)){
+            //Pripojime obsah souboru k aktualnimu souboru
+            parser.merge(importedFile);
+        } else {
+            //nahradime puvodni soubor
+            parser.closeDocument();
+            manager.replaceTempFile(importedFile);
+            parser.reloadDocument();
         }
         
         return "redirect:/category/showAll";

@@ -5,21 +5,10 @@
 package com.mycompany.videolibrary;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,13 +17,9 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.odftoolkit.simple.SpreadsheetDocument;
-import org.odftoolkit.simple.TextDocument;
-import org.odftoolkit.simple.draw.Textbox;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
-import org.odftoolkit.simple.text.Paragraph;
-import org.odftoolkit.simple.text.Section;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -73,13 +58,22 @@ public class ODFParser {
         this.document = document;
     }
     
+    public void closeDocument(){
+        document.close();
+        document = null;
+    }
+    
+    public boolean reloadDocument(){
+        document = null;
+        return loadDocument();
+    }
+    
     public boolean loadDocument(){
         if(document != null){
             return true;
         }
         
         logger.log(Level.INFO, "document is null. Loading document: " + documentPath);
-            
         if(documentPath == null){
             logger.log(Level.ERROR, "Document path is null!");
             return false;
@@ -110,11 +104,13 @@ public class ODFParser {
         
         try {
             document.save(documentPath);
+            closeDocument();
             return true;
         } catch (Exception ex) {
             logger.log(Level.ERROR, "Chyba pri ukladani dokumentu: '" + documentPath + "'", ex);
             return false;
         }
+        
     }
     
     
@@ -367,7 +363,7 @@ public class ODFParser {
 
         logger.log(Level.DEBUG, rowIndex);
 
-        row.getCellByIndex(0).setDoubleValue((double) medium.getId());
+        row.getCellByIndex(0).setDoubleValue((double) medium.getId());      //nastaveni ID
         for (int i = 1; i < medium.getMovies().size() + 1; i++) {
             row.getCellByIndex(i).setStringValue(medium.getMovies().get(i - 1).getName());
             row.getCellByIndex(i).setNoteText(medium.getMovies().get(i - 1).getMetaInfoXML());
@@ -697,7 +693,7 @@ public class ODFParser {
         loadDocument();
         
         List<Table> importTables = importedDocument.getTableList();
-        
+
         for(Table table: importTables){
             //do aktuálně nastaveného souboru v this.document přidá kategorii z importedDocument
             Category cat = getCategory(table.getTableName(), importedDocument);

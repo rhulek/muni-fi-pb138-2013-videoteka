@@ -7,12 +7,7 @@ package com.mycompany.videoteka.spring;
 import com.mycompany.videolibrary.Category;
 import com.mycompany.videolibrary.GDiskManagerWeb;
 import com.mycompany.videolibrary.Helper;
-import com.mycompany.videolibrary.Medium;
-import com.mycompany.videolibrary.Movie;
 import com.mycompany.videolibrary.ODFParser;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -49,6 +44,7 @@ public class CategoryController {
             return new ModelAndView("errorPage").addObject("msg", "MainController - showIndex(): parser je null!");
         }
         
+        parser.reloadDocument();
         List<String> categoriesNames = parser.getAllCategoryNames();
         ModelAndView index = new ModelAndView("index");
         
@@ -72,6 +68,7 @@ public class CategoryController {
             return "errorPage";
         }
         
+        parser.reloadDocument();
         logger.log(Level.TRACE, "dekodovane jmeno kategorie z url: " + decodedCategoryName);
         Category category = parser.getCategory(decodedCategoryName);
         

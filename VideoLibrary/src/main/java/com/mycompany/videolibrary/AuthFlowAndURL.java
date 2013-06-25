@@ -13,6 +13,10 @@ import java.util.Arrays;
 /**
  *
  * @author Martin
+ * 
+ * Wrapper Class to store and maintain authorization flow and URL needed to autorize application
+ * Made to simplify code.
+ * 
  */
 public class AuthFlowAndURL {
     private GoogleAuthorizationCodeFlow authFlow;
@@ -43,6 +47,9 @@ public class AuthFlowAndURL {
         authUrl = authFlow.newAuthorizationUrl().setRedirectUri(redirectURI).build();
     }
     
+    /*
+     * Recreate authorization flow and url using set informations
+     */
     public void recreate(){
         create();
     }
