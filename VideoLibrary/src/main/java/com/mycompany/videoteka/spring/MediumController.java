@@ -12,6 +12,8 @@ import com.mycompany.videolibrary.Movie;
 import com.mycompany.videolibrary.ODFParser;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +51,8 @@ public class MediumController {
         logger.log(Level.TRACE, "nove medium po trimu: " + newMedium);
         
         parser.addMedium(newMedium, newMedium.getCategory() );
-        return "redirect:/category/showAll";
+        parser.reloadDocument();
+        return "redirect:/category/" + newMedium.getCategory().getName();
     }
     
     /*
@@ -97,4 +100,14 @@ public class MediumController {
         parser.deleteMedium(new Medium(mediumID, null, null, new Category(decodedCategoryName)));
         return "redirect:/category/" + decodedCategoryName;
     }
+    
+    
+    //Postup jak ziskat dynamicky atributy z requestu
+//    public void test (HttpServletRequest request, HttpServletResponse response){
+//        //request.getAttributeNames();
+//        
+//        request.getParameterMap();
+//        List l;
+//        l.retainAll(l);
+//    }
 }

@@ -60,7 +60,7 @@ public class CategoryController {
             logger.log(Level.ERROR, "Requested parameter categoryName is missing!");
             model.addAttribute("msg", "Requested parameter categoryName is missing!");
         }
-        
+        logger.log(Level.TRACE, "Jmeno kategorie před dkodováním: '" + categoryName + "'");
         
         String decodedCategoryName = Helper.decodeEscapedString(categoryName);
         if(decodedCategoryName == null){
@@ -69,7 +69,7 @@ public class CategoryController {
         }
         
         parser.reloadDocument();
-        logger.log(Level.TRACE, "dekodovane jmeno kategorie z url: " + decodedCategoryName);
+        logger.log(Level.TRACE, "dekodovane jmeno kategorie z url: '" + decodedCategoryName + "'");
         Category category = parser.getCategory(decodedCategoryName);
         
 //        Category category = parser.getStaticTestCategory();

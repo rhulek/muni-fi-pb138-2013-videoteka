@@ -42,7 +42,16 @@ public class SearchController {
     public String showSearchResult(@ModelAttribute SearchBackingBean searchBean, Model model){
         logger.log(Level.DEBUG, "Hledám film: '" + searchBean.getMovieName() + "' v kategorii: '" + searchBean.getCategoryName() + "'");
         
-        List<Medium> mediumsList  = parser.findMediaByMovieName(searchBean.getMovieName());
+        List<Medium> mediumsList;
+        
+        if(searchBean.getCategoryName() == null || searchBean.getCategoryName().trim().isEmpty() ){
+            //mediumsList  = parser.findMediaByMovieName(searchBean.getMovieName());  //pokud byla ponechána defautlní položka tz. nebyla nastavena kategori pro hledání
+            mediumsList = parser.findMediumByNameAndMeta(searchBean.getMovieName(), null, null);
+        } else {
+            //jinak byla nastavena kategorie pro hledání a hledáme pouze v této kategorii
+            mediumsList = parser.findMediumByNameAndMeta(searchBean.getMovieName(), searchBean.getCategoryName(), null);
+        }
+        
         if(mediumsList == null || mediumsList.isEmpty()){
             model.addAttribute("msg","Hledaný film: '" + searchBean.getMovieName() + "' nebyl nalezen.");
             logger.log(Level.DEBUG, "Hledaný film: '" + searchBean.getMovieName() + "' nebyl nalezen.");
@@ -52,6 +61,7 @@ public class SearchController {
             logger.log(Level.TRACE, medium);
         }
         
+        model.addAttribute("categoriesList", parser.getAllCategoryNames());
         model.addAttribute("foundMediums", mediumsList);
         model.addAttribute("searchBean", searchBean);
         return "search";

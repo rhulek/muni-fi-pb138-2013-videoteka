@@ -30,7 +30,7 @@
         <input type="submit" value="Hledat">
         <br/>
         
-        Hledat kategorii:
+        Hledat v kategorii:
             <form:select path="categoryName">
                 <form:option value="" label="-- Hledat ve všech --"/>
                 <form:options items="${categoriesList}" />

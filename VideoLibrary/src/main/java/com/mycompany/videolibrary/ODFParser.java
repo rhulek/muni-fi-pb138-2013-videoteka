@@ -141,19 +141,19 @@ public class ODFParser {
     }
 
     public Category getCategory(String categoryName){
-        if(!loadDocument()){
-            return null;
-        }
         return getCategory(categoryName, this.document);
     }
     
      public Category getCategory(String categoryName, SpreadsheetDocument document){
-
+        if(!loadDocument()){
+            return null;
+        }
          if(categoryName.equals(SERVICE_TAB_NAME)){
              logger.log(Level.INFO, "SERVICE_TAB table can't be parsed as a category");
              return null;
          }
          
+        logger.log(Level.TRACE, "Kategorie k ziskání: " + categoryName);
         Table table = document.getTableByName(categoryName);
         
         if(table == null){
@@ -408,105 +408,129 @@ public class ODFParser {
     }
     
     /*
-     * Vrati vsechny media obsahujici zadany film
+     * Returns all media containg this film name in category passed in parameter. If category name is null perform search in all categories.
+     * 
+     * @param name jméno filmu který se má hledat
      */
-    public List<Medium> findMediaByMovieName(String name) {
-        if(!loadDocument()){
-            return null;
-        } 
-        List<Table> tables = document.getTableList();
-      
-        if(tables == null){            
-            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
-        }
-        List<Medium> media = new ArrayList<Medium>();
-        for(Table table: tables){
-            String catName = table.getTableName();
-            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
-            for(Medium medium : categoryMedia){
-
-                if(medium.containsMovie(name)){
-                    media.add(medium);
-                }
-            }
-        }
-        return media;  
-    }
-    
-    
-    /*
-     * Vrati prvni nalezeny film
+//    public List<Medium> findMediaByMovieName(String name) {
+//        if(!loadDocument()){
+//            return null;
+//        } 
+//        List<Table> tables = document.getTableList();
+//      
+//        if(tables == null){            
+//            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+//        }
+//        List<Medium> media = new ArrayList<Medium>();
+//        for(Table table: tables){
+//            String catName = table.getTableName();
+//            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+//            for(Medium medium : categoryMedia){
+//
+//                if(medium.containsMovie(name)){
+//                    media.add(medium);
+//                }
+//            }
+//        }
+//        return media;  
+//    }
+//    
+//    
+//    /*
+//     * Vrati prvni nalezeny film
+//     */
+//    public Movie findMovieByName(String name) {
+//        if(!loadDocument()){
+//            return null;
+//        } 
+//        List<Table> tables = document.getTableList();
+//      
+//        if(tables == null){            
+//            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+//        }
+//        for(Table table: tables){
+//            String catName = table.getTableName();
+//            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+//            for(Medium medium : categoryMedia){
+//                if(medium.containsMovie(name)){
+//                    return medium.getMovie(name);
+//                }
+//            }
+//        }
+//        return null;  
+//    }
+//    
+//    public List<Medium> findMediaByMovieNameInCategory(String name, Category cat) {
+//        if(!loadDocument()){
+//            return null;
+//        } 
+//        Table table = document.getTableByName(cat.getName());
+//      
+//        if(table == null){            
+//            logger.log(Level.ERROR, "Nepodarilo se ziskat tabulku!");
+//        }
+//        List<Medium> media = new ArrayList<Medium>();
+//
+//        String catName = table.getTableName();
+//        List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+//        for (Medium medium : categoryMedia) {
+//
+//            if (medium.containsMovie(name)) {
+//                media.add(medium);
+//            }
+//        }
+//
+//        return media;  
+//    }
+//    
+//      public Movie findMovieByNameInCategory(String name, Category cat) {
+//        if(!loadDocument()){
+//            return null;
+//        } 
+//        Table table = document.getTableByName(cat.getName());
+//      
+//        if(table == null){            
+//            logger.log(Level.ERROR, "Nepodarilo se ziskat tabulku!");
+//          }
+//
+//          String catName = table.getTableName();
+//          List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+//          for (Medium medium : categoryMedia) {
+//              if (medium.containsMovie(name)) {
+//                  return medium.getMovie(name);
+//              }
+//          }
+//
+//          return null;  
+//    }
+//    
+     /*
+     * Returns all Films in category passed in parameter. If category name is null perform search in all categories.
+     * 
+     * @param name name of film to search for if set to "" (empty string) search is performed only by meta tags
+     * @param categoryName name of category to search in if set to null search is performed in all categories
+     * @param meta Map of meta tags used to restrict searching if set null searching by meta tags is ignored
      */
-    public Movie findMovieByName(String name) {
+    public List<Movie> findMoviesByNameAndMeta(String movieName, String categoryName, Map<String, String> meta) {
         if(!loadDocument()){
             return null;
         } 
-        List<Table> tables = document.getTableList();
-      
-        if(tables == null){            
-            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
-        }
-        for(Table table: tables){
-            String catName = table.getTableName();
-            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
-            for(Medium medium : categoryMedia){
-                if(medium.containsMovie(name)){
-                    return medium.getMovie(name);
-                }
+        
+        //pokud je nastaveno jméno kategorie pro vyhledávání, získej tuto kategorii a nastav ji jako jedinou pro vyhledávání
+        //jinak nahrej všechny kategorie a vyhledávej ve všech.
+        List<Table> tables;
+        if(categoryName != null ){
+            Table tab = document.getTableByName(categoryName);
+            if(tab == null){
+                logger.log(Level.ERROR, "Nepodařilo se získat tabulku: '" + categoryName + "'");
+                return null;    //možná by se dalo pokračovat vyhledáváním ve všech kategoriích
             }
+            tables = new ArrayList<Table>();
+            tables.add(tab);
+            
+        } else {
+            tables = document.getTableList();
         }
-        return null;  
-    }
-    
-    public List<Medium> findMediaByMovieNameInCategory(String name, Category cat) {
-        if(!loadDocument()){
-            return null;
-        } 
-        Table table = document.getTableByName(cat.getName());
-      
-        if(table == null){            
-            logger.log(Level.ERROR, "Nepodarilo se ziskat tabulku!");
-        }
-        List<Medium> media = new ArrayList<Medium>();
-
-        String catName = table.getTableName();
-        List<Medium> categoryMedia = getCategory(catName).getAllMedia();
-        for (Medium medium : categoryMedia) {
-
-            if (medium.containsMovie(name)) {
-                media.add(medium);
-            }
-        }
-
-        return media;  
-    }
-    
-      public Movie findMovieByNameInCategory(String name, Category cat) {
-        if(!loadDocument()){
-            return null;
-        } 
-        Table table = document.getTableByName(cat.getName());
-      
-        if(table == null){            
-            logger.log(Level.ERROR, "Nepodarilo se ziskat tabulku!");
-          }
-
-          String catName = table.getTableName();
-          List<Medium> categoryMedia = getCategory(catName).getAllMedia();
-          for (Medium medium : categoryMedia) {
-              if (medium.containsMovie(name)) {
-                  return medium.getMovie(name);
-              }
-          }
-
-          return null;  
-    }
-    
-    public List<Movie> findMoviesByNameAndMeta(String movieName, Map<String, String> meta) {
-        if(!loadDocument()){
-            return null;
-        } 
-        List<Table> tables = document.getTableList();
       
         if(tables == null){            
             logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
@@ -520,10 +544,14 @@ public class ODFParser {
                 for(Movie movie : medium.getMovies()) {
                     //boolean check = false;
                     
-                    if (movieName.equals("") || movie.getName().equals(movieName)) {
+                    //prvni je aby bylo možné vyhledávat i pokud nebyl zadán název filmu potom se vyhledává pouze podle metaimformací
+                    if ( (movieName.equals("") || movie.getName().equals(movieName)) && meta != null) {
                         if(movie.getMetaInfo().values().containsAll(meta.values())) {
                             movies.add(movie);
                         }
+                        
+                    } else if (movie.getName().equals(movieName)) {
+                        movies.add(movie);
                     }
                     
                     /*
@@ -548,11 +576,34 @@ public class ODFParser {
         return movies; 
     }
     
-    public List<Medium> findMediumByNameAndMeta(String movieName, Map<String, String> meta) {
+    /*
+     * Returns all Films containg this film name in category passed in parameter. If category name is null perform search in all categories.
+     * 
+     * @param name name of film to search for if set to "" (empty string) search is performed only by meta tags
+     * @param categoryName name of category to search in if set to null search is performed in all categories
+     * @param meta Map of meta tags used to restrict searching if set null searching by meta tags is ignored
+     */
+    
+    public List<Medium> findMediumByNameAndMeta(String movieName, String categoryName, Map<String, String> meta) {
         if(!loadDocument()){
             return null;
         } 
-        List<Table> tables = document.getTableList();
+        
+        //pokud je nastaveno jméno kategorie pro vyhledávání, získej tuto kategorii a nastav ji jako jedinou pro vyhledávání
+        //jinak nahrej všechny kategorie a vyhledávej ve všech.
+        List<Table> tables;
+        if(categoryName != null ){
+            Table tab = document.getTableByName(categoryName);
+            if(tab == null){
+                logger.log(Level.ERROR, "Nepodařilo se získat tabulku: '" + categoryName + "'");
+                return null;    //možná by se dalo pokračovat vyhledáváním ve všech kategoriích
+            }
+            tables = new ArrayList<Table>();
+            tables.add(tab);
+            
+        } else {
+            tables = document.getTableList();
+        }
       
         if(tables == null){            
             logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
@@ -566,10 +617,12 @@ public class ODFParser {
                 boolean check = false;
                 for(Movie movie : medium.getMovies()) {
                     
-                    if (movieName.equals("") || movie.getName().equals(movieName)) {
+                    if ( (movieName.equals("") || movie.getName().equals(movieName)) && meta != null ) {
                         if(movie.getMetaInfo().values().containsAll(meta.values())) {
                             check = true;
                         }
+                    } else if (movie.getName().equals(movieName)) {
+                        check = true;
                     }
                      
                     /*
