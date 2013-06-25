@@ -89,10 +89,12 @@ public class MediumController {
     
     //Pro zjednodušení se odesílá ID media a jméno kategorie jako formulář
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    public String deleteMedium(@RequestParam String categoryName, @RequestParam Integer mediumID, Model model){
+    public String deleteMedium(@RequestParam(required = false) String categoryName, @RequestParam(required = false) Integer mediumID, Model model){
         logger.log(Level.TRACE, "Mazu medium: " + mediumID + " z kategorie: " + categoryName);
         
-        parser.deleteMedium(new Medium(mediumID, null, null, new Category(categoryName)));
-        return "redirect:/category/" + categoryName;
+        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
+        
+        parser.deleteMedium(new Medium(mediumID, null, null, new Category(decodedCategoryName)));
+        return "redirect:/category/" + decodedCategoryName;
     }
 }
