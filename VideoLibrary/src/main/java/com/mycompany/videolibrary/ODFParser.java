@@ -311,7 +311,12 @@ public class ODFParser {
 ////        throw new UnsupportedOperationException("Not inplemented yet!");
 //    }
     
+    
     public void addMedium(Medium medium, Category category) {
+        addMedium(medium, category, true);
+    }
+    
+    public void addMedium(Medium medium, Category category, boolean saveAfterAdd) {
         if(!loadDocument()){
             return;
         }
@@ -332,11 +337,17 @@ public class ODFParser {
         
         addMediumToTable(medium, table, size);
 
-       
-        saveDocument();
+        if(saveAfterAdd) {
+            saveDocument();
+        }
     }
     
     public void addAllMediums(List<Medium> mediums, Category category) {
+        addAllMediums(mediums, category, true);
+    }
+    
+    
+    public void addAllMediums(List<Medium> mediums, Category category, boolean saveAfterAdd) {
         if(!loadDocument()){
             return;
         }
@@ -359,7 +370,9 @@ public class ODFParser {
             size++;
         }
        
-        saveDocument();
+        if(saveAfterAdd) {
+            saveDocument();
+        }
     }
     
     
@@ -781,7 +794,7 @@ public class ODFParser {
         List<Medium> mediums = category.getAllMedia();
 
         
-        addAllMediums(mediums, category);
+        addAllMediums(mediums, category, false);
         
 
         saveDocument();
