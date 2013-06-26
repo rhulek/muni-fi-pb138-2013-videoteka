@@ -26,7 +26,6 @@
     </head>
 
     <body>
-        
         <div id="wrapper">
             <!-- heading -->
             <jsp:include page="../jsp/_heading.jsp" >

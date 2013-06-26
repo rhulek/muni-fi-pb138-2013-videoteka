@@ -28,6 +28,8 @@
                     </div>
                 </div>
             </c:forEach>
+            
+            <a href="${pageContext.servletContext.contextPath}/medium/addMedium/${catName}?preselected=true">Přidat médium</a><br/><br/>
         </div>
     </jsp:body>
         
