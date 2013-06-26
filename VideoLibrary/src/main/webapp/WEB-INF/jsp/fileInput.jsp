@@ -25,7 +25,6 @@
             <input type="submit" value="Importovat"/>
         </form:form>
             
-        <a href="${baseURL}/category/showAll"> Zpet na seznam kategorii </a>
     </jsp:body>
         
 </t:pageTemplate>

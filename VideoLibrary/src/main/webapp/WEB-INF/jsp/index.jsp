@@ -10,16 +10,17 @@
     <jsp:attribute name="scndMenuItemActive">categoryShowAll</jsp:attribute>
     
     <jsp:body>
-        Context path: <c:out value="${pageContext.servletContext.contextPath}"/><br/>
-        <table>
+        
+        <div class="item-container">
             <c:forEach items="${categoriesList}" var="item">
-                <tr>
-                    <td><a href="${pageContext.servletContext.contextPath}/category/${item}"> <c:out value="${item}" /> </a></td>
-                    <td><a href="${pageContext.servletContext.contextPath}/category/delete/${item}"> Smazat </a></td>
-                    <td><a href="${pageContext.servletContext.contextPath}/category/showRenameForm/${item}"> Přejmenovat </a></td>
-                </tr>
+                <div class="item category">
+                    <h3><a href="${pageContext.servletContext.contextPath}/category/${item}"><c:out value="${item}" /></a></h3>
+                    <div class="action-btns">
+                        <span class="action-btn delete"><a href="${pageContext.servletContext.contextPath}/category/delete/${item}">Smazat</a></span>
+                        <span class="action-btn rename"><a href="${pageContext.servletContext.contextPath}/category/showRenameForm/${item}">Přejmenovat</a></span>
+                    </div>
+                </div>
             </c:forEach>
-        </table>
     </jsp:body>
         
 </t:pageTemplate>
