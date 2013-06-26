@@ -125,7 +125,7 @@ public class ODFParser {
         }
         
         List<String> categorNames = new ArrayList<String>();
-        List<Table> tables = getTableList();
+        List<Table> tables = document.getTableList();
         
         if(tables == null){
             logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
@@ -524,20 +524,6 @@ public class ODFParser {
 //          return null;  
 //    }
 //    
-    private List<Table> getTableList(){
-        if(!loadDocument()){
-            return null;
-        } 
-        List<Table> tables = new ArrayList<Table>();
-        for(Table table : document.getTableList()){
-            if(!table.getTableName().equals(SERVICE_TAB_NAME)){
-                tables.add(table);
-            }
-        }
-        return tables;
-        
-    }
-    
      /*
      * Returns all Films in category passed in parameter. If category name is null perform search in all categories.
      * 
@@ -568,7 +554,7 @@ public class ODFParser {
             tables.add(tab);
             
         } else {
-            tables = getTableList(); 
+            tables = document.getTableList();
         }
       
         if(tables == null){            
@@ -652,7 +638,7 @@ public class ODFParser {
             tables.add(tab);
             
         } else {
-            tables = getTableList();
+            tables = document.getTableList();
         }
       
         if(tables == null){            

@@ -9,8 +9,10 @@
     <jsp:attribute name="headingType">compact</jsp:attribute>
     
     <jsp:body>
-        <p>Pokračujte výběrem konkrétní akce</p>
+
         <h2><c:out value="${msg}"/> </h2>
+        
+        <%-- <a href="${baseURL}/category/showAll"> Zpět na seznam kategorií </a> --%>
     </jsp:body>
         
 </t:pageTemplate>

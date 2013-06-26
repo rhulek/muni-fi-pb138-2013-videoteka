@@ -82,7 +82,8 @@ public class InitController {
         boolean result = manager.autorizeAndSaveCredentials(code);
         if(result){
             manager.getTempFile();
-            return new ModelAndView("infoPage").addObject("msg", "Aplikace uspesne autorizovana.");
+            manager.updateTempFileToGDrive();
+            return new ModelAndView("infoPage").addObject("msg", "Aplikace úspěšně autorizována. Pokračujte výběrem konkrétní akce.");
         } else {
             return new ModelAndView("errorPage").addObject("msg", "Chyba pri autorizaci aplikace!");
         }
