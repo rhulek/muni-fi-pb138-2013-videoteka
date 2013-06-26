@@ -9,36 +9,45 @@
    "http://www.w3.org/TR/html4/loose.dtd">
 
 <t:pageTemplate>
-    <jsp:attribute name="pageTitle">Add medium</jsp:attribute>
+    <jsp:attribute name="pageTitle">Přidat médium</jsp:attribute>
     <jsp:attribute name="theme">dark-theme</jsp:attribute>
     <jsp:attribute name="headingType">compact</jsp:attribute>
     <jsp:attribute name="headingMenuItemActive">catalog</jsp:attribute>
     <jsp:attribute name="scndMenuItemActive">mediumAdd</jsp:attribute>
     
     <jsp:body>
-        Context path: <c:out value="${pageContext.servletContext.contextPath}"/><br/>
         <div>
             <form:form action="${pageContext.servletContext.contextPath}/medium/addMedium" method="POST" modelAttribute="newMedium">
             
-                ID media: <form:input path="id"/><br/>
-
+                <div class="form-row">
+                    <label for="id">ID média</label>
+                    <form:input path="id" />
+                </div>
+                
                 <c:forEach items="${newMedium.movies}" var="mov" varStatus="status">
-                    Film: <%-- <form:input path="movies[${status.index}].name"/> --%> <!--Tento pristup pouziva pevne dany list, da se udelat i dynamicky: AutoPopulatingList-->
-                    <input name="movies[${status.index}].name"/>
+                    <div class="form-row">
+                        <label for="movies[${status.index}].name">Film</label>
+                        <input name="movies[${status.index}].name"/>
+                    </div>
                 </c:forEach>
-                <br/>
+                
+                <div class="form-row">
+                    <label for="type">Typ média</label>
+                    <form:input path="type"/>
+                </div>
+                
+                <div class="form-row">
+                    <label for="category">Kategorie</label>
+                    <form:select path="category" >
+                        <form:option value="${selectedCategory}" label="${selectedCategory}"/>
+                        <form:options items="${categories}" />
+                    </form:select>
+                </div>
 
-                <%-- Jmeno kategorie: <form:input path="category.name"/> <c:out value="${newMedium.category.name}"> je to null </c:out><br/> --%>
-                Typ media: <form:input path="type"/><br/>
-                <br/>
-
-                Predvolena kategorie (toto prijde smazat - pouze trace): <c:out value="${newMedium.category.name}"> je to null </c:out><br/>
-                <form:select path="category" >
-                    <form:option value="${selectedCategory}" label="${selectedCategory}"/>
-                    <form:options items="${categories}" />
-                </form:select>
-
-                <input type="submit" value="Pridat"/>
+                <div class="form-row submit">
+                    <input type="submit" value="Uložit"/>
+                </div>
+                
             </form:form>
         </div>
     </jsp:body>

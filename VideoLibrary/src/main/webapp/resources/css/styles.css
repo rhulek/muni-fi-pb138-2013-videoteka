@@ -68,10 +68,6 @@ a img, a:hover img {
    
 }
 
-.auth-code-form-input {
-    width: 500px;
-}
-
 #main.light-theme {
     background-color: #f0eeee;
 }
@@ -267,3 +263,31 @@ hr.cleaner {
 /*******************
   END:item-container
 *******************/
+
+.form-row {
+    
+}
+
+
+.form-row label {
+    font-style: italic;
+    display: block;
+    width: 150px;
+    float: left;
+}
+
+.form-row label:after {
+    content: ":";
+}
+
+.form-row input, .form-row select {
+    
+}
+
+.form-row.submit {
+    margin: 10px 20px 20px 150px;    
+}
+
+.form-row .auth-code-form-input {
+    width: 500px;
+}

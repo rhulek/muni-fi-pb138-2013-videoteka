@@ -17,11 +17,14 @@
     
     <jsp:body>
         <form action="${pageContext.servletContext.contextPath}/category/addCategory" method="post">
-            <input type="text" id="categoryName" name="categoryName"/>
-            <input type="submit" value="odeslat"/>
+            <div class="form-row">
+                <label for="categoryName">Název kategorie</label>
+                <input type="text" id="categoryName" name="categoryName"/>
+            </div>
+            <div class="form-row submit">
+                <input type="submit" value="Uložit"/>
+            </div>
         </form>
-        <br/>
-        <a href="${pageContext.servletContext.contextPath}/category/showAll"> Zpět na seznam kategorií </a>
     </jsp:body>
         
 </t:pageTemplate>
