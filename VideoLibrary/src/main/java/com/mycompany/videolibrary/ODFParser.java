@@ -859,6 +859,12 @@ public class ODFParser {
             addCategory( cat );
         }
     }
+    
+    
+    public SpreadsheetDocument createNewSpreadsheetDocument(String pathName){
+        
+        return null;
+    }
 }
     
 

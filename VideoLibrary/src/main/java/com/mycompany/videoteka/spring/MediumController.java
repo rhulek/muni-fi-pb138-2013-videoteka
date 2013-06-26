@@ -43,7 +43,7 @@ public class MediumController {
     
     @RequestMapping(value = "addMedium", method = RequestMethod.POST)
     public String addMedium(@ModelAttribute Medium newMedium, Model model){
-        logger.log(Level.TRACE, "nove medium: " + newMedium + " Ma nastavenou kategorii: " + newMedium.getCategory());
+        logger.log(Level.TRACE, "nove medium: " + newMedium + " Ma nastavenou kategorii: " + newMedium.getCategory().getName());
 //        logger.log(Level.TRACE, "Zvolena kategorie: " + category);
 //        String decodedCategoryName = Helper.decodeEscapedString(categoryName);
 //        if(decodedCategoryName == null){
@@ -56,7 +56,7 @@ public class MediumController {
         parser.addMedium(newMedium, newMedium.getCategory() );
         parser.reloadDocument();
         manager.updateTempFileToGDrive();
-        return "redirect:/category/" + newMedium.getCategory().getName();
+        return "forward:/category/" + newMedium.getCategory().getName();       //aby bylo mozne pouzit redirect bylo potreba string nejprve encodovat aby se vyescapovaly diakriticke znaky
     }
     
     /*

@@ -53,7 +53,7 @@ public class CategoryController {
     }
     
     //Je potreba davat bacha! Protoze vsechno co bude mit adresu ../category/* a nebude zachyceno nekde jinde pujde sem!!!
-    @RequestMapping(value = "{categoryName}", method = {RequestMethod.GET, RequestMethod.PUT})
+    @RequestMapping(value = "{categoryName}", method = {RequestMethod.GET, RequestMethod.POST}) //POST je nastaveno kvuli forwardovani z addMedia aby bylo možné po přidání zobrazit kategorii kam bylo přidáno
     public String showCategory(@PathVariable String categoryName, Model model){
         
         if(categoryName == null){
