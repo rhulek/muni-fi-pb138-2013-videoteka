@@ -56,7 +56,7 @@ public class MediumController {
         parser.addMedium(newMedium, newMedium.getCategory() );
         parser.reloadDocument();
         manager.updateTempFileToGDrive();
-        return "forward:/category/" + newMedium.getCategory().getName();       //
+        return "forward:/category/" + newMedium.getCategory().getName();       //aby bylo mozne pouzit redirect bylo potreba string nejprve encodovat aby se vyescapovaly diakriticke znaky
     }
     
     /*
