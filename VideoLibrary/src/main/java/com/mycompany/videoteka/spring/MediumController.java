@@ -58,6 +58,7 @@ public class MediumController {
         manager.updateTempFileToGDrive();
         return "redirect:/category/" + newMedium.getCategory().getName();
     }
+      
     
     /*
      * Vezme request na zobrazeni formulare pro pridani media
