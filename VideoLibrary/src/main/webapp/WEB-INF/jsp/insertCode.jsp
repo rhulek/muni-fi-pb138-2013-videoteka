@@ -25,7 +25,8 @@
                         <br/>
                         V nově otevřeném okně prohlížeče autorizujte aplikaci a zde vložte vygenerovaný bezpečnostní kód.</p>
                     <form name="authCodeForm" action="autorize" method="POST" >
-                        <input name="authCode" type="text" class="auth-code-form-input"/>
+                        <label for="authCode">Autorizační kód:</label>
+                               <input name="authCode" id="authCode" type="text" class="auth-code-form-input"/>
                         <input type="submit" value="Autorizovat aplikaci"/>
                     </form>
                 </div>
