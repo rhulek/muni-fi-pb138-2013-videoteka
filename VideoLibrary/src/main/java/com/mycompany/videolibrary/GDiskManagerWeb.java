@@ -28,13 +28,16 @@ import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,12 +50,11 @@ import org.apache.logging.log4j.Logger;
 public class GDiskManagerWeb {
     private static Logger logger = LogManager.getLogger(GDiskManagerWeb.class.getName());
     private static String APPLICATION_NAME = "videoteka";
-    private static String TEMP_FILE = "tmpFile.ods";
-    private static String SERVER_FILE_NAME = "videoteka_data";
-    private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
-    private static String DEFAULT_USER_ID = "defaultUser";
-    public static String ODS_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
-    public static String IMPORTED_FILE_NAME = "imported.ods";
+    private String TEMP_FILE = "tempFile.ods";
+    private String SERVER_FILE_NAME = "videoteka_data";
+    private String DEFAULT_USER_ID_FOR_CREDENTIALS_STORE = "defaultUser";
+    private static String ODS_FORMAT_EXPORT_CONSTANT = "application/x-vnd.oasis.opendocument.spreadsheet";
+    private String IMPORTED_TEMP_FILE_NAME = "imported.ods";
     private static int FILE_BUFFER_SIZE = 2048;
     
     private HttpTransport httpTransport;
@@ -66,10 +68,10 @@ public class GDiskManagerWeb {
     private String CLIENT_ID = "702406823762.apps.googleusercontent.com";
     private String CLIENT_SECRET = "iKIHHkC-wKEC7JS9YkzmDX_n";
     private String CREDENTIALS_FILE = "credentials.txt";
+    private String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     private String GOOGLE_FILE_ID = "0AotGtmQ-kiV4dGJtLXQ0R3VELWNkSWF5QkNEX1o4enc";  //ulozeni by umoznilo pracovat porad se stejnum souborem i v pripade ze uzivatel zmeni nazev, nebo prida soubor se stejnym nazvem
-    
+    private String PROPERTIES_FILE = "GApiAppAuth.properties";
     private GoogleCredential credentials;
-    
 
     
     public GDiskManagerWeb() {
@@ -78,6 +80,7 @@ public class GDiskManagerWeb {
         this.jsonFactory = new JacksonFactory();
         
         this.credentialsFile = new java.io.File(CREDENTIALS_FILE);
+        credentialsFile.mkdirs();
         this.credentials = new GoogleCredential.Builder().setJsonFactory(jsonFactory)
                                                         .setTransport(httpTransport)
                                                         .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
@@ -87,8 +90,139 @@ public class GDiskManagerWeb {
         //this.initialize();
     }
     
+    public void createConfigurationFile(){
+        java.io.File configFile = new java.io.File(PROPERTIES_FILE);
+        if(!configFile.exists()){
+            logger.log(Level.TRACE, "Konfiguracni soubor neexistuje. Vytvarim zakladni konfiguraci.");
+
+            try {
+                java.io.File parentFile = configFile.getParentFile();
+                parentFile.mkdirs();
+                
+                if(!configFile.createNewFile()) {
+                    logger.log(Level.ERROR, "Creating file: '" + configFile.getAbsolutePath() + "' failed");
+                } else {
+                    logger.log(Level.INFO, "Created file: '" + configFile.getAbsolutePath() + "'");
+                }
+                
+                writeDefaultConfiguration(configFile);
+                
+            } catch (IOException ex) {
+               logger.log(Level.ERROR, "Failed do create configuration file.", ex);
+            }
+        }
+    }
+    
+    public void writeDefaultConfiguration(java.io.File configFile){
+        Properties prop = new Properties();
+        try {
+            //prop.load( new FileInputStream(configFile) );
+
+            prop.setProperty("CLIENT_ID", "702406823762.apps.googleusercontent.com");   //this is client id from google client API console used for application identification
+            prop.setProperty("CLIENT_SECRET", "iKIHHkC-wKEC7JS9YkzmDX_n");              //this is client secred from google client API console
+            prop.setProperty("CREDENTIALS_FILE", "credentials.txt");                    //path where to store credentials
+            prop.setProperty("GOOGLE_FILE_ID", "0AotGtmQ-kiV4dGJtLXQ0R3VELWNkSWF5QkNEX1o4enc"); //ID of file to store application data
+            prop.setProperty("APPLICATION_NAME", "videoteka");                          //name of this application which will be shown on Google Drive
+            prop.setProperty("SERVER_FILE_NAME", "videoteka_data");                     //if GOOGLE_FILE_ID is not set this is name of file containing data of this application both variables must be set correctly
+            prop.setProperty("REDIRECT_URI", "urn:ietf:wg:oauth:2.0:oob");              //variable gainded from Google client API console, shouldnt be changed.
+            prop.setProperty("DEFAULT_USER_ID_FOR_CREDENTIALS_STORE", "defaultUser");   //constant of userID for storing credentials in credentails file, should not be changed
+            prop.setProperty("ODS_FORMAT_EXPORT_CONSTANT", "application/x-vnd.oasis.opendocument.spreadsheet"); //mime type of ODF spreadsheet
+            prop.setProperty("IMPORTED_TEMP_FILE_NAME", "imported.ods");                //name and location of temporary file used during importing infomration
+            prop.setProperty("FILE_BUFFER_SIZE", "2048");                               //size of buffer used for copying file from Google Drive
+//            prop.setProperty();
+//            prop.setProperty();
+
+  
+            prop.store( new FileOutputStream(configFile), null);
+            logger.log(Level.DEBUG, "Configuration file was saved in: " + configFile.getAbsolutePath());
+
+        } catch (FileNotFoundException ex) {
+            logger.log(Level.ERROR, "Chyba pri ziskavani properties souboru - file not found:", ex);
+        } catch (IOException e){
+            logger.log(Level.ERROR, "Chyba pri ziskavani properties souboru - IOException:", e);
+        }
+    }
+    
+    public void printAndWritePropertiesTest(){
+        logger.log(Level.TRACE, "Nazev souboru:" + PROPERTIES_FILE);
+        Properties prop = new Properties();
+        try {
+            prop.load(new FileInputStream(PROPERTIES_FILE));
+        } catch (FileNotFoundException ex) {
+            logger.log(Level.ERROR, "Chyba pri ziskavani properties souboru - file not found:", ex);
+        } catch (IOException e){
+            logger.log(Level.ERROR, "Chyba pri ziskavani properties souboru - IOException:", e);
+        }
+
+        Enumeration<?> enumeration = prop.propertyNames();
+        while (enumeration.hasMoreElements()) {
+            String key = (String) enumeration.nextElement();
+            String value = prop.getProperty(key);
+            logger.log(Level.TRACE, "property '" + key + "': " + value);
+        }
+    }
+    
+    public GDiskManagerWeb(HttpTransport httpTransport, JsonFactory jsonFactory, String clientID, String clientSecret, String credentialsFilePath) {
+        this.httpTransport = httpTransport;
+        this.jsonFactory = jsonFactory;
+    }
+
+    public String getPropertiesFilePathName() {
+        return PROPERTIES_FILE;
+    }
+
+    public void setPropertiesFilePathName(String pathName) {
+        this.PROPERTIES_FILE = pathName;
+    }
+    
+    //   get/set Metody
+    public String getGoogleFileID(){
+        return GOOGLE_FILE_ID;
+    }
+    
+    public void setGoogleFileID(String googleFileID){
+        this.GOOGLE_FILE_ID = googleFileID;
+    }
+    
+    public GoogleCredential getCredentials(){
+        return this.credentials;
+    }
+    
+    public void setCredentials(GoogleCredential cred){
+        this.credentials = cred;
+    }
+
+    public java.io.File getCredentialsFile() {
+        return credentialsFile;
+    }
+
+    public void setCredentialsFile(java.io.File credentialsFile) {
+        this.credentialsFile = credentialsFile;
+    }
+
+    public String getODS_FORMAT_EXPORT_CONSTANT() {
+        return ODS_FORMAT_EXPORT_CONSTANT;
+    }
+
+    public void setODS_FORMAT_EXPORT_CONSTANT(String ODS_FORMAT_EXPORT_CONSTANT) {
+        this.ODS_FORMAT_EXPORT_CONSTANT = ODS_FORMAT_EXPORT_CONSTANT;
+    }
+
+    public String getIMPORTED_TEMP_FILE_NAME() {
+        return IMPORTED_TEMP_FILE_NAME;
+    }
+
+    public void setIMPORTED_TEMP_FILE_NAME(String IMPORTED_TEMP_FILE_NAME) {
+        this.IMPORTED_TEMP_FILE_NAME = IMPORTED_TEMP_FILE_NAME;
+    }
+    
+    
 //    protected void setClientID(String id){ this.CLIENT_ID = id; }
 //    protected void setClientSecret(String secret) { this. CLIENT_SECRET = secret; }
+    
+    
+    //pokrocile funkce:
+    
     
     /*
      * Returns authorization URL
@@ -162,7 +296,7 @@ public class GDiskManagerWeb {
         FileCredentialStore credentialStore;
         try {
             credentialStore = new FileCredentialStore(credentialsFile, jsonFactory);
-            credentialStore.store(DEFAULT_USER_ID, credentials);
+            credentialStore.store(DEFAULT_USER_ID_FOR_CREDENTIALS_STORE, credentials);
         } catch (IOException ex) {
             logger.log(Level.ERROR, ex);
         }
@@ -173,29 +307,7 @@ public class GDiskManagerWeb {
     }
     
    
-    public String getGoogleFileID(){
-        return GOOGLE_FILE_ID;
-    }
-    
-    public void setGoogleFileID(String googleFileID){
-        this.GOOGLE_FILE_ID = googleFileID;
-    }
-    
-    public GoogleCredential getCredentials(){
-        return this.credentials;
-    }
-    
-    public void setCredentials(GoogleCredential cred){
-        this.credentials = cred;
-    }
-
-    public java.io.File getCredentialsFile() {
-        return credentialsFile;
-    }
-
-    public void setCredentialsFile(java.io.File credentialsFile) {
-        this.credentialsFile = credentialsFile;
-    }
+ 
     
     /*
      * Loads credentials from file specified inside this class
@@ -220,7 +332,7 @@ public class GDiskManagerWeb {
             return null;
         }
 
-        if (!credentialStore.load(DEFAULT_USER_ID, credentials)) {
+        if (!credentialStore.load(DEFAULT_USER_ID_FOR_CREDENTIALS_STORE, credentials)) {
             logger.log(Level.FATAL, "Chyba pri nahravani credentials");
             return null;
         } else {

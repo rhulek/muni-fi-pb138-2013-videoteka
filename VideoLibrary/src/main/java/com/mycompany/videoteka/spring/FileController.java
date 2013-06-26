@@ -47,7 +47,7 @@ public class FileController {
     public String sendToClient(HttpServletRequest request, HttpServletResponse response) throws IOException{
         
         //Dvoji volani pro ziskani docasneho souboru muze byt nebezpecne zvlaste pokud by se uzivateli podarilo soubor na serveru editovat
-        response.setContentType(GDiskManagerWeb.ODS_FORMAT_EXPORT_CONSTANT);
+        response.setContentType(manager.getODS_FORMAT_EXPORT_CONSTANT());
         response.setContentLength((int) manager.getTempFile().length());
         response.setHeader("Content-Disposition", "attachment");
         response.setHeader("Content-Disposition", "attachment; filename=videoknihovna.ods");
@@ -92,7 +92,7 @@ public class FileController {
         java.io.File importedFile = null;
         try {
             //Ulozi soubor na disk pro dalsi zpracovani
-            importedFile = GDiskManagerWeb.createFile( multipartFile.getInputStream(), GDiskManagerWeb.IMPORTED_FILE_NAME);
+            importedFile = GDiskManagerWeb.createFile( multipartFile.getInputStream(), manager.getIMPORTED_TEMP_FILE_NAME());
         } catch (IOException ex) {
             logger.log(Level.ERROR, "Chyba pri ukladani importovaneho souboru:", ex);
         }

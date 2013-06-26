@@ -53,6 +53,9 @@
           </bean>
     
     <bean id="gDiskManager" class="com.mycompany.videolibrary.GDiskManagerWeb">
+        <property name="propertiesFilePathName" value="videolibrary/GApiAppAuth.properties"/>
+        <!-- <constructor-arg> -->
+        <!-- <property name="testString" value="${test}"/> -->
     </bean>
 
     <bean id="odfParser" class="com.mycompany.videolibrary.ODFParser">

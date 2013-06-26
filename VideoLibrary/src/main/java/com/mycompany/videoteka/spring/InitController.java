@@ -62,7 +62,9 @@ public class InitController {
                 return "errorPage";
             }
         }
-
+        
+        manager.createConfigurationFile();
+        manager.printAndWritePropertiesTest();
         manager.getTempFile();
         manager.updateTempFileToGDrive();
 //        String msg = "Token byl uspesne nahran a obnoven. Nyni muzete pracovat s aplikaci. \r"
