@@ -385,7 +385,8 @@ public class ODFParser {
         if (rowIndex >= table.getRowCount()) {
             row = table.appendRow();
         } else {
-            row = table.insertRowsBefore(rowIndex, 1).get(0);
+            List<Row> rowList = table.insertRowsBefore(rowIndex, 1);
+            row = rowList.get(0);
         }
 
 
@@ -874,6 +875,12 @@ public class ODFParser {
             
             addCategory( cat );
         }
+    }
+    
+    
+    public SpreadsheetDocument createNewSpreadsheetDocument(String pathName){
+        
+        return null;
     }
 }
     
