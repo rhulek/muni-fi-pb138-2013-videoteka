@@ -91,6 +91,15 @@ a img, a:hover img {
     border-top: solid 3px #fff;
 }
 
+#footer a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+#footer a:hover {
+    color: #f19300;
+}
+
 #footer .content {
     position: relative;
     padding: 15px 0; 

@@ -21,7 +21,6 @@
         <form action="${pageContext.servletContext.contextPath}/category/delete/${categoryName}" method="POST">
             <input type="hidden" value="delete" name="delete" id="delete"/>
             <input type="submit" value="Ano SMAZAT"/>
-            <a href="${pageContext.servletContext.contextPath}/category/showAll"> <input type="button" value="Probůh to ne! Rychle pryč!"/> </a>
         </form>
     </jsp:body>
         

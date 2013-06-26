@@ -15,20 +15,16 @@
         <div class="block2">
             <h3>Autoři</h3>
             <p>
-                Richard Hůlek<br/>
-                Ondřej Vojtíšek<br/>
-                Milan Vláčil<br/>
-                Martin Vavrušák
+                <a href="https://is.muni.cz/auth/osoba/172775">Richard Hůlek</a><br/>
+                <a href="https://is.muni.cz/auth/osoba/325192">Ondřej Vojtíšek</a><br/>
+                <a href="https://is.muni.cz/auth/osoba/374143">Milan Vláčil</a><br/>
+                <a href="https://is.muni.cz/auth/osoba/325408">Martin Vavrušák</a>
             </p>
         </div>
         <div class="block3">
             <h3>Odkazy</h3>
-            <p>PB138 - Moderní značkovací jazyky a jejich aplikace<br/>
-                Fakulta informatiky MU, Brno</p>
+            <p><a href="https://is.muni.cz/auth/predmet/fi/jaro2013/PB138">PB138 - Moderní značkovací jazyky a jejich aplikace</a><br/>
+                <a href="http://www.fi.muni.cz">Fakulta informatiky MU, Brno</a></p>
         </div>
-        <c:choose>
-            <c:when test="${false}">false</c:when>
-            <c:otherwise>other</c:otherwise>
-        </c:choose>
     </div>
 </div>
