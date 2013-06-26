@@ -16,11 +16,11 @@
                     <h3><c:out value="${med.value.id}"></c:out></h3>
                     <ul>
                         <c:forEach items="${med.value.movies}" var="movie">
-                            <li><c:out value="${movie.name}"/> <c:out value="${movie.metaInfoXML}"/></li>
-                            <a href="${pageContext.servletContext.contextPath}/movie?category=${categoryName}&mediumId=${mediumId}&movieId=${movieId}"><c:out value="${movie}" />
+                            <li><a href="${pageContext.servletContext.contextPath}/movie?category=${categoryName}&mediumId=${med.value.id}&movieName=${movie.name}">
+                                    <c:out value="${movie.name}"/></a></li>
+                        
                         </form>
-                            
-                            
+                             
                         </c:forEach>
                     </ul>
                     <div class="action-btns">

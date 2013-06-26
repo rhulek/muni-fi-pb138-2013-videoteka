@@ -24,22 +24,20 @@ import org.odftoolkit.simple.table.Table;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
 /**
  *
  * @author Martin
  */
 public class ODFParser {
+
     private static Logger logger = LogManager.getLogger(ODFParser.class.getName());
     private String documentPath;
     private SpreadsheetDocument document;
-
     public static String SERVICE_TAB_NAME = "service_tab";
-    
-    public ODFParser(){
-        
+
+    public ODFParser() {
     }
-    
+
     public ODFParser(String documentPath) {
         logger.log(Level.DEBUG, "Default charset:" + Charset.defaultCharset());
         logger.log(Level.DEBUG, "file.encoding=" + System.getProperty("file.encoding"));
@@ -61,28 +59,28 @@ public class ODFParser {
     public void setDocument(SpreadsheetDocument document) {
         this.document = document;
     }
-    
-    public void closeDocument(){
+
+    public void closeDocument() {
         document.close();
         document = null;
     }
-    
-    public boolean reloadDocument(){
+
+    public boolean reloadDocument() {
         document = null;
         return loadDocument();
     }
-    
-    public boolean loadDocument(){
-        if(document != null){
+
+    public boolean loadDocument() {
+        if (document != null) {
             return true;
         }
-        
+
         logger.log(Level.INFO, "document is null. Loading document: " + documentPath);
-        if(documentPath == null){
+        if (documentPath == null) {
             logger.log(Level.ERROR, "Document path is null!");
             return false;
         }
-        
+
         try {
             document = SpreadsheetDocument.loadDocument(documentPath);
             return true;
@@ -90,22 +88,22 @@ public class ODFParser {
             logger.log(Level.ERROR, "Chyba pri nahravani dokumentu: '" + documentPath + "'", ex);
             return false;
         }
-        
+
     }
-    
+
     public boolean saveDocument() {
-        if(document == null){
+        if (document == null) {
             logger.log(Level.ERROR, "Document neni nahran.");
             return false;
         }
-        
-        
-            
-        if(documentPath == null){
+
+
+
+        if (documentPath == null) {
             logger.log(Level.ERROR, "Document path is null!");
             return false;
         }
-        
+
         try {
             document.save(documentPath);
             closeDocument();
@@ -114,51 +112,49 @@ public class ODFParser {
             logger.log(Level.ERROR, "Chyba pri ukladani dokumentu: '" + documentPath + "'", ex);
             return false;
         }
-        
+
     }
-    
-    
-    
-    public List<String> getAllCategoryNames(){
-        if(!loadDocument()){
+
+    public List<String> getAllCategoryNames() {
+        if (!loadDocument()) {
             return null;
         }
-        
+
         List<String> categorNames = new ArrayList<String>();
         List<Table> tables = document.getTableList();
-        
-        if(tables == null){
+
+        if (tables == null) {
             logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
         }
-        
-        for(Table table: tables){
+
+        for (Table table : tables) {
             String name = table.getTableName();
-            if(!SERVICE_TAB_NAME.equals(name)){
+            if (!SERVICE_TAB_NAME.equals(name)) {
                 categorNames.add(name);
                 logger.log(Level.TRACE, "Pridavam kategorii: " + name);
             }
         }
-        
+
         return categorNames;
     }
 
-    public Category getCategory(String categoryName){
+    public Category getCategory(String categoryName) {
         return getCategory(categoryName, this.document);
     }
-    
-     public Category getCategory(String categoryName, SpreadsheetDocument document){
-        if(!loadDocument()){
+
+    public Category getCategory(String categoryName, SpreadsheetDocument document) {
+        if (!loadDocument()) {
             return null;
         }
-         if(categoryName.equals(SERVICE_TAB_NAME)){
-             logger.log(Level.INFO, "SERVICE_TAB table can't be parsed as a category");
-             return null;
-         }
-         
+        if (categoryName.equals(SERVICE_TAB_NAME)) {
+            logger.log(Level.INFO, "SERVICE_TAB table can't be parsed as a category");
+            return null;
+        }
+
         logger.log(Level.TRACE, "Kategorie k ziskání: " + categoryName);
         Table table = document.getTableByName(categoryName);
-        
-        if(table == null){
+
+        if (table == null) {
             logger.log(Level.ERROR, "getTableByName returned null!");
             return null;
         }
@@ -167,71 +163,73 @@ public class ODFParser {
 
         logger.log(Level.TRACE, "Pocet radku tabulky: " + rowList.size());
         Category category = new Category(categoryName);
-        
+
         int rowCount = rowList.size();
-       
-        for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
+
+        for (int i = 0; i < rowCount; i++) {     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
 
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
-            
-            if(firstCell == null || firstCell.getDisplayText().equals(""))
+
+            if (firstCell == null || firstCell.getDisplayText().equals("")) {
                 break;
-          
+            }
+
             //Vytvoprit nove medium
             Medium medium = new Medium();
-            medium.setId( firstCell.getDoubleValue().intValue() );  //Throw IllegalArgumentException if the cell type is not "float".
+            medium.setId(firstCell.getDoubleValue().intValue());  //Throw IllegalArgumentException if the cell type is not "float".
             //medium.setId( Integer.getInteger( firstCell.getDisplayText() ) );
-            
+
             //medium.setType(); //TODO provest parsovani poznamky
-       
-             int collumns = row.getCellCount();
+
+            int collumns = row.getCellCount();
             List<Movie> movies = new ArrayList<Movie>();
-           
-            for(int j = 1; j < collumns; j++){  //je potreba preskocit prvni sloupec, ktery obsahuje ID
+
+            for (int j = 1; j < collumns; j++) {  //je potreba preskocit prvni sloupec, ktery obsahuje ID
                 Cell cell = row.getCellByIndex(j);
 
-                
-                if(cell == null || cell.getDisplayText().equals(""))
+
+                if (cell == null || cell.getDisplayText().equals("")) {
                     break;
-                
-                
+                }
 
-               
 
-                
+
+
+
+
                 String movieName = "";
-                
-                
+
+
                 //Parsování jména kategorie toto je nutné, protože po přidání poznámky vrací cell.getDisplayText()
                 //Spolu s textem i další bordel jako datum poslední modifikace a pod
                 String movieComment = cell.getNoteText();
                 NodeList nodes = cell.getOdfElement().getChildNodes();
-                for(int k = 0; k < nodes.getLength(); k++) {
-                    Node node = nodes.item(k); 
-                    if(nodes.item(k).getLocalName().equals("p")) {
+                for (int k = 0; k < nodes.getLength(); k++) {
+                    Node node = nodes.item(k);
+                    if (nodes.item(k).getLocalName().equals("p")) {
                         movieName = node.getTextContent();
                     }
-                    
-                   
+
+
                 }
-                
-                
-            
-                if(movieComment != null){
-                     logger.log(Level.TRACE, "Comment: " + movieComment); 
-                }                
-                
-                if( movieName.trim().length() > 0 ){
+
+
+
+                if (movieComment != null) {
+                    logger.log(Level.TRACE, "Comment: " + movieComment);
+                }
+
+                if (movieName.trim().length() > 0) {
                     logger.log(Level.TRACE, "Pridavam bunku: " + movieName);
                     Movie movie = new Movie(j, movieName);
-                    if(movieComment != null && !movieComment.trim().isEmpty()){
-                        try{
+                    if (movieComment != null && !movieComment.trim().isEmpty()) {
+                        try {
                             movie.setMetaInfo(movieComment);
-                        }catch(DocumentException ex){
-                          logger.log(Level.ERROR, ex);
+                        } catch (DocumentException ex) {
+                            logger.log(Level.ERROR, ex);
                         }
-                    }      
+                    }
                     movies.add(movie);
                     //movies.add( new Movie(j, movieName) );    //TODO je treba provest parsovani poznamky a ziskat id filmu
                 }
@@ -239,45 +237,44 @@ public class ODFParser {
             medium.setMovies(movies);
             medium.setCategory(category);
             category.addMedium(medium);
-            
+
         }
 
         return category;
 
     }
-     
-    public Category getStaticTestCategory(){
+
+    public Category getStaticTestCategory() {
         Category category = new Category("Pejsek a kocicka");
         List<Movie> filmy = new ArrayList<Movie>();
         filmy.add(new Movie(10, "Macha sebestova"));
         filmy.add(new Movie(1, "Na samote u lesa"));
         filmy.add(new Movie(3, "Nosorozec Tom"));
-        
+
         Medium med1 = new Medium(335, "DVD", filmy, category);
-        
+
         List<Movie> filmy2 = new ArrayList<Movie>();
         filmy2.add(new Movie(7, "Cerveny trakturek"));
         filmy2.add(new Movie(7, "Darbujan a pandrhola"));
-        
+
         Medium med2 = new Medium(55, "Blue Ray", filmy2, category);
-        
-        
+
+
         List<Movie> filmy3 = new ArrayList<Movie>();
         filmy3.add(new Movie(7, "žluťoučký"));
         filmy3.add(new Movie(7, "filmeček"));
         filmy3.add(new Movie(7, "Maňáskového divadka"));
         filmy3.add(new Movie(7, "říčníků"));
-        
+
         Medium med3 = new Medium(55, "Blue Ray", filmy3, category);
-        
+
         category.addMedium(med1);
         category.addMedium(med2);
         category.addMedium(med3);
-        
+
         return category;
     }
 
-    
 //    public List<Medium> getAllFilms(){
 //
 //        if(!loadDocument()){
@@ -313,74 +310,70 @@ public class ODFParser {
 //        //return Collections.unmodifiableCollection( new ArrayList<Film>() );
 ////        throw new UnsupportedOperationException("Not inplemented yet!");
 //    }
-    
-    
     public void addMedium(Medium medium, Category category) {
         addMedium(medium, category, true);
     }
-    
+
     public void addMedium(Medium medium, Category category, boolean saveAfterAdd) {
-        if(!loadDocument()){
+        if (!loadDocument()) {
             return;
         }
-        
+
         //Category actualCat = getCategory(category.getName());
-        
-        
+
+
         Table table = document.getTableByName(category.getName());
         List<Row> rowList = table.getRowList();
         int size = 0;
-        for(Row row : rowList) {
+        for (Row row : rowList) {
             Cell firstCell = row.getCellByIndex(0);
-            if(firstCell == null || firstCell.getDisplayText().equals("")) {
+            if (firstCell == null || firstCell.getDisplayText().equals("")) {
                 break;
             }
             size++;
         }
-        
+
         addMediumToTable(medium, table, size);
 
-        if(saveAfterAdd) {
+        if (saveAfterAdd) {
             saveDocument();
         }
     }
-    
+
     public void addAllMediums(List<Medium> mediums, Category category) {
         addAllMediums(mediums, category, true);
     }
-    
-    
+
     public void addAllMediums(List<Medium> mediums, Category category, boolean saveAfterAdd) {
-        if(!loadDocument()){
+        if (!loadDocument()) {
             return;
         }
         //Category actualCat = getCategory(category.getName());
-        
-        
+
+
         Table table = document.getTableByName(category.getName());
         List<Row> rowList = table.getRowList();
         int size = 0;
-        for(Row row : rowList) {
+        for (Row row : rowList) {
             Cell firstCell = row.getCellByIndex(0);
-            if(firstCell == null || firstCell.getDisplayText().equals("")) {
+            if (firstCell == null || firstCell.getDisplayText().equals("")) {
                 break;
             }
             size++;
         }
         for (Medium medium : mediums) {
-            
+
             addMediumToTable(medium, table, size);
             size++;
         }
-       
-        if(saveAfterAdd) {
+
+        if (saveAfterAdd) {
             saveDocument();
         }
     }
-    
-    
+
     private void addMediumToTable(Medium medium, Table table, int rowIndex) {
-                
+
         Row row;
         if (rowIndex >= table.getRowCount()) {
             row = table.appendRow();
@@ -394,39 +387,39 @@ public class ODFParser {
         logger.log(Level.DEBUG, "Počet sloupců: " + row.getCellCount());
         Cell cell = row.getCellByIndex(0);
         cell.setDoubleValue((double) medium.getId());      //nastaveni ID
-        
+
         for (int i = 1; i < medium.getMovies().size() + 1; i++) {
             row.getCellByIndex(i).setStringValue(medium.getMovies().get(i - 1).getName());
             row.getCellByIndex(i).setNoteText(medium.getMovies().get(i - 1).getMetaInfoXML());
         }
 
     }
-    
+
     public void deleteMedium(Medium medium) {
-        if(!loadDocument()){
+        if (!loadDocument()) {
             return;
         }
         Table table = document.getTableByName(medium.getCategory().getName());
-        
+
         List<Row> rowList = table.getRowList();
 
         int rowCount = rowList.size();
-        for(int i=0; i < rowCount; i++) {
+        for (int i = 0; i < rowCount; i++) {
             Cell cell = rowList.get(i).getCellByIndex(0);
-            if(cell == null || cell.getStringValue().equals("")) {
+            if (cell == null || cell.getStringValue().equals("")) {
                 break;
             }
-            
-            if(cell.getDoubleValue().intValue() == medium.getId()) {
+
+            if (cell.getDoubleValue().intValue() == medium.getId()) {
 
                 table.removeRowsByIndex(i, 1);
                 saveDocument();
                 break;
             }
-                
-        }    
+
+        }
     }
-    
+
     /*
      * Returns all media containg this film name in category passed in parameter. If category name is null perform search in all categories.
      * 
@@ -532,80 +525,117 @@ public class ODFParser {
      * @param meta Map of meta tags used to restrict searching if set null searching by meta tags is ignored
      */
     public List<Movie> findMoviesByNameAndMeta(String movieName, String categoryName, Map<String, String> meta) {
-        if(!loadDocument()){
+        if (!loadDocument()) {
             return null;
-        } 
-        
-        if(ODFParser.SERVICE_TAB_NAME.equals(categoryName)){
+        }
+
+        if (ODFParser.SERVICE_TAB_NAME.equals(categoryName)) {
             logger.log(Level.WARN, "Searching for movies in Service category is forbidden!");
             return new ArrayList<Movie>();
         }
-        
+
         //pokud je nastaveno jméno kategorie pro vyhledávání, získej tuto kategorii a nastav ji jako jedinou pro vyhledávání
         //jinak nahrej všechny kategorie a vyhledávej ve všech.
         List<Table> tables;
-        if(categoryName != null ){
+        if (categoryName != null) {
             Table tab = document.getTableByName(categoryName);
-            if(tab == null){
+            if (tab == null) {
                 logger.log(Level.ERROR, "Nepodařilo se získat tabulku: '" + categoryName + "'");
                 return null;    //možná by se dalo pokračovat vyhledáváním ve všech kategoriích
             }
             tables = new ArrayList<Table>();
             tables.add(tab);
-            
+
         } else {
             tables = document.getTableList();
         }
-      
-        if(tables == null){            
+
+        if (tables == null) {
             logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
         }
         List<Movie> movies = new ArrayList<Movie>();
-        
-        for(Table table: tables){
-            
+
+        for (Table table : tables) {
+
             String catName = table.getTableName();
-            if(ODFParser.SERVICE_TAB_NAME.equals(catName)){     //preskcoci servisni kategorii v te vyhledávat filmy nechceme
+            if (ODFParser.SERVICE_TAB_NAME.equals(catName)) {     //preskcoci servisni kategorii v te vyhledávat filmy nechceme
                 continue;
             }
-                        
+
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
-            for(Medium medium : categoryMedia){
-                for(Movie movie : medium.getMovies()) {
+            for (Medium medium : categoryMedia) {
+                for (Movie movie : medium.getMovies()) {
                     //boolean check = false;
-                    
+
                     //prvni je aby bylo možné vyhledávat i pokud nebyl zadán název filmu potom se vyhledává pouze podle metaimformací
-                    if ( (movieName.equals("") || movie.getName().equals(movieName)) && meta != null) {
-                        if(movie.getMetaInfo().values().containsAll(meta.values())) {
+                    if ((movieName.equals("") || movie.getName().equals(movieName)) && meta != null) {
+                        if (movie.getMetaInfo().values().containsAll(meta.values())) {
                             movies.add(movie);
                         }
-                        
+
                     } else if (movie.getName().equals(movieName)) {
                         movies.add(movie);
                     }
-                    
+
                     /*
-                    for(Entry<String, String> entry : meta.entrySet()){ 
-                        if(movie.hasNoteProperty(entry.getKey())) {
-                            if(movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
-                                check = true;
-                                continue;
-                            }
-                        }
-                        check = false;
-                        break;
-                    }
+                     for(Entry<String, String> entry : meta.entrySet()){ 
+                     if(movie.hasNoteProperty(entry.getKey())) {
+                     if(movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
+                     check = true;
+                     continue;
+                     }
+                     }
+                     check = false;
+                     break;
+                     }
                     
-                    if(check) {
-                        movies.add(movie);
-                    }
-                    */
+                     if(check) {
+                     movies.add(movie);
+                     }
+                     */
                 }
             }
         }
-        return movies; 
+        return movies;
     }
-    
+
+    public Movie findMovie(String movieName, String mediumID, String categoryName) {
+        if (!loadDocument()) {
+             logger.log(Level.WARN, "FindMovie - loadDocument null");
+            return null;
+        }
+
+        if (ODFParser.SERVICE_TAB_NAME.equals(categoryName)) {
+            logger.log(Level.WARN, "Searching for movies in Service category is forbidden!");
+            return null;
+        }
+
+        //pokud je nastaveno jméno kategorie pro vyhledávání, získej tuto kategorii a nastav ji jako jedinou pro vyhledávání
+        //jinak nahrej všechny kategorie a vyhledávej ve všech.
+        Table tab = null;
+        if (categoryName != null) {
+            tab = document.getTableByName(categoryName);
+            if (tab == null) {
+                logger.log(Level.ERROR, "Nepodařilo se získat tabulku: '" + categoryName + "'");
+                return null;    //možná by se dalo pokračovat vyhledáváním ve všech kategoriích
+            }
+
+        } else {
+            return null;
+        }
+        List<Medium> categoryMedia = getCategory(categoryName).getAllMedia();
+        for (Medium medium : categoryMedia) {
+            if (medium.getId() == Integer.parseInt(mediumID)) {        
+                for (Movie movie : medium.getMovies()) {
+                    if (movie.getName().equals(movieName)) {
+                        return movie;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /*
      * Returns all Films containg this film name in category passed in parameter. If category name is null perform search in all categories.
      * 
@@ -613,199 +643,191 @@ public class ODFParser {
      * @param categoryName name of category to search in if set to null search is performed in all categories
      * @param meta Map of meta tags used to restrict searching if set null searching by meta tags is ignored
      */
-
-        
     public List<Medium> findMediumByNameAndMeta(String movieName, String categoryName, Map<String, String> meta) {
-        if(!loadDocument()){
+        if (!loadDocument()) {
             return null;
-        } 
-        
-        if(ODFParser.SERVICE_TAB_NAME.equals(categoryName)){
+        }
+
+        if (ODFParser.SERVICE_TAB_NAME.equals(categoryName)) {
             logger.log(Level.WARN, "Searching for movies in Service category is forbidden!");
             return new ArrayList<Medium>();
         }
-        
+
         //pokud je nastaveno jméno kategorie pro vyhledávání, získej tuto kategorii a nastav ji jako jedinou pro vyhledávání
         //jinak nahrej všechny kategorie a vyhledávej ve všech.
         List<Table> tables;
-        if(categoryName != null ){
+        if (categoryName != null) {
             Table tab = document.getTableByName(categoryName);
-            if(tab == null){
+            if (tab == null) {
                 logger.log(Level.ERROR, "Nepodařilo se získat tabulku: '" + categoryName + "'");
                 return null;    //možná by se dalo pokračovat vyhledáváním ve všech kategoriích
             }
             tables = new ArrayList<Table>();
             tables.add(tab);
-            
+
         } else {
             tables = document.getTableList();
         }
-      
-        if(tables == null){            
+
+        if (tables == null) {
             logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
         }
         List<Medium> mediums = new ArrayList<Medium>();
-        
-        for(Table table: tables){
-            
+
+        for (Table table : tables) {
+
             String catName = table.getTableName();
-            if(ODFParser.SERVICE_TAB_NAME.equals(catName)){     //preskcoci servisni kategorii v te vyhledávat filmy nechceme
+            if (ODFParser.SERVICE_TAB_NAME.equals(catName)) {     //preskcoci servisni kategorii v te vyhledávat filmy nechceme
                 continue;
             }
-            
+
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
-            for(Medium medium : categoryMedia){
+            for (Medium medium : categoryMedia) {
                 boolean check = false;
-                for(Movie movie : medium.getMovies()) {
-                    
-                    if ( (movieName.equals("") || movie.getName().equals(movieName)) && meta != null ) {
-                        if(movie.getMetaInfo().values().containsAll(meta.values())) {
+                for (Movie movie : medium.getMovies()) {
+
+                    if ((movieName.equals("") || movie.getName().equals(movieName)) && meta != null) {
+                        if (movie.getMetaInfo().values().containsAll(meta.values())) {
                             check = true;
                         }
                     } else if (movie.getName().equals(movieName)) {
                         check = true;
                     }
-                     
+
                     /*
-                    if (movieName.equals("") || movie.getName().equals(movieName)) {
-                        for (Entry<String, String> entry : meta.entrySet()) {
-                            if (movie.hasNoteProperty(entry.getKey())) {
-                                if (movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
-                                    check = true;
-                                    continue;
-                                }
-                            }
-                            check = false;
-                            break;
-                        }
-                    }
-                    */
+                     if (movieName.equals("") || movie.getName().equals(movieName)) {
+                     for (Entry<String, String> entry : meta.entrySet()) {
+                     if (movie.hasNoteProperty(entry.getKey())) {
+                     if (movie.getNoteProperty(entry.getKey()).equals(entry.getValue())) {
+                     check = true;
+                     continue;
+                     }
+                     }
+                     check = false;
+                     break;
+                     }
+                     }
+                     */
                 }
-                
-                if(check) {
+
+                if (check) {
                     mediums.add(medium);
                 }
             }
         }
-        return mediums; 
+        return mediums;
     }
-     
-     public Map<String, List<String>> getServiceTabData(){
+
+    public Map<String, List<String>> getServiceTabData() {
         Table table = document.getTableByName(SERVICE_TAB_NAME);
-        
-        if(table == null){
+
+        if (table == null) {
             logger.log(Level.ERROR, "getTableByName returned null!");
             return null;
         }
         List<Row> rowList = table.getRowList();
         int rowCount = rowList.size();
-        Map<String, List<String>> output = new HashMap<String, List<String>>();      
-        for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
-            
+        Map<String, List<String>> output = new HashMap<String, List<String>>();
+        for (int i = 0; i < rowCount; i++) {     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
+
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
-            if(firstCell.getStringValue().isEmpty()){
+            if (firstCell.getStringValue().isEmpty()) {
                 break;
             }
             List<String> values = new ArrayList<String>();
-            
+
             int collumns = row.getCellCount();
-            for(int j=1; j < collumns; j++){ 
+            for (int j = 1; j < collumns; j++) {
                 Cell cell = row.getCellByIndex(j);
-                if(cell.getStringValue().isEmpty()){
+                if (cell.getStringValue().isEmpty()) {
                     break;
                 }
                 values.add(cell.getStringValue());
             }
             output.put(firstCell.getStringValue(), values);
-        }  
+        }
         return output;
-     }
-    
-    
-     public List<String> getMetaDataDomain(String domainName){
+    }
+
+    public List<String> getMetaDataDomain(String domainName) {
 
         Table table = document.getTableByName(SERVICE_TAB_NAME);
-        
-        if(table == null){
+
+        if (table == null) {
             logger.log(Level.ERROR, "getTableByName returned null!");
             return null;
         }
 
         List<Row> rowList = table.getRowList();
-        
+
         int rowCount = rowList.size();
-       
+
         List<String> metaDataDomain = new ArrayList<String>();
-        
-        for(int i=0; i < rowCount; i++){     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
-            
+
+        for (int i = 0; i < rowCount; i++) {     //Vytahnout vsechny filmy z radku a vlozit je do noveho media
+
             Row row = rowList.get(i);
             Cell firstCell = row.getCellByIndex(0);
-            if(firstCell.getStringValue().isEmpty()){
+            if (firstCell.getStringValue().isEmpty()) {
                 break;
             }
-            
-            if(firstCell.getStringValue().equals(domainName)){
-                 int collumns = row.getCellCount();
-                  for(int j=1; j < collumns; j++){ 
-                       Cell cell = row.getCellByIndex(j);
-                       if(cell.getStringValue().isEmpty()){
-                            return metaDataDomain;
-                        }
-                      
-                      metaDataDomain.add(cell.getStringValue());
-                      
-                  }
-                  return metaDataDomain;
+
+            if (firstCell.getStringValue().equals(domainName)) {
+                int collumns = row.getCellCount();
+                for (int j = 1; j < collumns; j++) {
+                    Cell cell = row.getCellByIndex(j);
+                    if (cell.getStringValue().isEmpty()) {
+                        return metaDataDomain;
+                    }
+
+                    metaDataDomain.add(cell.getStringValue());
+
+                }
+                return metaDataDomain;
             }
-            
-        }  
+
+        }
         return metaDataDomain;
 
     }
-     
 
-     public void setServiceTab(String serviceTabName){
-         this.SERVICE_TAB_NAME = serviceTabName;
-     }
-     
-     public String getServiceTab(){
-         return SERVICE_TAB_NAME;
-     }
-    
-       /* 
-        public String findMetaInfoAboutMovie(String name) {
-        if(!loadDocument()){
-            return null;
-        } 
-        List<Table> tables = document.getTableList();
+    public void setServiceTab(String serviceTabName) {
+        this.SERVICE_TAB_NAME = serviceTabName;
+    }
+
+    public String getServiceTab() {
+        return SERVICE_TAB_NAME;
+    }
+
+    /* 
+     public String findMetaInfoAboutMovie(String name) {
+     if(!loadDocument()){
+     return null;
+     } 
+     List<Table> tables = document.getTableList();
       
-        if(tables == null){            
-            logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
-        }
-        for(Table table: tables){
-            String catName = table.getTableName();
-            List<Medium> categoryMedia = getCategory(catName).getAllMedia();
-            for(Medium medium : categoryMedia){
-                if(medium.containsMovie(name)){
-                    return "";
-                }
-            }
-        }
-        return null;  
-    }   
-    * */
-        
-    
-    
-
+     if(tables == null){            
+     logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
+     }
+     for(Table table: tables){
+     String catName = table.getTableName();
+     List<Medium> categoryMedia = getCategory(catName).getAllMedia();
+     for(Medium medium : categoryMedia){
+     if(medium.containsMovie(name)){
+     return "";
+     }
+     }
+     }
+     return null;  
+     }   
+     * */
     /*
      * Vytvori kategorii pokud neexistuje a prida media
      * nebo jen prida media pokud kategorie existuje
      */
     public void addCategory(Category category) {
-        if(!loadDocument()){
+        if (!loadDocument()) {
             return;
         }
 
@@ -821,39 +843,38 @@ public class ODFParser {
 
         List<Medium> mediums = category.getAllMedia();
 
-        
+
         addAllMediums(mediums, category, false);
-        
+
 
         saveDocument();
     }
-    
+
     public void renameCategory(Category category, String categoryNewName) {
-        if(!loadDocument()){
+        if (!loadDocument()) {
             return;
         }
-        
+
         document.getTableByName(category.getName()).setTableName(categoryNewName);
         category.setName(categoryNewName);
         saveDocument();
     }
-    
+
     public void deleteCategory(Category category) {
-        if(!loadDocument()){
+        if (!loadDocument()) {
             return;
         }
-        
+
         document.getTableByName(category.getName()).remove();
         saveDocument();
     }
-    
-    
+
     /*
      * Imports content of file passed as attribute
      */
-    public void merge(java.io.File fileToImport){
+    public void merge(java.io.File fileToImport) {
         logger.log(Level.DEBUG, "Importuju data ze souboru: " + fileToImport.getAbsolutePath());
-        
+
         SpreadsheetDocument importedDocument;
         try {
             importedDocument = SpreadsheetDocument.loadDocument(fileToImport);
@@ -861,20 +882,18 @@ public class ODFParser {
             logger.log(Level.ERROR, "Chyba pri nahravani importovaneho souboru souboru: " + fileToImport.getName(), ex);
             return;
         }
-        
+
         loadDocument();
-        
+
         List<Table> importTables = importedDocument.getTableList();
 
-        for(Table table: importTables){
+        for (Table table : importTables) {
             //do aktuálně nastaveného souboru v this.document přidá kategorii z importedDocument
             Category cat = getCategory(table.getTableName(), importedDocument);
             logger.log(Level.TRACE, "kopiruji kategorii:_______________________ \r"
                     + cat);
-            
-            addCategory( cat );
+
+            addCategory(cat);
         }
     }
 }
-    
-

@@ -7,6 +7,7 @@ package com.mycompany.videoteka.spring;
 import com.mycompany.videolibrary.GDiskManagerWeb;
 import com.mycompany.videolibrary.Movie;
 import com.mycompany.videolibrary.ODFParser;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,19 @@ public class MovieController {
 
     @RequestMapping(value = {""}, method = RequestMethod.GET)
     public String detail(@RequestParam String category, @RequestParam String mediumId, 
-    @RequestParam String movieId, Model model){
+    @RequestParam String movieName, Model model){
         
-        String pokus = "pokusnyKralik";
+        
+        Movie movie = parser.findMovie(movieName, mediumId, category);
 
-        model.addAttribute("pokus", pokus);
+        if(movie != null){
+            model.addAttribute("movieName", movie.getName());
+            model.addAttribute("category", category);
+            model.addAttribute("mediumId", mediumId);
+            model.addAttribute("metaInfo", movie.getMetaInfo());
+        }
+         
+    
         return "movie";
         
     }
