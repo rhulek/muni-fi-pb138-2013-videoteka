@@ -18,11 +18,19 @@
     <jsp:body>
         <form:form action="${baseURL}/file/import" method="POST" commandName="importBean" enctype="multipart/form-data">
             
-            Zvolte prosim soubor: <input type="file" name="filePath"/><br/>
-
-            <form:radiobuttons path="importOption" items="${importBean.importOptions}"/>
-
-            <input type="submit" value="Importovat"/>
+            <div class="form-row">
+                <label for="filePath">Soubor k importu</label>
+                <input type="file" name="filePath"/>
+            </div>
+            
+            <div class="form-row radio-btns">
+                <form:radiobuttons path="importOption" items="${importBean.importOptions}"/>
+            </div>
+               
+            <div class="form-row submit">
+                <input type="submit" value="Importovat"/>
+            </div>  
+            
         </form:form>
             
     </jsp:body>

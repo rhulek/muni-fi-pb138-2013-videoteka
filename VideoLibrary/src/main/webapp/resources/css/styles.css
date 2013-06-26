@@ -280,12 +280,25 @@ hr.cleaner {
     content: ":";
 }
 
+.form-row.radio-btns {
+    margin-left: 150px;
+}
+
+.form-row.radio-btns span label {
+    float: none;
+    display: inline-block; 
+}
+
+.form-row.radio-btns span label:after {
+    content: "";
+}
+
 .form-row input, .form-row select {
     
 }
 
 .form-row.submit {
-    margin: 10px 20px 20px 150px;    
+    margin: 20px 20px 20px 150px;    
 }
 
 .form-row .auth-code-form-input {
