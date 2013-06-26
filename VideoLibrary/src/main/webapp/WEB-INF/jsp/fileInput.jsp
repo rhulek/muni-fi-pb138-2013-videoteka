@@ -24,6 +24,7 @@
             </div>
             
             <div class="form-row radio-btns">
+                <label for="importOption">Režim importu</label>
                 <form:radiobuttons path="importOption" items="${importBean.importOptions}"/>
             </div>
                

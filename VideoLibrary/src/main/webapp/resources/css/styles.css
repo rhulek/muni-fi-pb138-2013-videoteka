@@ -280,9 +280,6 @@ hr.cleaner {
     content: ":";
 }
 
-.form-row.radio-btns {
-    margin-left: 150px;
-}
 
 .form-row.radio-btns span label {
     float: none;
