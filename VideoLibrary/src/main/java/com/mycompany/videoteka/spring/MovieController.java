@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -31,12 +34,15 @@ public class MovieController {
     @Autowired
     private GDiskManagerWeb manager;
     
-    @RequestMapping(value = "detail", method = RequestMethod.GET)
-    public String detail(@ModelAttribute Movie movie, Model model){
+
+    @RequestMapping(value = {""}, method = RequestMethod.GET)
+    public String detail(@RequestParam String category, @RequestParam String mediumId, 
+    @RequestParam String movieId, Model model){
         
-       // parser.addMedium(newMedium, newMedium.getCategory() );
-       // parser.reloadDocument();
-       // manager.updateTempFileToGDrive();
-        return "redirect:/movie/" + movie.getName();
+        String pokus = "pokusnyKralik";
+
+        model.addAttribute("pokus", pokus);
+        return "movie";
+        
     }
 }

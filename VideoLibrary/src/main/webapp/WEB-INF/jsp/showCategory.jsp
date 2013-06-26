@@ -17,6 +17,7 @@
                     <ul>
                         <c:forEach items="${med.value.movies}" var="movie">
                             <li><c:out value="${movie.name}"/> <c:out value="${movie.metaInfoXML}"/></li>
+                            <a href="${pageContext.servletContext.contextPath}/movie?category=${categoryName}&mediumId=${mediumId}&movieId=${movieId}"><c:out value="${movie}" />
                         </form>
                             
                             
@@ -27,10 +28,7 @@
                             <input type="hidden" name="mediumID" id="mediumID" value="ID media"/>
                             <input type="hidden" name="categoryName" id="categoryName" value="Nazev kategorie"/>
                             <input type="submit" value="Smazat"/>
-                        </form>
-                         <form action="${pageContext.servletContext.contextPath}/movie/detail" id="deleteBackingForm" method="GET">
-                            <input type="submit" value="Detail"/>
-                        </form>    
+                        </form>   
                     </div>
                 </div>
             </c:forEach>
