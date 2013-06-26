@@ -9,10 +9,8 @@
     <jsp:attribute name="headingType">compact</jsp:attribute>
     
     <jsp:body>
-        <p>Pokračujte výběrem konkrétní akce.</p>
-        <h2> h2 nadpis: <c:out value="${msg}"/> </h2>
-        file://d:/IMG_0011.JPG
-        <a href="${msg}">${msg}</a>
+        <p>Pokračujte výběrem konkrétní akce</p>
+        <h2><c:out value="${msg}"/> </h2>
     </jsp:body>
         
 </t:pageTemplate>

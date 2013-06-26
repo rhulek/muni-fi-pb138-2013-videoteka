@@ -125,7 +125,7 @@ public class ODFParser {
         }
         
         List<String> categorNames = new ArrayList<String>();
-        List<Table> tables = document.getTableList();
+        List<Table> tables = getTableList();
         
         if(tables == null){
             logger.log(Level.ERROR, "Nepodarilo se ziskat seznam tabulek!");
@@ -314,7 +314,12 @@ public class ODFParser {
 ////        throw new UnsupportedOperationException("Not inplemented yet!");
 //    }
     
+    
     public void addMedium(Medium medium, Category category) {
+        addMedium(medium, category, true);
+    }
+    
+    public void addMedium(Medium medium, Category category, boolean saveAfterAdd) {
         if(!loadDocument()){
             return;
         }
@@ -335,11 +340,17 @@ public class ODFParser {
         
         addMediumToTable(medium, table, size);
 
-       
-        saveDocument();
+        if(saveAfterAdd) {
+            saveDocument();
+        }
     }
     
     public void addAllMediums(List<Medium> mediums, Category category) {
+        addAllMediums(mediums, category, true);
+    }
+    
+    
+    public void addAllMediums(List<Medium> mediums, Category category, boolean saveAfterAdd) {
         if(!loadDocument()){
             return;
         }
@@ -362,7 +373,9 @@ public class ODFParser {
             size++;
         }
        
-        saveDocument();
+        if(saveAfterAdd) {
+            saveDocument();
+        }
     }
     
     
@@ -511,6 +524,20 @@ public class ODFParser {
 //          return null;  
 //    }
 //    
+    private List<Table> getTableList(){
+        if(!loadDocument()){
+            return null;
+        } 
+        List<Table> tables = new ArrayList<Table>();
+        for(Table table : document.getTableList()){
+            if(!table.getTableName().equals(SERVICE_TAB_NAME)){
+                tables.add(table);
+            }
+        }
+        return tables;
+        
+    }
+    
      /*
      * Returns all Films in category passed in parameter. If category name is null perform search in all categories.
      * 
@@ -541,7 +568,7 @@ public class ODFParser {
             tables.add(tab);
             
         } else {
-            tables = document.getTableList();
+            tables = getTableList(); 
         }
       
         if(tables == null){            
@@ -625,7 +652,7 @@ public class ODFParser {
             tables.add(tab);
             
         } else {
-            tables = document.getTableList();
+            tables = getTableList();
         }
       
         if(tables == null){            
@@ -809,7 +836,7 @@ public class ODFParser {
         List<Medium> mediums = category.getAllMedia();
 
         
-        addAllMediums(mediums, category);
+        addAllMediums(mediums, category, false);
         
 
         saveDocument();
