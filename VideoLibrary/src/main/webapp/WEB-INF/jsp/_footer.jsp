@@ -9,7 +9,7 @@
     <div class="content">
         <img src="${pageContext.request.contextPath}/resources/images/dvojice.png" alt="" id="footer-decor-img" />
         <div class="block1">
-            <h3>Info - included</h3>
+            <h3>Info</h3>
             <p>Školní projekt, který vznikl na  půdě FI.MUNI.cz<br/>PB138 (jaro2013)</p>
         </div>
         <div class="block2">

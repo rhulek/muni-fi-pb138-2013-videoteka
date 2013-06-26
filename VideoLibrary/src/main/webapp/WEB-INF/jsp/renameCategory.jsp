@@ -17,11 +17,14 @@
     
     <jsp:body>
         <form action="${pageContext.servletContext.contextPath}/category/rename/${oldCategoryName}" method="post">
-            <input type="text" id="newName" name="newName" value="${oldCategoryName}"/>
-            <input type="submit" value="odeslat"/>
+            <div class="form-row">
+                <label for="newName">Nový název</label>
+                <input type="text" id="newName" name="newName" value="${oldCategoryName}"/>
+            </div>
+            <div class="form-row submit">
+                <input type="submit" value="Uložit"/>
+            </div>
         </form>
-        <br/>
-        <a href="${pageContext.servletContext.contextPath}/category/showAll"> Zpet na seznam kategorii </a>
     </jsp:body>
         
 </t:pageTemplate>

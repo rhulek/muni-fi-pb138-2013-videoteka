@@ -16,9 +16,9 @@
                 <img src="${pageContext.request.contextPath}/resources/images/videoteka-logo.png" alt="Videotéka" /></a>
                 <div id="navcontainer">
                     <ul id="navlist">
-                        <li <% if(request.getParameter("menuItemActive").equals("catalog") ) {%> class="active" <%}%>  ><a href="#">Katalog</a></li>
-                        <li <% if(request.getParameter("menuItemActive").equals("setup") ) {%> class="active" <%}%>  ><a href="#">Nastavení</a></li>
-                        <li <% if(request.getParameter("menuItemActive").equals("help") ) {%> class="active" <%}%>  ><a href="#">Nápověda</a></li>
+                        <li <% if(request.getParameter("menuItemActive").equals("catalog") ) {%> class="active" <%}%>  ><a href="${pageContext.request.contextPath}/category">Katalog</a></li>
+<!--                        <li <% if(request.getParameter("menuItemActive").equals("setup") ) {%> class="active" <%}%>  ><a href="#">Nastavení</a></li>
+                        <   li <% if(request.getParameter("menuItemActive").equals("help") ) {%> class="active" <%}%>  ><a href="#">Nápověda</a></li>-->
                     </ul>
                 </div>
             </div>
