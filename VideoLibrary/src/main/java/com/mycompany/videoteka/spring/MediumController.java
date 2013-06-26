@@ -38,6 +38,9 @@ public class MediumController {
     @Autowired
     private ODFParser parser;
     
+    @Autowired
+    private GDiskManagerWeb manager;
+    
     @RequestMapping(value = "addMedium", method = RequestMethod.POST)
     public String addMedium(@ModelAttribute Medium newMedium, Model model){
         logger.log(Level.TRACE, "nove medium: " + newMedium + " Ma nastavenou kategorii: " + newMedium.getCategory());
@@ -52,6 +55,7 @@ public class MediumController {
         
         parser.addMedium(newMedium, newMedium.getCategory() );
         parser.reloadDocument();
+        manager.updateTempFileToGDrive();
         return "redirect:/category/" + newMedium.getCategory().getName();
     }
     
@@ -98,6 +102,7 @@ public class MediumController {
         String decodedCategoryName = Helper.decodeEscapedString(categoryName);
         
         parser.deleteMedium(new Medium(mediumID, null, null, new Category(decodedCategoryName)));
+        manager.updateTempFileToGDrive();
         return "redirect:/category/" + decodedCategoryName;
     }
     

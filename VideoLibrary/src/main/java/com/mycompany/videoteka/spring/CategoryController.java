@@ -119,6 +119,7 @@ public class CategoryController {
         }
         
         parser.renameCategory(new Category(decodedCategoryName), decodedNewName);
+        manager.updateTempFileToGDrive();
         return "redirect:/category/showAll";
     }
     
@@ -147,7 +148,7 @@ public class CategoryController {
             if (delete.equals("delete"));
             parser.deleteCategory( new Category(decodedCategoryName) );
         }
-        
+        manager.updateTempFileToGDrive();
         return "redirect:/category/showAll";
     }
     
@@ -165,6 +166,8 @@ public class CategoryController {
         }
         logger.log(Level.TRACE, "Vytvarim kategorii: " + decodedCategoryName);
         parser.addCategory(new Category(decodedCategoryName));
+        
+        manager.updateTempFileToGDrive();
         return "redirect:/category/showAll";
     }
     

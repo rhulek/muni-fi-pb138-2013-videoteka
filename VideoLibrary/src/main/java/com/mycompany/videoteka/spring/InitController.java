@@ -64,6 +64,7 @@ public class InitController {
         }
 
         manager.getTempFile();
+        manager.updateTempFileToGDrive();
 //        String msg = "Token byl uspesne nahran a obnoven. Nyni muzete pracovat s aplikaci. \r"
 //                + manager.getCredentials().getRefreshToken() + " " + Calendar.getInstance().getTime();
 //        model.addAttribute("msg", msg);
@@ -80,6 +81,7 @@ public class InitController {
         
         boolean result = manager.autorizeAndSaveCredentials(code);
         if(result){
+            manager.getTempFile();
             return new ModelAndView("infoPage").addObject("msg", "Aplikace uspesne autorizovana.");
         } else {
             return new ModelAndView("errorPage").addObject("msg", "Chyba pri autorizaci aplikace!");

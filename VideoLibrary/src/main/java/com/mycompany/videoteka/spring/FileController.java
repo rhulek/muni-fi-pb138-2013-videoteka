@@ -107,14 +107,15 @@ public class FileController {
             parser.reloadDocument();
         }
         
+        manager.updateTempFileToGDrive();
         return "redirect:/category/showAll";
     }
     
-    @RequestMapping(value = "saveTest")
-    public String saveFile(Model model){
-        
-//        model.addAttribute("msg", "file:///D:/IMG_0011.JPG");
-        //model.addAttribute("msg", "www.centrum.cz");
-        return "redirect:http://www.google.com";
-    }
+//    @RequestMapping(value = "saveTest")
+//    public String saveFile(Model model){
+//        
+////        model.addAttribute("msg", "file:///D:/IMG_0011.JPG");
+//        //model.addAttribute("msg", "www.centrum.cz");
+//        return "redirect:http://www.google.com";
+//    }
 }

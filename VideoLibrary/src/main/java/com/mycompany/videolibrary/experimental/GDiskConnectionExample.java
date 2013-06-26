@@ -65,17 +65,18 @@ public class GDiskConnectionExample {
         br.readLine();
 
         
+        logger.log(Level.INFO, "Nahravam soubor na server");
         manager.updateTempFileToGDrive();
  
         
-        ODFParser parser = new ODFParser(tempFile.getName());
-        
-        logger.log(Level.DEBUG, parser.getCategory("BluRay"));
-        
-        //test nahrazeni souboru
-        manager.replaceTempFile(new java.io.File("videoteka.ods"));
-        
-        logger.log(Level.DEBUG, parser.getCategory("BluRay"));
+//        ODFParser parser = new ODFParser(tempFile.getName());
+//        
+//        logger.log(Level.DEBUG, parser.getCategory("BluRay"));
+//        
+//        //test nahrazeni souboru
+//        manager.replaceTempFile(new java.io.File("videoteka.ods"));
+//        
+//        logger.log(Level.DEBUG, parser.getCategory("BluRay"));
         
         //logger.log(Level.FATAL, "temFile is exist: " + manager.getTempFile().exists());
         logger.debug("A to je vse pratele tady dady da!");

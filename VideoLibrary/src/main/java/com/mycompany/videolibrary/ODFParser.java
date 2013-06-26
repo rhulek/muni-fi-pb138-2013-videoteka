@@ -133,8 +133,10 @@ public class ODFParser {
         
         for(Table table: tables){
             String name = table.getTableName();
-            categorNames.add(name);
-            logger.log(Level.TRACE, "Pridavam kategorii: " + name);
+            if(!SERVICE_TAB_NAME.equals(name)){
+                categorNames.add(name);
+                logger.log(Level.TRACE, "Pridavam kategorii: " + name);
+            }
         }
         
         return categorNames;
@@ -201,7 +203,8 @@ public class ODFParser {
                 String movieName = "";
                 
                 
-                
+                //Parsování jména kategorie toto je nutné, protože po přidání poznámky vrací cell.getDisplayText()
+                //Spolu s textem i další bordel jako datum poslední modifikace a pod
                 String movieComment = cell.getNoteText();
                 NodeList nodes = cell.getOdfElement().getChildNodes();
                 for(int k = 0; k < nodes.getLength(); k++) {
@@ -372,9 +375,13 @@ public class ODFParser {
             row = table.insertRowsBefore(rowIndex, 1).get(0);
         }
 
-        logger.log(Level.DEBUG, rowIndex);
 
-        row.getCellByIndex(0).setDoubleValue((double) medium.getId());      //nastaveni ID
+        logger.log(Level.DEBUG, "rowIndex: " + rowIndex);
+
+        logger.log(Level.DEBUG, "Počet sloupců: " + row.getCellCount());
+        Cell cell = row.getCellByIndex(0);
+        cell.setDoubleValue((double) medium.getId());      //nastaveni ID
+        
         for (int i = 1; i < medium.getMovies().size() + 1; i++) {
             row.getCellByIndex(i).setStringValue(medium.getMovies().get(i - 1).getName());
             row.getCellByIndex(i).setNoteText(medium.getMovies().get(i - 1).getMetaInfoXML());
@@ -516,6 +523,11 @@ public class ODFParser {
             return null;
         } 
         
+        if(ODFParser.SERVICE_TAB_NAME.equals(categoryName)){
+            logger.log(Level.WARN, "Searching for movies in Service category is forbidden!");
+            return new ArrayList<Movie>();
+        }
+        
         //pokud je nastaveno jméno kategorie pro vyhledávání, získej tuto kategorii a nastav ji jako jedinou pro vyhledávání
         //jinak nahrej všechny kategorie a vyhledávej ve všech.
         List<Table> tables;
@@ -538,7 +550,12 @@ public class ODFParser {
         List<Movie> movies = new ArrayList<Movie>();
         
         for(Table table: tables){
+            
             String catName = table.getTableName();
+            if(ODFParser.SERVICE_TAB_NAME.equals(catName)){     //preskcoci servisni kategorii v te vyhledávat filmy nechceme
+                continue;
+            }
+                        
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
             for(Medium medium : categoryMedia){
                 for(Movie movie : medium.getMovies()) {
@@ -583,11 +600,17 @@ public class ODFParser {
      * @param categoryName name of category to search in if set to null search is performed in all categories
      * @param meta Map of meta tags used to restrict searching if set null searching by meta tags is ignored
      */
-    
+
+        
     public List<Medium> findMediumByNameAndMeta(String movieName, String categoryName, Map<String, String> meta) {
         if(!loadDocument()){
             return null;
         } 
+        
+        if(ODFParser.SERVICE_TAB_NAME.equals(categoryName)){
+            logger.log(Level.WARN, "Searching for movies in Service category is forbidden!");
+            return new ArrayList<Medium>();
+        }
         
         //pokud je nastaveno jméno kategorie pro vyhledávání, získej tuto kategorii a nastav ji jako jedinou pro vyhledávání
         //jinak nahrej všechny kategorie a vyhledávej ve všech.
@@ -611,7 +634,12 @@ public class ODFParser {
         List<Medium> mediums = new ArrayList<Medium>();
         
         for(Table table: tables){
+            
             String catName = table.getTableName();
+            if(ODFParser.SERVICE_TAB_NAME.equals(catName)){     //preskcoci servisni kategorii v te vyhledávat filmy nechceme
+                continue;
+            }
+            
             List<Medium> categoryMedia = getCategory(catName).getAllMedia();
             for(Medium medium : categoryMedia){
                 boolean check = false;

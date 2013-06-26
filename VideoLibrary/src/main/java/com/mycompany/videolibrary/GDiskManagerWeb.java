@@ -454,6 +454,13 @@ public class GDiskManagerWeb {
                 googleFile = videoFile;
                 
                 tempFile = createFile(is, TEMP_FILE);
+                
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    logger.log(Level.WARN, "Failed to close input stream.", ex);
+                }
+                
                 return tempFile;
             }
             return null;
@@ -487,8 +494,12 @@ public class GDiskManagerWeb {
             Drive service = new Drive.Builder(httpTransport, jsonFactory, credentials).setApplicationName(APPLICATION_NAME).build();
             if (updateFile(service, GOOGLE_FILE_ID, tempFile) == null) {
                 logger.log(Level.ERROR, "Doslo k chybe pri update souboru na serveru.");
+                return;
             }
+        } else {
+            logger.log(Level.ERROR, "Chyba při aktualizaci souboru na serveru. Nenastaveny credentials!");
         }
+        logger.log(Level.DEBUG, "Soubor na serveru uspesne aktualizovan.");
         //throw new UnsupportedOperationException("Not supported yet.");
     }
     
@@ -544,6 +555,12 @@ public class GDiskManagerWeb {
         return null;
     }
     
+    /*
+     * Common function for retrieving information about file from Google Drive.
+     * 
+     * @return file specified by parameter or null if not found or error occurs. Contains only file infomration NO Content
+     * @param fileID Id of file at Google Drive
+     */
     public File getFileFromGDriveByID(String fileID){
         return getFileFromGDriveByID(fileID, credentials, httpTransport, jsonFactory);
     }
