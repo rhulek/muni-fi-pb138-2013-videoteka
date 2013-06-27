@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "../docbook-xml-4.5/docbookx.dtd">
+
+<book lang="cz">
+  <title>PB138 - semestrální projekt VideoWebGApps</title>
+  
+  <bookinfo>
+    <title>Závìreèná zpráva z projektu VideoWebGApps - zpracování odf a metadata jednotlivých filmù</title>
+    <author>
+      <firstname>Ondøej</firstname>
+      <surname>Vojtíšek</surname>
+    </author>
+  </bookinfo>
+  
+    <preface>
+        <title>Úvod</title>
+        <para>Èást projektu, kterou jsem mìl na starosti se týkala toho jakým zpùsobem bude realizován pøístup k datùm uloženým v tabulce, tak aby aplikace správnì chápala jejich semantiku. Další èást mé práce spoèívala v tom aby bylo umožnìno data filmù doplnit o dodateèné informace a poznámky.
+        </para>
+    </preface>
+    <chapter>
+        <title>Pøístup k tabulce</title>
+        <para>
+        Formát uložení dat v tabulce byl v podstatì stanoven zadáním, které pøedepisovalo jak formát .ods tak z velké èásti i logiku uložení. Nebylo tedy dùležité se zamýšlet nad syntaxí dat v tabulce jako spíš nad tím jak k datùm implementaènì pøistupovat. K tomu jsem se rozhodl použít knihovnu apache odftoolkit. 
+        </para>
+        <para>
+              Knihovna poskytuje nástroje pro komplexní práci s dokumentem. Umožòuje volbu tabulek souboru (v kontextu projektu chápané jako kategorie médií) a následné procházení tabulky v cyklu po øádcích. K jednotlivým buòkám se pøistupuje obdobnì iterací pøes prvky øádku. 
+              Operace nad buòkami i øádky jsou intuitivní a nechá se jednoduše pøistupovat k textovému obsahu, èíselnému obsahu, k foromátu nebo ke komentáøi buòky. Knihovna tedy poskytovala dostatek nástrojù pro implementaci našeho projektu.
+        </para>
+         <para>
+         Náplní mé práce byla implementace metod backendu pro práci s .ods dokumentem, které se nachází ve tøídì ODFParser. Jednalo se pøedevším o metody sloužící k vyhledávání nad tabulkou.
+         </para>
+    </chapter>
+    <chapter>
+        <title>Dodateèné informace o ukládaných multimédiích</title>
+        <para>
+        Už pøi prvnotním nástøelu modelu aplikace jsme uvažovali, že by aplikace pro smysluplné použití nemìla ukládat pouze informace o médiích, ale mìla by uchovávat souèasnì i informace o jejich multimediálním obsahu v rozsahu vìtším než pouhý název. Ideálnì tak, aby tato data byla parametrizovaná a bylo nad nimi umožnìno vyhledávání. Jelikož struktura tabulek definovaná zadáním s tímto použitím moc nepoèítala, tak jsme se zamýšleli nad tím jak do tabulek tyto informace pøidat. 
+        Uvažovali jsme nìkolik variant jak metaData ukládat. Jednou z nich bylo použití reference. Ukládat u média pouze identifikátor obsažených dat a kompletní informace o médiu nechat v jiné tabulce. To by ale snížilo pøehlednost výsledné tabulky. 
+        Aby tabulka zachovala vypovídací hodnotu a pøitom byla rozšíøena o další rozmìr dat jsme se rozhodli použít komentáøù bunìk. Data do komentáøù mohla být uložena buï jako JSON a nebo jako XML. Pro implementaci jsem se vybral variantu komentáøe strukturovaného jako XML. Pøíklad komentáøe:
+        </para>
+        <programlisting language="xml"><![CDATA[
+          <multimediaData>  
+            <data name="genre">Action</data>
+            <data name="codec">DivX</data>
+            <data name="container">avi</data>
+            <data name="bitrate">24 Mbit/s</data>
+        </multimediaData>
+        ]]>
+        </programlisting>
+        
+        <para>
+        Existence komentáøù není nutná a množství parametrù je libovolné. Po naètení informací z tabulky jsou dvojice název parametru a hodnota ukládány do hash mapy. 
+        </para>
+        <para>
+        Struktura ODFParseru poèítá s pøípadným rozšíøením tabulky o tzv. servisní tabulku, která by uchovávala doménu jednotlivých ukládaných parametrù filmù. Tato tabulka bude v .ods dokumentu skryta a ani metody prohledávání ji budou ignorovat. Využita bude napø. aby pøi zadávání informací k novému filmu umožnila výbìr z domény a aby doména neobsahovala rùzné modifikace téhož (avi vs. AVI vs. Avi).
+    </chapter>
+</book>
+
