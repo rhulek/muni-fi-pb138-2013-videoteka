@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "../docbook-xml-4.5/docbookx.dtd">
+
+<book lang="cz">
+  <title>Docbook Book Example</title>
+  
+  <bookinfo>
+    <title>Závěrečná zpráva z projektu Videotéka – prezentační vrstva</title>
+    <author>
+      <firstname>Richard</firstname>
+      <surname>Hůlek</surname>
+    </author>
+  </bookinfo>
+  
+    <preface>
+        <title>Úvod</title>
+        <para>Stěžejním zaměřením mojí práce na projektu bylo zpracování prezentační
+            vrstvy aplikace Videotéka – webové aplikace pro správu domácí videotéky.
+            Pro vývoj celé aplikace byl zvolen Spring framework, který je vhodný
+            mimo jiné pro implementaci systémů využívající MVC architekturu.
+            Tato architektura je vhodná nejenom z pohledu oddělení aplikační,
+            persistentní a prezentační vrstvy, ale zároveň také umožňuje efektivní
+            souběžnou týmovou práci na projektu.
+        </para>
+    </preface>
+    <chapter>
+        <title>Prezentační vrstva</title>
+        <para>Prezentační vrstva je implementována sadou JSP souborů, které jsou
+            pomocí Spring frameworku přímo navázány na příslušné controllery, které předzpracovávají
+            veškerá potřebná data.
+        </para>
+        <para>
+            Technologie JSP byla zvolena kvůli svojí jednoduchosti. Na projektu
+            malého rozsahu se přímočarost JSP velice osvědčila. Přestože prezentační
+            vrstva obsahuje pouze několik obrazovek, i zde se našly místa, kde bylo
+            potřeba zvolit trochu sofistikovanější postupy, aby nedocházelo k duplikaci
+            zdrojového kódu (sdílené komponenty obrazovky – navigační menu, záhlaví, zápatí…).
+        </para>
+        <para>
+            Pro zjednodušení a zpřehlednění kódu JSP byla využita technologie JSTL
+            (JSP – Standard Tag Library), která umožňuje efektivní zápis cyklů,
+            podmíněných konstrukcí pro větvení kódu a další funkce, kde se často
+            prolíná statický kód jazyka HTML a řídící kód jazyka Java (JSP).
+        </para>
+    </chapter>
+    <chapter>
+        <title>Template a struktura souborů pro views</title>
+        <para>Prezentační vrstva je vystavěna na dvou základních layoutech. Jednosloupcový
+            layout je použit na vstupní stránce, kde se provádí autorizace aplikace vůči úložišti
+            GoogleDrive. Dvousloupcový layout je pak použit na všech dalších obrazovkách
+            webové aplikace. Aby nedocházelo k duplikaci kódu, byl vytvořen template pro
+            dvousloupcový layout, který je implementován formou vlastního tag souboru
+            (pageTemplate.tag), který je umístěn ve složce WebPages/WEB-INF/tags/.
+        </para>
+        <para>Tag pageTemplate obsahuje HTML komponenty a pomocí direktiv jazyka
+              JSP do sebe načítá navíc ještě soubory:</para>
+            <itemizedlist>
+                <listitem><para>WebPages/WEB-INF/jsp/_heading.jsp s prvky definující záhlaví stránky</para></listitem>
+                <listitem><para>WebPages/WEB-INF/jsp/_scndMenu.jsp s prvky definující navigaci do levého sloupce</para></listitem>
+                <listitem><para>WebPages/WEB-INF/jsp/_footer.jsp s prvky definující zápatí stránky</para></listitem>
+            </itemizedlist>
+            <para>Tag pageTemplate lze navíc parametrizovat několika parametry:</para>
+            <itemizedlist>
+                <listitem><para>pageTitle – titulek stránky a H1 nadps</para></listitem>
+                <listitem><para>theme – příznak určující, jaký barevné schéma se použije na vykreslení hlavní části</para></listitem>
+                <listitem><para>headingType – určuje typ záhlaví – kompaktní nebo velké s bannerem</para></listitem>
+                <listitem><para>headingMenuItemActive – určuje, jaká položka hlavního horizontálního menu v záhlaví bude vykreslena jako aktivní</para></listitem>
+                <listitem><para>scndMenuItemActive – určuje, jaká položka bočního vertikálního menu v záhlaví bude vykreslena jako aktivní</para></listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            Jednotlivé soubory, které tvoří samotná view jsou implementovány jako
+            jednotlivé JSP soubory a jsou umístěny v adresáři WebPages/WEB-INF/jsp/.
+        </para>
+        <para>Adresáře WebPages/resources/css a WebPages/resources/images pak obsahují
+            veškeré potřebné definice kaskádových stylů a grafické prvky. Je důležité
+            tyto CSS a obrazové zdroje držet mimo adresář WEB-INF, aby byly přímo
+            dostupné a adresovatelné.
+        </para>
+    </chapter>
+    <chapter>
+        <title>GUI</title>
+        <para>Grafické zpracování uživatelského rozhraní navozuje setmělou atmosféru
+            domácího kina. Jednotlivé grafické prvky se opakují na všech obrazovkách
+            aplikace a vytvářejí tak uniformní grafické uživatelské rozhraní.
+        </para>
+        <para>Pro zpracování GUI byly využity technologie HTML v kombinaci s CSS.
+            Obrazové podklady byly vytvořeny pomocí grafického editoru Adobe
+            Photoshop a Illustrator.
+        </para>
+    </chapter>
+</book>
