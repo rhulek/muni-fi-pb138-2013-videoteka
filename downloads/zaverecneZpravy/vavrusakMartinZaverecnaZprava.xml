@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "../docbook-xml-4.5/docbookx.dtd">
+
+<book lang="cz">
+ <bookinfo>
+    <title>VideoWebGApps: Webová aplikace pro správu domácí videotéky</title>
+    <author>
+      <firstname>Martin</firstname>
+      <surname>Vavrušák</surname>
+    </author>
+    
+    <preface>
+        <title>
+            Popis
+        </title>
+        <para>
+			Během řešení projektu jsem se zabýval především spojením na Google Drive a implementaci Spring MVC.            
+        </para>
+    </preface>
+    
+    
+    <chapter>
+        <title>
+            Google Drive API
+        </title>
+    	<para>
+    	    Google umožňuje přistupovat ke službě Drive pomocí API, podporující mimo jiné i programovací jazyk Java, ve kterém jsme projekt implementovali. Aby bylo možné používat toto API a přistupovat programově ke službám Google, je nutné nejdříve aplikaci "zaregistrovat na Google apis console. Tímto získáme údaje (Client ID, Client Secret, Redirect URL) nutné pro další přístup ke službám Google.
+    	</para>
+    	<para>
+    	    Před samotným použitím Google API je nutné aby uživatel provedl autorizaci aplikace. Komunikace s Google potom probíhá pomocí autentizačního tokenu získaného na základě autorizace uživatelem.
+    	</para>
+    	<para>
+    	    Autorizace aplikace probíhá tak, že na základě údajů získaných z  Google apis console si klientská aplikace vygeneruje autorizační URL, ve které specifikuje jaké služby a v jeném rozshau chce používat. Tuto adresu živatel zadá (v nešem případě se automaticky otevře v prohlížeči) do prohlížeče, poku není příhlášený zadá i své přihlašovací údaje a zobrazí se mu žádost aplikace o povolení přístupu. Potvrzením této žádosti se vygeneruje autorizační kod, pomocí kterého klientská aplikace získá autentizační a obnovovací token (authentization token, refresh token). Díky tomuto postupu není nutné nikam zadávat uživatelovy přihlašovací údaje a tím je vystavovat riziku prozrazení a zneužití.
+    	</para>
+    	<para>
+    	    Pro autorizaci a veškeré další operace spojené s Google Drive jsem vytvořil třídu GDriveManagerWeb. Při prvním spuštění aplikace tato třída zjišťuje jestli existuje soubor credentials.txt (je možné nastavit jak název, tak umístění), do kterého se ukládají přístupové a identifikační údaje pro přístup ke Google API. Pokud soubor není nalezen provede se autentizace popsaná výše. Je vygenerovaná autorizační URL, která je automaticky otevřena v defaultním prohlížeči uživatele. Po přihlášení uživatele a potvrzení autorizace se zobrazí uživateli stránka s autorizačním kodem. Zároveň se zobrazením autorizační URL je zobrazena i stránka naší aplikace pro vložení toho kodu. Po vložení autorizačního kodu, aplikace požádá o autentizační a obnovovací token, které uloží do souboru pro příští puštění. Pokud už byla provedena autorizace aplikace načte se autentizační a obnovovací token a pomocí druhého zmíněného se provede obnovení autentizace. Od tohoto momentu je možné využívat služeb Google Drive API.
+    	</para>
+    	
+    	<para>
+    	    Následně aplikace, kontroluje jestli se na disku nachází dočasný soubor pro manipulaci s daty. Připojí se na Google Drive, získá seznam všech souborů na disku a vyhledá soubor videoteka_data (název a umístění je možné nastavit v property souboru). V případě pokud dočasný soubor není nalezen, nebo je starší než soubor na serveru, provede se stažení dat z Google Drive a tento soubor je vytvořen nebo aktualizován. Všechny další operace jsou poté prováděny v tomto lokálním souboru jehož změny jsou následně nahrány na Google Drive.
+    	</para>
+    </chapter>
+    <chapter>
+        <title>
+            Problémy
+        </title>
+        <para>
+            Při implementaci autorizačního flow a funkcí pro komunikaci s Google Drive jsem narazil na nepřeberné množství problému. Postup autorizace a autentizace je na stránkách Google popsán poměrně dobře a srozumitelně, bohužel při snaze o implementaci je situace opačná. Konkrétní iformace jak provést autorizaci a následnou žádost o tokeny není úplně jasně popsána. Většina informací je ohledně nízkoúrovňových operací pomocí JSON. API pro javu je popsáno velmi stoze a nejasně. Je sice kráce popsáno co která funkce dělá ovšemto jak je použít a zkonbinovat už ne. Naštěstí nějaké informace bylo možné najít různě na internetu (blogy, stackoverflow.com, diskuze, issue trackery). Dalším problémem implementace komunikace s Google Drive bylo, že při chybě zobrazuje Google ve většině případů pouze kod 500 a nicneříkající hlášku "Internal Error", kerá může znamenat od špatně formátované URL, přes chybu parametrů až po nedostupnost služby ze strany Google a chybu serveru. Díky těmto problémům zabralo řešení této části velké množství intenzivní práce a bylo velmi časově náročné.
+        </para>
+    </chapter>
+    
+    <chapter>
+        <title>
+            Spring MVC
+        </title>
+        <para>
+            Jelikož zadání mělo být řešeno jako webová aplikace, použili jsme pro implementaci webový framework Spring MVC. Především proto, že je poměrně široce využíván a má silnou uživatelskou základnu. Práce se springem byla další z mých hlavních činností na tomto projektu. Implementoval jsem 5 základních kontrolerů.
+        </para>
+        <itemizedlist mark='opencircle'>
+            <listitem>
+  6     		<para>
+  					InitController.java "Hlavní" kontroler, který se stará o inicializaci aplikace při spuštění a autorizační flow. Kontroluje přítomnost souboru s autentizačními údaji, přítomnost a aktuálnost lokálního souboru.
+     			</para>
+  8   		</listitem>
+              <listitem>
+  6     		<para>
+  					CategoryController.java	Stará se o manimulaci s kategoriemi (přidání, zobrazení, přejmenování, zobrazení seznamu kategorií,  smazání)
+     			</para>
+  8   		</listitem>
+              <listitem>
+  6     		<para>
+  					MadiumController.java Tento kontroler provádí manipulaci s médii (zobrazení formáře pro vložení nového média, přidání média, smazání média)
+     			</para>
+  8   		</listitem>
+              <listitem>
+  6     		<para>
+  					SearchController.java Zde je řešeno vyhledávání filmů.
+     			</para>
+  8   		</listitem>
+              <listitem>
+  6     		<para>
+  					FileController.java Zde je implementována manipulace se soubory. Import a export. Při importování souboru je uživateli zobrazena stránka pro výběr souboru a tento soubor je stažen do složky aplikace (je možné  nastavit). Uživatel má možnost zvolit dva druhy importu a to spojení a nahrazení. Při spojení jsou informace z inportovaného souboru importovány do aktuálního dočasného souboru. Při volbě nahradit se aktuální soubor nahradí importovaným souborem a všechny předchozí informace jsou ztraceny.
+     			</para>
+  8   		</listitem>
+        </itemizedlist>
+    </chapter>
+    <chapter>
+        <title>
+            Problémy
+        </title>
+        <para>
+            Při práci se Springem byl největší problém ten, že jedna konkrétní věc se dá udělat mnoha způsoby a není úplně jasné který zvolit. Zároveň při hledání problému sandno dojde ke snaze o nesourodou kombinaci několika způsobů řešení. Další problém, který jsem musel řešit bylo jak správně nastavit kodování, které se musí nastavovat na několika různých místech.
+        </para>
+    </chapter>
+
+  </bookinfo>
+</book>
