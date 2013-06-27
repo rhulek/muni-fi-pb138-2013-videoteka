@@ -50,6 +50,7 @@
           </bean>
     
     <bean id="gDiskManager" class="com.mycompany.videolibrary.GDiskManagerWeb">
+        <property name="googleFileID" value="0AoTKDD6do3kVdEVtUTZ6Unpmb05ia29PM0hkdWYwZmc"/>
     </bean>
 
     <bean id="odfParser" class="com.mycompany.videolibrary.ODFParser">
