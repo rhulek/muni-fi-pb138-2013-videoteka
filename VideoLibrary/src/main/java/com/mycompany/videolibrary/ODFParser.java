@@ -323,19 +323,12 @@ public class ODFParser {
 
 
         Table table = document.getTableByName(category.getName());
-        List<Row> rowList = table.getRowList();
-        int size = 0;
-        for (Row row : rowList) {
-            Cell firstCell = row.getCellByIndex(0);
-            if (firstCell == null || firstCell.getDisplayText().equals("")) {
-                break;
-            }
-            size++;
-        }
 
-        addMediumToTable(medium, table, size);
+        logger.log(Level.TRACE, "Pridavam medium: " + medium.getId());
 
-        if (saveAfterAdd) {
+        addMediumToTable(medium, table);
+
+        if(saveAfterAdd) {
             saveDocument();
         }
     }
@@ -352,19 +345,11 @@ public class ODFParser {
 
 
         Table table = document.getTableByName(category.getName());
-        List<Row> rowList = table.getRowList();
-        int size = 0;
-        for (Row row : rowList) {
-            Cell firstCell = row.getCellByIndex(0);
-            if (firstCell == null || firstCell.getDisplayText().equals("")) {
-                break;
-            }
-            size++;
-        }
+        
         for (Medium medium : mediums) {
+            logger.log(Level.TRACE, "Pridavam medium: " + medium.getId());
+            addMediumToTable(medium, table);
 
-            addMediumToTable(medium, table, size);
-            size++;
         }
 
         if (saveAfterAdd) {
@@ -372,17 +357,16 @@ public class ODFParser {
         }
     }
 
-    private void addMediumToTable(Medium medium, Table table, int rowIndex) {
-
+    private void addMediumToTable(Medium medium, Table table) {
+    
         Row row;
-        if (rowIndex >= table.getRowCount()) {
-            row = table.appendRow();
-        } else {
-            row = table.insertRowsBefore(rowIndex, 1).get(0);
-        }
+            
+        
+        row = table.insertRowsBefore(0, 1).get(0);
 
 
-        logger.log(Level.DEBUG, "rowIndex: " + rowIndex);
+
+
 
         logger.log(Level.DEBUG, "Počet sloupců: " + row.getCellCount());
         Cell cell = row.getCellByIndex(0);
@@ -895,5 +879,11 @@ public class ODFParser {
 
             addCategory(cat);
         }
+    }
+    
+    
+    public SpreadsheetDocument createNewSpreadsheetDocument(String pathName){
+        
+        return null;
     }
 }

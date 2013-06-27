@@ -1,7 +1,8 @@
 <%-- 
     Document   : deleteCategoryConfirm
     Created on : 21.6.2013, 22:46:57
-    Author     : Martin
+    Author     : Martin, hulek
+    Doc        : View pro akci "Smazání kategorie - varování!"
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

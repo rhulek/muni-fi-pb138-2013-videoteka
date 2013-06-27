@@ -14,9 +14,10 @@
 
     
     <context:component-scan base-package="com.mycompany.videoteka.spring" />
+    <context:property-placeholder location="classpath:/GApiAppAuth.properties"/>
     
     <!--<context:annotation-config />-->
-    <mvc:annotation-driven />
+    <mvc:annotation-driven />   <!-- this should be before resources mapping -->
     
     <!-- <tx:annotation-driven proxy-target-class="true"/> -->
         
@@ -40,6 +41,8 @@
     
     <mvc:resources mapping="/resources/**" location="/resources/" />
     
+
+
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver"
           p:prefix="/WEB-INF/jsp/"

@@ -1,9 +1,9 @@
 <%-- 
     Document   : insertCode
     Created on : 17.6.2013, 21:01:44
-    Author     : Martin
+    Author     : Martin, hulek
+    Doc        : View pro akci "Autorizace aplikace"
 --%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>
 <!DOCTYPE html>

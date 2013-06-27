@@ -2,8 +2,8 @@
     Document   : pageTemplate
     Created on : 25.6.2013, 1:38:16
     Author     : hulek
+    Doc        : Hlavní template pro vnitřní stránky aplikace (všechny, kromě úvodní strany)
 --%>
-
 <%@tag description="Template of common page" pageEncoding="UTF-8"%>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>

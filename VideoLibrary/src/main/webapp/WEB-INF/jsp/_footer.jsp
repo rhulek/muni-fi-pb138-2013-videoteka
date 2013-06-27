@@ -2,6 +2,7 @@
     Document   : _footer
     Created on : 23.6.2013, 15:38:14
     Author     : hulek
+    Doc        : Pomocny soubor, ktery je urcen pro includovani. Obsahuje prvky zapati
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -16,9 +17,9 @@
             <h3>Autoři</h3>
             <p>
                 <a href="https://is.muni.cz/auth/osoba/172775">Richard Hůlek</a><br/>
-                <a href="https://is.muni.cz/auth/osoba/325192">Ondřej Vojtíšek</a><br/>
-                <a href="https://is.muni.cz/auth/osoba/374143">Milan Vláčil</a><br/>
                 <a href="https://is.muni.cz/auth/osoba/325408">Martin Vavrušák</a>
+                <a href="https://is.muni.cz/auth/osoba/374143">Milan Vláčil</a><br/>
+                <a href="https://is.muni.cz/auth/osoba/325192">Ondřej Vojtíšek</a><br/>
             </p>
         </div>
         <div class="block3">

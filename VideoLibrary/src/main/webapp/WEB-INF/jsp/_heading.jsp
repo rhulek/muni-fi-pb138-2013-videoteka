@@ -2,6 +2,11 @@
     Document   : _heading
     Created on : 24.6.2013, 19:43:06
     Author     : hulek
+    Doc        : Pomocny soubor, ktery je urcen pro includovani.
+                 Dokument obsahuje prvky zahlavi.
+                 Volani lze parametrizovat parametry "type" a "menuItemActive"
+    @param String type Parametr ridi presnou podobu vykreslovani HTML komponent. Nabyva hodnot: "compact" | ""
+    @param String menuItemActive ridi zobrezeni aktivni polozky hlavniho horizontalniho menu v zahlavi. Nabyva hodnot: "catalog". Mozno nadale rozsirovat.
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
