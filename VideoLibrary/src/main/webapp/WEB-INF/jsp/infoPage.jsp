@@ -1,3 +1,9 @@
+<%-- 
+    Document   : index
+    Created on : 17.6.2013, 16:43:18
+    Author     : Martin, hulek
+    Doc        : View pro akci "Vítejte"
+--%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"

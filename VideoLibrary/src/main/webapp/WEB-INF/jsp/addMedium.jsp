@@ -1,7 +1,8 @@
 <%-- 
     Document   : addMedium
     Created on : 22.6.2013, 20:15:49
-    Author     : Martin
+    Author     : Martin, hulek
+    Doc        : View pro akci "Přidat médium"
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>

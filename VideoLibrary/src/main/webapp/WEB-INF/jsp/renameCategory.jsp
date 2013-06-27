@@ -1,10 +1,9 @@
 <%-- 
     Document   : renameCategory
     Created on : 21.6.2013, 20:54:37
-    Author     : Martin
+    Author     : Martin, hulek
+    Doc        : View pro akci "Přejmenování kategorie"
 --%>
-
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"

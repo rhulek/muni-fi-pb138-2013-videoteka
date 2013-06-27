@@ -1,3 +1,6 @@
+/*******************
+  BEGIN:general layout + typography + colors
+*******************/
 body {
     background-color: black;
     background-image: url("../images/grunge-bg.jpg");
@@ -7,10 +10,6 @@ body {
     padding: 0;
     font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
     font-size: 0.8em;
-}
-
-#wrapper {
-    
 }
 
 h1 {
@@ -30,6 +29,14 @@ a img, a:hover img {
     width: 1000px;
     margin: 0 auto;
 }
+
+/*******************
+  END:general layout + typography + colors
+*******************/
+
+/*******************
+  BEGIN:heading
+*******************/
 
 #heading {
     position: relative;
@@ -62,6 +69,14 @@ a img, a:hover img {
     left: 40px;
 }
 
+/*******************
+  END:heading
+*******************/
+
+/*******************
+  BEGIN:main content + themes
+*******************/
+
 #main .content {
     padding: 2em;
     padding-bottom: 350px;
@@ -85,6 +100,13 @@ a img, a:hover img {
     color: #fff;
 }
 
+/*******************
+  END:main content + themes
+*******************/
+
+/*******************
+  BEGIN:footer
+*******************/
 
 #footer {
     color: #ccc;
@@ -117,6 +139,10 @@ a img, a:hover img {
     width: 330px;
     float: left;
 }
+
+/*******************
+  BEGIN:footer
+*******************/
 
 
 /*******************
@@ -188,16 +214,19 @@ ul#navlist {
     color: #fff;
     }
 
-#navcontainer-scnd a:link, #navlist-scnd a:visited {
+#main.dark-theme #navcontainer-scnd a:link, #main.dark-theme #navlist-scnd a:visited {
     color: #EEE;
     text-decoration: none;
     }
 
-#navcontainer-scnd a:hover, #navcontainer-scnd .active a {
+#main.dark-theme #navcontainer-scnd a:hover, #main.dark-theme  #navcontainer-scnd .active a {
     color: #f19300;
     }
     
-    
+#navcontainer-scnd h3 {
+    border-bottom: solid 1px #ccc;
+}
+       
 /*******************
   END: navlist-scnd - secnd navigation
 *******************/
@@ -227,10 +256,6 @@ hr.cleaner {
 /*******************
   END:two column layoyt
 *******************/
-
-#navcontainer-scnd h3 {
-    border-bottom: solid 1px #ccc;
-}
 
 /*******************
   BEGIN:item-container
@@ -268,15 +293,14 @@ hr.cleaner {
     display: block;
 }
 
-
 /*******************
   END:item-container
 *******************/
 
-.form-row {
-    
-}
 
+/*******************
+  BEGIN:form
+*******************/
 
 .form-row label {
     font-style: italic;
@@ -310,3 +334,7 @@ hr.cleaner {
 .form-row .auth-code-form-input {
     width: 500px;
 }
+
+/*******************
+  END:form
+*******************/

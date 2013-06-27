@@ -1,9 +1,9 @@
 <%-- 
     Document   : search
     Created on : 23.6.2013, 14:23:10
-    Author     : Martin
+    Author     : Martin, hulek
+    Doc        : View pro akci "Vyhledat film"
 --%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="header.jsp" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"

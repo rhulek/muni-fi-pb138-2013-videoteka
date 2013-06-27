@@ -1,7 +1,8 @@
 <%-- 
     Document   : fileInput
     Created on : 24.6.2013, 13:11:58
-    Author     : Martin
+    Author     : Martin, hulek
+    Doc        : View pro akci "Import knihovny"
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

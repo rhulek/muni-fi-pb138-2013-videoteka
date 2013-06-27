@@ -2,6 +2,7 @@
     Document   : errorPage
     Created on : 17.6.2013, 16:43:18
     Author     : Martin
+    Doc        : View pro akci "Chybová hláška"
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -15,8 +16,6 @@
     
     <jsp:body>
         <p> <c:out value="${msg}"/> </p>
-        <a href="<c:url value="${msg}"/>"> odkaz </a><br/>
-        <a href="file://localhost/D:/Fotky/bonsai_by_johnbruk03_normalni_verze.JPG"> vod </a>
     </jsp:body>
         
 </t:pageTemplate>

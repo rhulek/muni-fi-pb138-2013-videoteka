@@ -2,6 +2,7 @@
     Document   : _footer
     Created on : 23.6.2013, 15:38:14
     Author     : hulek
+    Doc        : Pomocny soubor, ktery je urcen pro includovani. Obsahuje prvky zapati
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
