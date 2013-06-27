@@ -17,9 +17,9 @@
             <h3>Autoři</h3>
             <p>
                 <a href="https://is.muni.cz/auth/osoba/172775">Richard Hůlek</a><br/>
-                <a href="https://is.muni.cz/auth/osoba/325192">Ondřej Vojtíšek</a><br/>
-                <a href="https://is.muni.cz/auth/osoba/374143">Milan Vláčil</a><br/>
                 <a href="https://is.muni.cz/auth/osoba/325408">Martin Vavrušák</a>
+                <a href="https://is.muni.cz/auth/osoba/374143">Milan Vláčil</a><br/>
+                <a href="https://is.muni.cz/auth/osoba/325192">Ondřej Vojtíšek</a><br/>
             </p>
         </div>
         <div class="block3">
