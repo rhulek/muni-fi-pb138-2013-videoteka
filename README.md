@@ -19,14 +19,14 @@ Aplikace VideoWebGApps poskytuje veškeré funkce skrze grafické uživatelské 
 
 Data jsou ukládána v rámci úložiště do spreadsheet dokumentu, který obsahuje sadu záložek a v nich data ukládá podle principů definovaných v kapitole Fyzický model.
 
-Vzhledem k tomu, že datový zdroj aplikace je běžně čitelný formát tabulkového procesoru a je dostupný uživateli skrze rozhraní GoogleDrive,má  uživatel možnost s datovým zdrojem videotéky pracovat i mimo aplikaci, což při zachování pravidel fyzického modelu není nijak na škodu. Aplikace VideoWebGApps však zajišťuje zachování integrity a formální správnosti dat a zároveň nabízí pohodlnější obshluhu skrze k tomuto účelu připravené grafické rozhraní.
+Vzhledem k tomu, že datový zdroj aplikace je běžně čitelný formát tabulkového procesoru a je dostupný uživateli skrze rozhraní GoogleDrive, má  uživatel možnost s datovým zdrojem videotéky pracovat i mimo aplikaci, což při zachování pravidel fyzického modelu není nijak na škodu. Aplikace VideoWebGApps však zajišťuje zachování integrity a formální správnosti dat a zároveň nabízí pohodlnější obsluhu skrze k tomuto účelu připravené grafické rozhraní.
 
 Datový slovník
 ------------------------
 Datovní slovník popisuje základní datové struktury a jejich přesný význam.
 
 **Kategorie médií (Category)**
-Kategorie médií je uživatelem vytvořená a libovolně pojmenovaná kategorie, která slouží především pro zpřehlednění videotéky. Kategorie může představovat např: horory, pohádky, živé konzerty apod.
+Kategorie médií je uživatelem vytvořená a libovolně pojmenovaná kategorie, která slouží především pro zpřehlednění videotéky. Kategorie může představovat např: vypálené, originální, hudební, doma, v práci, ...
 
 **Typ média (MediumType)**
 Typ média představuje popis datového média, jako je třeba CD, DVD, BlueRay, složka v PC...
@@ -37,11 +37,8 @@ Médium je fyzický datový nosič: konkrétní CD, které je uložené v tom č
 **Multimédium (Multimedia)**
 Multimédium je konkrétní audio / video dílo. Představuje konkrétní film, který je reprezentovaný názvem.
 
-**Typ multimédia (MultimediaType)**
-Typ multimédia slouží pro další kategorizaci videotéky a obsahuje záznamy typu: video, hudba, hudební klip případně třeba i bitmapa či vektorová kresba.
-
-**Datový formát (DataFormat)**
-Datový formát je další kategorie pro zpřehlednění a třídění videotéky a je silně propojený s typem multimédia. Datový formát reprezentuje název datového formátu, jak je multimédium uložené, tedy např.: DivX, avi, mp3 apod.
+**Poznamky k multimediálnímu dílu**
+Aby bylo možné obsah médií dále kategorizovat tak je možné jednotlivým multimediálním dílům přiřadit metaData. Těmi může být např. formát v jakém je film uložen, velikost, bitrate nebo hodnocení.
 
 Logický datový model
 ------------------------
@@ -60,31 +57,17 @@ Persistentní úložiště dat aplikace představuje jeden soubor ve formátu ta
 
 **Záznamy o** jednotlivých **multimédiích** na daném médiu jsou reprezentovány hodnotou buňky na řádku. Každé další multimédium za zapisuje do další volné buňky na řádku daného média.
 
-**Typ multimédia** se ukládá ve strukturované formě (XML) do poznámky buňky konkrétního multimédia.
-
-**Datový formát** multimédia se ukládá ve strukturované formě (XML) do poznámky buňky konkrétního multimédia.
-
-Kvůli zajištění integrity dat se v datovém souboru nacházejí ještě speciální záložky, které obsahují seznamy s výčtovými typy (číselníky).
- - záložka **codeList_mediumType** obsahuje výčet povolených hodnot typů médií
- - záložka **codeList_multimediaType** obsahuje výčet povolených hodnot typů multimédií
- - záložka **codeList_dataFormat** obsahuje výčet povolených hodnot typů datových formátů
- 
-**Strukturovaná poznámka multimédia (buňky)**
+**Poznamky k multimediálnímu dílu**
 Protože vyžadovaný datový formát tabulkového procesoru neumožňuje díky své dvou dimenzionální povaze ukládat libovolně strukturovaná data, tak bylo k ukládání dodatečných informací o multimédiu zvoleno jejich uchovávání v poznámce buňky ve formě XML s definovanou šablonou.
 Strukturovaní XML poznámka v tomto momeňtě slouží jednak pro místo pro uchovávání dodatečných informací k multimédiu. Do budoucna však může představovat vhodný nástroj pro další rozšíření aplikace především z pohledu přidání dalších kategorií. Obdobný princip lze aplikovat i na entitu médium.
 
 **Ukázka strukturované XML poznámky:**
 
-    <multimediaData>
-      <multimediumType>
-        Hudební klip
-      </multimediumType>
-      <dataFormat>
-        DivX
-      </dataFormat>
-      <otherExtensionPoint>
-        DivX
-      </otherExtensionPoint>
+    <multimediaData>  
+     <data name="genre">Action</data>
+     <data name="codec">DivX</data>
+     <data name="container">avi</data>
+     <data name="bitrate">24 Mbit/s</data>
     </multimediaData>
 
 Use case
