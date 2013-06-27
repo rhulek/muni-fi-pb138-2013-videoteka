@@ -5,6 +5,7 @@
 package com.mycompany.videoteka.spring;
 
 import com.mycompany.videolibrary.GDiskManagerWeb;
+import com.mycompany.videolibrary.Helper;
 import com.mycompany.videolibrary.Movie;
 import com.mycompany.videolibrary.ODFParser;
 import java.util.Map;
@@ -43,9 +44,8 @@ public class MovieController {
     public String detail(@RequestParam String category, @RequestParam String mediumId, 
     @RequestParam String movieName, Model model){
         
-        
         Movie movie = parser.findMovie(movieName, mediumId, category);
-
+        
         if(movie != null){
             model.addAttribute("movieName", movie.getName());
             model.addAttribute("category", category);

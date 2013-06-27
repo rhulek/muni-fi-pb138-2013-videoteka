@@ -32,11 +32,6 @@
                 </c:forEach>
                 
                 <div class="form-row">
-                    <label for="type">Typ média</label>
-                    <form:input path="type"/>
-                </div>
-                
-                <div class="form-row">
                     <label for="category">Kategorie</label>
                     <form:select path="category" >
                         <form:option value="${selectedCategory}" label="${selectedCategory}"/>
