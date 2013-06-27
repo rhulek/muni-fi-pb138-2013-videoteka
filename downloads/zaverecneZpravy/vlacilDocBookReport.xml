@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "../docbook-xml-4.5/docbookx.dtd">
+
+<book lang="cz">
+    <title>Docbook Book Example</title>
+  
+    <bookinfo>
+        <title>Závěrečná zpráva z projektu Videotéka – parsování dat</title>
+        <author>
+            <firstname>Milan</firstname>
+            <surname>Vláčil</surname>
+        </author>
+    </bookinfo>
+  
+    <preface>
+        <title>Úvod</title>
+        <para>V tomto projektu Videotéka jsem spolu s Ondřejem Vojtíškem řešil způsob ukládání a parsování dat.
+        </para>
+    </preface>
+
+
+    <chapter>
+        <title>Formát uložených dat</title>
+        <para>Všechny informace jsou uloženy v jednom spreadsheet dokumentu typu ods. Jednotlivé kategorie reprezentují listy (tabulky) v dokumentu. Medium se ukládá jako řádek v tabulce, kde první soupec je ID media a nasledující sloupce jsou pak samotné multimedia (filmy). V textové části buňky multimedia se nachází název multimedia a je tu i možnost uložit další informace o multimediu do poznámky buňky. Text v poznámce má potom formát podle XML schema commentSchema.xsd.     
+        </para>
+    </chapter>
+    
+    <chapter>
+        <title>Technologie</title>
+        <para>V tomto projektu jsme použili Apache ODF Toolkit. Apache ODF Toolkit je množina modulů umožnující vytvárení, procházení a manipulaci s Open Document Format dokumenty. Tento toolkit je lightweight a proto ideální pro použití na serveru.
+        </para>
+    </chapter>
+    <chapter>
+        <title>Technologie</title>
+        <para>V tomto projektu jsme použili Apache ODF Toolkit. Apache ODF Toolkit je množina Java modulů umožnující vytvárení, procházení a manipulaci s Open Document Format dokumenty. Tento toolkit je lightweight a proto ideální pro použití na serveru.
+        </para>
+    </chapter>
+    <chapter>
+        <title>ODFParser</title>
+        <para>O veškerou manipulaci s daty se stará třídá ODFParser. ODFParser přijímá v konstruktoru umístění ods souboru, se kterým bude pracovat. Metody které stojí za zmínění:
+        </para>
+        <para>getCategory</para>
+        <itemizedlist>
+            <listitem>
+                <para>Vrátí podle jména kategorii naplněnout medii.</para>
+            </listitem>
+            <listitem>
+                <para>Zde nastává problém, že dokument může mít více řádků než samotných záznamu. Proto se jednotlivé záznamy načítají postupně dokud se nenarazí na prazdný řádek nebo na konec dokumentu.
+                </para>
+            </listitem>
+            <listitem>
+                <para>Dále jsem narazil pravděpodobně na chybu ODF toolkitu. Při získávání textu buňky která má v sobě uloženou poznámku, není vrácen text buňky, ale všechny informace o buňce. Tento problém byl vyřešen převedením buňky na samotný dom4j element, u kterého jdou v pořádku všechny informace získat z jeho potomků.
+                </para>
+            </listitem>           
+        </itemizedlist>
+        
+        <para>addCategory</para>
+        <itemizedlist>
+            <listitem>
+                <para>Vytvoří nový list v dokumentu a vloží media co jsou v kategorii.
+                    Pokud kategorie uz existuje, tak se jenom vloží media</para>
+            </listitem>
+
+        </itemizedlist> 
+        
+        <para>addMedium/addMediums</para>
+        <itemizedlist>
+            <listitem>
+                <para>Přidá media nebo seznam medii</para>
+            </listitem>
+            <listitem>
+                <para>Přidávání probíhá přidáním nových řádků na začátek tabulky.</para>
+            </listitem>
+            <listitem>
+                <para>Pro přidání na konec tabulky by bylo potřeba znát počet záznamů. To by znamenalo nové procházení tabulky.</para>
+            </listitem>
+        </itemizedlist> 
+    </chapter>
+</book>
